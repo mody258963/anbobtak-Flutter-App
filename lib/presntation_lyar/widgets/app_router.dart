@@ -2,8 +2,10 @@ import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
+import 'package:anbobtak/presntation_lyar/screens/OtpScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/SignUp.dart';
+import 'package:anbobtak/presntation_lyar/screens/emailScreen.dart';
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:flutter/material.dart';
@@ -45,17 +47,17 @@ class AppRouter {
                   value: getMethodCubit!,
                   child: ProfileScreen(),
                 ));
-      case forgetpass:
+      case emailpage:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
-                  child: Container(),
+                  child: EmailScreen(),
                 ));
-      case editaccount:
+      case otp:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
-                  child: Container(),
+                  child: OTPScreen(),
                 ));
             case nav:
               return MaterialPageRoute(
