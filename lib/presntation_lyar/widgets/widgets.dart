@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class Widgets {
   Widget TextFiledLogin(text, input, int short, String min, String max,
@@ -48,22 +49,10 @@ class Widgets {
                 child: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('assets/images/background.png'),
+                          image: AssetImage('assets/lolo.png'),
                           fit: BoxFit.fill)),
                 )),
           ),
-          Positioned(
-            height: 400,
-            width: width + 20,
-            child: FadeInUp(
-                duration: Duration(milliseconds: 1000),
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/background-2.png'),
-                          fit: BoxFit.fill)),
-                )),
-          )
         ],
       ),
     );
@@ -86,13 +75,53 @@ class Widgets {
     );
   }
 
-  Widget TitleText(name,int font) {
-    return Text(
-      name,
-      style: TextStyle(
-          color: Color.fromRGBO(49, 39, 79, 1),
-          fontWeight: FontWeight.bold,
-          fontSize: 30),
+  Widget TitleText(name, double font) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        name,
+        style: TextStyle(
+            color: Color.fromRGBO(49, 39, 79, 1),
+            fontWeight: FontWeight.bold,
+            fontSize: font),
+      ),
+    );
+  }
+
+  Widget listTile(title, subtitle,BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return ListTile(
+      title: Padding(
+        padding:  EdgeInsets.only(bottom: height * 0.01),
+        child: Text(title),
+      ),
+      contentPadding: EdgeInsets.only(top: height * 0.02,left: width * 0.02),
+      titleTextStyle: TextStyle(fontWeight: FontWeight.bold , color: Colors.black,fontSize: width * 0.04),
+      subtitleTextStyle: TextStyle(fontWeight: FontWeight.bold , color: Colors.black54),
+      subtitle: Text(subtitle),
+    );
+  }
+
+  // ======================================= Loading Screen Widget
+
+  Widget buildCircularProgressIndicatorDialog(BuildContext context) {
+    return SizedBox(
+      width: double.infinity, // Takes the full width
+      height: MediaQuery.of(context).size.height * 0.70,
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  void _showCircularProgressIndicatorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.white.withOpacity(0),
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // Call the Widget-building function here.
+        return buildCircularProgressIndicatorDialog(context);
+      },
     );
   }
 }

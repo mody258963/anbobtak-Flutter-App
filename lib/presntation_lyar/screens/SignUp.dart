@@ -1,4 +1,5 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
+import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/OtpScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
@@ -18,7 +19,6 @@ class _SignUpState extends State<SignUp> {
   String dropdownValue = list.first;
   Widgets _widgets = Widgets();
   final TextEditingController phonecontroller = TextEditingController();
-
 
   static const List<String> list = <String>['EN', 'AR'];
 
@@ -95,6 +95,7 @@ class _SignUpState extends State<SignUp> {
     final width = MediaQuery.of(context).size.width;
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: MyColors.white,
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +108,7 @@ class _SignUpState extends State<SignUp> {
                   children: <Widget>[
                     FadeInUp(
                         duration: Duration(milliseconds: 1500),
-                        child:_widgets.TitleText("Enter Phone Number", 30)),
+                        child: _widgets.TitleText("Enter Phone Number", 30)),
                     SizedBox(
                       height: 30,
                     ),
@@ -147,10 +148,10 @@ class _SignUpState extends State<SignUp> {
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 1900),
-                        child:_widgets.AppButton((){
-                           Navigator.pushNamed(
-                                context, otp , arguments: phonecontroller.toString()
-            );
+                        child: _widgets.AppButton(() {
+                          print(phonecontroller.toString());
+                          Navigator.pushNamed(context, otp,
+                              arguments: phonecontroller.text);
                         }, 'Recive OTP')),
                     SizedBox(
                       height: 30,

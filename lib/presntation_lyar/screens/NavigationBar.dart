@@ -2,6 +2,7 @@
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
+import 'package:anbobtak/presntation_lyar/screens/MyorderScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,24 +26,18 @@ class _NavigationBarsState extends State<NavigationBars> {
   List<PersistentBottomNavBarItem> _navBarItems() {
     return [
       PersistentBottomNavBarItem(
-     
         icon: Icon(Icons.home),
-        activeColorPrimary: Colors.white,
+        activeColorPrimary: MyColors.Secondcolor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.book_sharp),
-        activeColorPrimary: Colors.white,
-        inactiveColorPrimary: Colors.grey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.search),
-        activeColorPrimary: Colors.white,
+        icon: Icon(Icons.delivery_dining_sharp ),
+        activeColorPrimary: MyColors.Secondcolor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person),
-        activeColorPrimary: Colors.white,
+        activeColorPrimary: MyColors.Secondcolor,
         inactiveColorPrimary: Colors.grey,
       ),
     ];
@@ -53,17 +48,11 @@ class _NavigationBarsState extends State<NavigationBars> {
   List<Widget> _screens() {
     return [
       HomeScreen(),
+      MyOrderScreen(),
       ProfileScreen(),
     ];
   }
 
-// PersistentTabView _buildScreens() {
-//   return PersistentTabView(
-//     context,
-//     controller: _controller,
-//     screens: _screens(),
-//   );
-// }
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +61,11 @@ class _NavigationBarsState extends State<NavigationBars> {
         body: PersistentTabView(
           screens: _screens(),
           context,
+          confineInSafeArea: true,
           controller: _controller,
           items: _navBarItems(),
           navBarStyle: NavBarStyle.style6,
-          backgroundColor: MyColors.backcolor,
+          backgroundColor: MyColors.white,
           hideNavigationBarWhenKeyboardShows: true,
           popAllScreensOnTapOfSelectedTab: true,
         ),

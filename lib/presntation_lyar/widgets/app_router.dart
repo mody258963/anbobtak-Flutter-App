@@ -39,7 +39,7 @@ class AppRouter {
         return MaterialPageRoute(
             builder: (_) => BlocProvider<GetMethodCubit>.value(
                   value: getMethodCubit!,
-                  child: HomeScreen(),
+                  child: NavigationBars(),
                 ));
       case account:
         return MaterialPageRoute(
@@ -54,10 +54,11 @@ class AppRouter {
                   child: EmailScreen(),
                 ));
       case otp:
+      final phoneNumber = settings.arguments;
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
-                  child: OTPScreen(),
+                  child: OTPScreen(phonenumber: phoneNumber),
                 ));
             case nav:
               return MaterialPageRoute(
