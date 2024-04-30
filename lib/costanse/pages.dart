@@ -5,6 +5,7 @@ const account = '/ACCOUNT';
 const addingPage = '/ADDINGPSGE';
 const genraldata = '/GENRALDATA';
 const emailpage = '/EMAILPAGE';
+const map = '/MAP';
 const otp = '/OTP';
 const mycourse = '/MYCOURSE';
 const search = '/SEARCH';

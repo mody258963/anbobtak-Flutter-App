@@ -1,4 +1,6 @@
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -187,34 +190,59 @@ class _HomeScreenState extends State<HomeScreen> {
     double height = MediaQuery.of(context).size.height;
     return MaterialApp(
       home: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              width: width * 0.80,
+              height: height * 0.07,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: MyColors.Secondcolor),
+                  onPressed: () {
+                    
+    PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: MapScreen(),
+        withNavBar: true, // OPTIONAL VALUE. True by default.
+        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+
+               },
+                  child: Text(
+                    'Pay   EGP 100.50',
+                    style: TextStyle(color: Colors.white),
+                  ))),
+        ),
         backgroundColor: MyColors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: FadeInUp(
-                    duration: Duration(milliseconds: 1500),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: height * 0.10,
-                          right: width * 0.20,
-                          left: width * 0.06),
-                      child: _widgets.TitleText('Hi, Name form database', 30),
-                    )),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: FadeInUp(
+                          duration: Duration(milliseconds: 1500),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                top: height * 0.10,
+                                right: width * 0.20,
+                                left: width * 0.06),
+                            child: _widgets.TitleText(
+                                'Hi, Name form database', 30),
+                          )),
+                    ),
+                    _GirdBuilder(),
+                    Text('Your super cool Footer'),
+                  ],
+                ),
               ),
-              _GirdBuilder(),
-              Stack(children: 
-              [
-                Container(
-                height: 35,
-                width: 35,
-                color: Colors.black,
-                              )],)
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

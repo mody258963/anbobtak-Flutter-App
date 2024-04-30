@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Widgets {
   Widget TextFiledLogin(text, input, int short, String min, String max,
@@ -124,4 +125,16 @@ class Widgets {
       },
     );
   }
+
+  Future<void> requestLocationPermission() async {
+  var status = await Permission.location.request();
+  if (status.isGranted) {
+    // Permission is granted, proceed
+  } else if (status.isDenied) {
+    // Permission denied, handle appropriately
+  } else if (status.isPermanentlyDenied) {
+    // The user opted not to grant permission and should not be asked again
+    openAppSettings();  // Opens app settings where user can manually allow permission
+  }
+}
 }

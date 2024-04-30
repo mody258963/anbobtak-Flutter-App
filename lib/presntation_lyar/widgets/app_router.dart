@@ -6,6 +6,7 @@ import 'package:anbobtak/presntation_lyar/screens/OtpScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/SignUp.dart';
 import 'package:anbobtak/presntation_lyar/screens/emailScreen.dart';
+import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,12 @@ class AppRouter {
             builder: (_) => BlocProvider<GetMethodCubit>.value(
                   value: getMethodCubit!,
                   child: ProfileScreen(),
+                ));
+      case map:
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider<GetMethodCubit>.value(
+                  value: getMethodCubit!,
+                  child: MapScreen(),
                 ));
       case emailpage:
         return MaterialPageRoute(
