@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -20,7 +21,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   Widgets _widgets = Widgets();
-  LatLng _currentMapPosition = LatLng(45.521563, -122.677433);
+  LatLng _currentMapPosition = LatLng(31.7778542, 35.2342953);
   GoogleMapController? mapController;
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -31,24 +32,26 @@ class _MapScreenState extends State<MapScreen> {
     _widgets.requestLocationPermission();
   }
 
-    void _onTap(LatLng position) {
+  void _onTap(LatLng position) {
     print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
   }
- void _onCameraIdle() {
-    print('Latitude: ${_currentMapPosition.latitude}, Longitude: ${_currentMapPosition.longitude}');
+
+  void _onCameraIdle() {
+    print(
+        'Latitude: ${_currentMapPosition.latitude}, Longitude: ${_currentMapPosition.longitude}');
   }
 
   void _onCameraMove(CameraPosition position) {
     _currentMapPosition = position.target;
   }
-  
+
   Widget _buildGoogleMaps() {
     return GoogleMap(
       mapType: MapType.normal,
-      initialCameraPosition:  CameraPosition(
-    target:  _currentMapPosition,
-    zoom: 14.4746,
-  ),
+      initialCameraPosition: CameraPosition(
+        target: _currentMapPosition,
+        zoom: 14.4746,
+      ),
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
@@ -111,8 +114,34 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return MaterialApp(
       home: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Padding(
+            padding:  EdgeInsets.only(right: width * 0.12, bottom: height * 0.01),
+            child: Container(
+                width: width * 0.75,
+                height: height * 0.065,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: MyColors.Secondcolor),
+                    onPressed: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: MapScreen(),
+                        withNavBar: true, // OPTIONAL VALUE. True by default.
+                        pageTransitionAnimation:
+                            PageTransitionAnimation.cupertino,
+                      );
+                    },
+                    child: Text(
+                      'Pay   EGP 100.50',
+                      style: TextStyle(color: Colors.white),
+                    ))),
+          ),
           backgroundColor: MyColors.white,
           appBar: AppBar(
             backgroundColor: MyColors.white,
@@ -127,8 +156,7 @@ class _MapScreenState extends State<MapScreen> {
             actions: [
               IconButton(
                   onPressed: () {
-                    //  Navigator.of(context).pop(ModalRoute.withName(homescreen));
-                    
+                    Navigator.of(context).pop(ModalRoute.withName(homescreen));
                   },
                   icon: Icon(
                     Icons.cancel_rounded,
@@ -136,12 +164,17 @@ class _MapScreenState extends State<MapScreen> {
                   ))
             ],
           ),
-          body: Stack(children: [_buildGoogleMaps(), Center( // This creates the fixed pin in the center of the map view
+          body: Stack(children: [
+            _buildGoogleMaps(),
+            Center(
+              // This creates the fixed pin in the center of the map view
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 37),
-                child: Icon(Icons.location_pin, size: 50.0, color: MyColors.Secondcolor),
+                child: Icon(Icons.location_pin,
+                    size: 50.0, color: MyColors.Secondcolor),
               ),
-            ),])),
+            ),
+          ])),
     );
   }
 }
