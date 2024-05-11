@@ -5,7 +5,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 String? initialRoute;
 String? ids;
 void main() async {
@@ -14,14 +13,11 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   var id = prefs.getString('user_id');
 
-
-
   if (id != null) {
     initialRoute = nav;
   } else {
     initialRoute = logain;
   }
-
 
   runApp(MyApp(
     appRouter: AppRouter(),
@@ -42,6 +38,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-

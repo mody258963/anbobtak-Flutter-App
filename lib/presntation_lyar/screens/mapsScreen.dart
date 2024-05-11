@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,7 @@ class _MapScreenState extends State<MapScreen> {
       onQueryChanged: (query) {
         // Call your model, bloc, controller here.
       },
-      // Specify a custom transition to be used for
+      // Specify a custom transition to be used forseup 
       // animating between opened and closed stated.
       transition: CircularFloatingSearchBarTransition(),
       actions: [
@@ -131,7 +132,7 @@ class _MapScreenState extends State<MapScreen> {
                     onPressed: () {
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: MapScreen(),
+                        screen: AddressScreen(),
                         withNavBar: true, // OPTIONAL VALUE. True by default.
                         pageTransitionAnimation:
                             PageTransitionAnimation.cupertino,

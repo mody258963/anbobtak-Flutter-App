@@ -23,10 +23,6 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <meta-data 
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDzMqiQF2RtVWf60ID2gQl9kq7KfBzJ3hw"
-            />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -37,6 +33,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <meta-data 
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDzMqiQF2RtVWf60ID2gQl9kq7KfBzJ3hw"
+            />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and

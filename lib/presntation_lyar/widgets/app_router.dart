@@ -54,6 +54,12 @@ class AppRouter {
                   value: getMethodCubit!,
                   child: MapScreen(),
                 ));
+           case addresspage:
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider<EmailAuthCubit>.value(
+                  value: emailAuthCubit!,
+                  child: EmailScreen(),
+                ));
       case emailpage:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
