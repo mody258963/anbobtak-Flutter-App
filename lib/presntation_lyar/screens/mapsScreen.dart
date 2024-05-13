@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
@@ -21,6 +22,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  double? lat;
+  double? long;
   Widgets _widgets = Widgets();
   LatLng _currentMapPosition = LatLng(31.7778542, 35.2342953);
   GoogleMapController? mapController;
@@ -33,13 +36,10 @@ class _MapScreenState extends State<MapScreen> {
     _widgets.requestLocationPermission();
   }
 
-  void _onTap(LatLng position) {
-    print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
-  }
-
   void _onCameraIdle() {
-    print(
-        'Latitude: ${_currentMapPosition.latitude}, Longitude: ${_currentMapPosition.longitude}');
+    lat = _currentMapPosition.latitude;
+    long = _currentMapPosition.longitude;
+    print('1Latitude: ${lat}, Longitude: ${long}');
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -59,7 +59,6 @@ class _MapScreenState extends State<MapScreen> {
       onCameraMove: _onCameraMove,
       onCameraIdle: _onCameraIdle,
       myLocationEnabled: true,
-      onTap: _onTap,
     );
   }
 
@@ -80,7 +79,7 @@ class _MapScreenState extends State<MapScreen> {
       onQueryChanged: (query) {
         // Call your model, bloc, controller here.
       },
-      // Specify a custom transition to be used forseup 
+      // Specify a custom transition to be used forseup
       // animating between opened and closed stated.
       transition: CircularFloatingSearchBarTransition(),
       actions: [
@@ -122,7 +121,8 @@ class _MapScreenState extends State<MapScreen> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: Padding(
-            padding:  EdgeInsets.only(right: width * 0.12, bottom: height * 0.01),
+            padding:
+                EdgeInsets.only(right: width * 0.12, bottom: height * 0.013),
             child: Container(
                 width: width * 0.75,
                 height: height * 0.065,
@@ -132,37 +132,45 @@ class _MapScreenState extends State<MapScreen> {
                     onPressed: () {
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: AddressScreen(),
+                        screen: AddressScreen(lat: lat,long: long),
                         withNavBar: true, // OPTIONAL VALUE. True by default.
                         pageTransitionAnimation:
                             PageTransitionAnimation.cupertino,
                       );
                     },
                     child: Text(
-                      'Pay   EGP 100.50',
+                      'Submit',
                       style: TextStyle(color: Colors.white),
                     ))),
           ),
           backgroundColor: MyColors.white,
           appBar: AppBar(
             backgroundColor: MyColors.white,
-            leading: Icon(
-              Icons.navigation_rounded,
-              color: MyColors.Secondcolor,
+            leading: Padding(
+              padding: EdgeInsets.only(left: width * 0.01),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop(ModalRoute.withName(homescreen));
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                ),
+                highlightColor: Colors.transparent,
+                color: MyColors.Secondcolor,
+              ),
             ),
             title: const Text(
               "Set Delivery Location",
               style: TextStyle(color: MyColors.Secondcolor),
             ),
             actions: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(ModalRoute.withName(homescreen));
-                  },
-                  icon: Icon(
-                    Icons.cancel_rounded,
-                    color: MyColors.Secondcolor,
-                  ))
+              Padding(
+                padding: EdgeInsets.only(right: width * 0.04),
+                child: Icon(
+                  Icons.navigation_rounded,
+                  color: MyColors.Secondcolor,
+                ),
+              ),
             ],
           ),
           body: Stack(children: [
