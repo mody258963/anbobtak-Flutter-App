@@ -1,6 +1,8 @@
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -14,69 +16,157 @@ class AddressScreen extends StatefulWidget {
 
 class _AddressScreenState extends State<AddressScreen> {
   bool? isOffice = true;
+  final TextEditingController otpcontroller = TextEditingController();
+  Widgets _widgets = Widgets();
 
-  Widget _TextFeild() {
+  Widget _twoButton() {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                isOffice == false ? MyColors.Secondcolor : MyColors.white,
+          ),
+          onPressed: () => setState(() => isOffice = false),
+          child: Text(
+            'House',
+            style: TextStyle(
+                color: isOffice == false ? MyColors.white : MyColors.black),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.only(right: width * 0.33),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isOffice == false ? MyColors.white : MyColors.Secondcolor,
+              ),
+              onPressed: () => setState(() => isOffice = true),
+              child: Text(
+                'Apartment',
+                style: TextStyle(
+                    color: isOffice == false ? MyColors.black : MyColors.white),
+              ),
+            )),
+      ],
+    );
+  }
+
+  Widget _TextField() {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () => setState(() => isOffice = false),
-              child: Text('House'),
+        SizedBox(height: height * 0.01),
+        _widgets.TextFieldinApp(
+            TextEditingController(),
+            'Building name',
+            6,
+            'more detals',
+            'alot of detals',
+            65,
+            0.05,
+            0.05,
+            TextInputType.text,
+            context),
+        SizedBox(height: isOffice == false ? height * 0.01 : height * 0.001),
+        if (isOffice == false)
+          Row(
+            children: [
+              Expanded(
+                child: _widgets.TextFieldinApp(
+                    TextEditingController(),
+                    'Apt. no.',
+                    6,
+                    'more detals',
+                    'alot of detals',
+                    2,
+                    0.01,
+                    0.05,
+                    TextInputType.text,
+                    context),
+              ),
+              Expanded(
+                child: _widgets.TextFieldinApp(
+                    TextEditingController(),
+                    'Floor',
+                    0,
+                    'more detals',
+                    'alot of detals',
+                    3,
+                    0.05,
+                    0.01,
+                    TextInputType.number,
+                    context),
+              ),
+            ],
+          ),
+        SizedBox(height: height * 0.01),
+        _widgets.TextFieldinApp(
+            TextEditingController(),
+            'Street',
+            6,
+            'more detals',
+            'alot of detals',
+            65,
+            0.05,
+            0.05,
+            TextInputType.text,
+            context),
+        SizedBox(height: height * 0.01),
+        _widgets.TextFieldinApp(
+            TextEditingController(),
+            'Additional directions (optional)',
+            6,
+            'more detals',
+            'alot of detals',
+            65,
+            0.05,
+            0.05,
+            TextInputType.text,
+            context),
+        SizedBox(height: height * 0.01),
+        Padding(
+          padding: EdgeInsets.only(right: width * 0.05, left: width * 0.05),
+          child: TextFormField(
+            validator: (value) {
+              if (value!.length > 8) {
+                return 'min';
+              }
+              if (value.length < 1) {
+                return 'max';
+              } else {
+                return null;
+              }
+            },
+            decoration: const InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color:
+                        MyColors.Secondcolor), // Change the color when focused
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: MyColors.whitefade),
+              ),
+              prefixText: '+20 ',
+              labelText: 'Phone number',
+              labelStyle: TextStyle(color: Colors.black),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  borderSide: BorderSide(color: MyColors.Secondcolor)),
             ),
-            ElevatedButton(
-              onPressed: () => setState(() => isOffice = true),
-              child: Text('Office'),
-            ),
-          ],
+          ),
         ),
-      ]
+        SizedBox(height: height * 0.015),
+        Container(
+            height: height * 0.07,
+            width: width * 0.80,
+            child: _widgets.AppButton(() {}, "Confirm"))
+      ],
     );
-    //     Expanded(
-    //       child: SingleChildScrollView(
-    //         padding: const EdgeInsets.all(16),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             TextFormField(
-    //               decoration: InputDecoration(
-    //                 labelText: isOffice! ? 'Company Name' : 'Building Name',
-    //               ),
-    //             ),
-    //             TextFormField(
-    //               decoration: InputDecoration(
-    //                 labelText: 'Apt. No.',
-    //               ),
-    //             ),
-    //             if (isOffice!)
-    //               TextFormField(
-    //                 decoration: InputDecoration(
-    //                   labelText: 'Floor (optional)',
-    //                 ),
-    //               ),
-    //             TextFormField(
-    //               decoration: InputDecoration(
-    //                 labelText: 'Street',
-    //               ),
-    //             ),
-    //             TextFormField(
-    //               decoration: InputDecoration(
-    //                 labelText: 'Additional Directions (optional)',
-    //               ),
-    //             ),
-    //             TextFormField(
-    //               decoration: InputDecoration(
-    //                 labelText: '+20',
-    //                 prefixText: 'Phone Number ',
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 
   Widget _buildGoogleMaps() {
@@ -109,55 +199,57 @@ class _AddressScreenState extends State<AddressScreen> {
           backgroundColor: MyColors.white,
           title: Center(child: Text('Enter your address')),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              Container(
-                height: height * 0.15,
-                width: width * 0.90,
-                child: Stack(children: [
-                  _buildGoogleMaps(),
-                  Center(
-                    // This creates the fixed pin in the center of the map view
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Icon(Icons.location_pin,
-                          size: 40.0, color: MyColors.Secondcolor),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Container(
+                  height: height * 0.15,
+                  width: width * 0.90,
+                  child: Stack(children: [
+                    _buildGoogleMaps(),
+                    Center(
+                      // This creates the fixed pin in the center of the map view
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: Icon(Icons.location_pin,
+                            size: 40.0, color: MyColors.Secondcolor),
+                      ),
+                    ),
+                  ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: height * 0.08,
+                    width: width * 0.90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: MyColors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0, 1), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(Icons.location_pin),
+                        ),
+                        Text('${widget.lat} , ${widget.long}')
+                      ],
                     ),
                   ),
-                ]),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: height * 0.08,
-                  width: width * 0.90,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: MyColors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.location_pin),
-                      ),
-                      Text('${widget.lat} , ${widget.long}')
-                    ],
-                  ),
-
                 ),
-              ),
-              _TextFeild(),
-            ],
+                    _twoButton(),
+                _TextField()
+              ],
+            ),
           ),
         ),
       ),

@@ -1,9 +1,12 @@
+import 'package:anbobtak/costanse/colors.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Widgets {
+
   Widget TextFiledLogin(text, input, int short, String min, String max,
       int long, BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -29,6 +32,40 @@ class Widgets {
             hintText: text,
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.grey.shade700)),
+      ),
+    );
+  }
+
+  Widget TextFieldinApp(TextEditingController controller,text, int short, String min, String max,
+      int long,sizeR,sizeL,TextInputType type, BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Padding(
+       padding: EdgeInsets.only(right: width * sizeR,left: width * sizeL),
+      child: TextFormField(
+              validator: (value) {
+          if (value!.length > long) {
+            return min;
+          }
+          if (value.length < short) {
+            return max;
+          } else {
+            return null;
+          }
+        },
+        controller: controller,
+       keyboardType:  type ,
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: MyColors.Secondcolor), // Change the color when focused
+    ),
+    enabledBorder:  OutlineInputBorder(
+      borderSide: BorderSide(color: MyColors.whitefade),),
+          labelText: text,
+          labelStyle: TextStyle(color: Colors.black),
+          border: const OutlineInputBorder( borderRadius:  BorderRadius.all(Radius.circular(10.0))),
+        ),
+        
       ),
     );
   }
@@ -62,7 +99,7 @@ class Widgets {
   Widget AppButton(OnPressed, text) {
     return MaterialButton(
       onPressed: OnPressed,
-      color: Color.fromRGBO(49, 39, 79, 1),
+      color: MyColors.Secondcolor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50),
       ),
@@ -89,17 +126,21 @@ class Widgets {
     );
   }
 
-  Widget listTile(title, subtitle,BuildContext context) {
+  Widget listTile(title, subtitle, BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return ListTile(
       title: Padding(
-        padding:  EdgeInsets.only(bottom: height * 0.01),
+        padding: EdgeInsets.only(bottom: height * 0.01),
         child: Text(title),
       ),
-      contentPadding: EdgeInsets.only(top: height * 0.02,left: width * 0.02),
-      titleTextStyle: TextStyle(fontWeight: FontWeight.bold , color: Colors.black,fontSize: width * 0.04),
-      subtitleTextStyle: TextStyle(fontWeight: FontWeight.bold , color: Colors.black54),
+      contentPadding: EdgeInsets.only(top: height * 0.02, left: width * 0.02),
+      titleTextStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+          fontSize: width * 0.04),
+      subtitleTextStyle:
+          TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
       subtitle: Text(subtitle),
     );
   }
@@ -127,14 +168,14 @@ class Widgets {
   }
 
   Future<void> requestLocationPermission() async {
-  var status = await Permission.location.request();
-  if (status.isGranted) {
-    // Permission is granted, proceed
-  } else if (status.isDenied) {
-    // Permission denied, handle appropriately
-  } else if (status.isPermanentlyDenied) {
-    // The user opted not to grant permission and should not be asked again
-    openAppSettings();  // Opens app settings where user can manually allow permission
+    var status = await Permission.location.request();
+    if (status.isGranted) {
+      // Permission is granted, proceed
+    } else if (status.isDenied) {
+      // Permission denied, handle appropriately
+    } else if (status.isPermanentlyDenied) {
+      // The user opted not to grant permission and should not be asked again
+      openAppSettings(); // Opens app settings where user can manually allow permission
+    }
   }
-}
 }
