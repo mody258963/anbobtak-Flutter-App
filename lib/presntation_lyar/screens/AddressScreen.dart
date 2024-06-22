@@ -15,7 +15,7 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  bool? isOffice = true;
+  bool? isOffice = false;
   final TextEditingController otpcontroller = TextEditingController();
   Widgets _widgets = Widgets();
 
@@ -72,8 +72,8 @@ class _AddressScreenState extends State<AddressScreen> {
             0.05,
             TextInputType.text,
             context),
-        SizedBox(height: isOffice == false ? height * 0.01 : height * 0.001),
-        if (isOffice == false)
+        SizedBox(height: isOffice == true ? height * 0.01 : height * 0.001),
+        if (isOffice == true)
           Row(
             children: [
               Expanded(
