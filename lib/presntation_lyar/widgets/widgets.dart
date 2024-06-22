@@ -7,8 +7,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class Widgets {
 
-  Widget TextFiledLogin(text, input, int short, String min, String max,
-      int long, BuildContext context) {
+  Widget TextFiledLogin(text, input, int short, String max,
+      BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -18,10 +18,7 @@ class Widgets {
               bottom: BorderSide(color: Color.fromRGBO(196, 135, 198, .3)))),
       child: TextFormField(
         validator: (value) {
-          if (value!.length > long) {
-            return min;
-          }
-          if (value.length < short) {
+          if (value!.length < short) {
             return max;
           } else {
             return null;
@@ -75,7 +72,7 @@ class Widgets {
     double height = MediaQuery.of(context).size.height;
 
     return Container(
-      height: 400,
+      height: 300,
       child: Stack(
         children: <Widget>[
           Positioned(

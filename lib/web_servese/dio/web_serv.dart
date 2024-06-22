@@ -25,19 +25,68 @@ class NameWebServise {
       return [];
     }
   }
+Future<List<dynamic>> LoginDio(String end, Object data) async {
+  try {
 
-  Future<List<dynamic>> post(String end, Object data) async {
-    try {
-      final response = await dio.post(baseUrl + end,
-          data: data,
-          );
-    
+  
+    // Perform POST request with headers
+    final response = await dio.post(
+      baseUrl + end,
+      data: data,
+    );
 
-      print('========$response');
-      return [response.data];
-    } catch (e) {
-      print("======dio=======${e.toString()}");
-      return [];
-    }
+    print('======== $response');
+
+    // Return the response data wrapped in a List
+    return [response.data];
+  } catch (e) {
+    print("====== dio error ======= ${e.toString()}");
+    return [];
   }
+}
+
+Future<List<dynamic>> SignUpDio(String end, Object data) async {
+  try {
+
+    final response = await dio.post(
+      baseUrl + end,
+      data: data,
+    );
+
+    print('======== $response');
+
+    return [response.data];
+  } catch (e) {
+    print("====== dio error ======= ${e.toString()}");
+    return [];
+  }
+}
+Future<List<dynamic>> post(String end, Object data, String token) async {
+  try {
+
+    
+    // Create a map for headers
+    Map<String, dynamic> headers = {
+      'Authorization': 'Bearer $token', // Assuming token is prefixed with 'Bearer '
+      'Content-Type': 'application/json', // Adjust content type as needed
+    };
+
+    // Perform POST request with headers
+    final response = await dio.post(
+      baseUrl + end,
+      data: data,
+      options: Options(
+        headers: headers,
+      ),
+    );
+
+    print('======== $response');
+
+    // Return the response data wrapped in a List
+    return [response.data];
+  } catch (e) {
+    print("====== dio error ======= ${e.toString()}");
+    return [];
+  }
+}
 }

@@ -18,13 +18,13 @@ class MyRepo {
 
 
 
-  Future<String> login(String end, Object data) async {
+  Future<String> login(String end, Object data ) async {
     try {
-      final result = await nameWebService.post(end, data);
+      final result = await nameWebService.LoginDio(end, data);
 
       if (result.isNotEmpty) {
         // final userid = result.map((result) => User.fromJson(result)).toList();
-        dynamic firstItem = result[0];
+        dynamic firstItem = result[1];
         int userId = firstItem['user_id'];
         String userIdAsString = userId.toString();
         print('login $userIdAsString');
@@ -40,7 +40,7 @@ class MyRepo {
 
   Future<String> SignUpUser(String end, Object data) async {
     try {
-      final result = await nameWebService.post(end, data);
+      final result = await nameWebService.SignUpDio(end, data);
 
       if (result.isNotEmpty) {
         // final userid = result.map((result) => User.fromJson(result)).toList();

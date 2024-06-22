@@ -16,7 +16,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
 
     try {
       String result = await myRepo
-          .login('user/login', {'email': email, 'password': password});
+          .login('users/login', {'email': email, 'password': password});
       print('=====cubit====$result');
       emit(LoginSuccess(userId: result));
     } catch (e) {
@@ -25,24 +25,23 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
     }
   }
 
-  // Future<FutureOr<void>> signupTeacher(String name, String email,
-  //     String password, String cpassword, String social) async {
-  //   emit(LoginLoading());
-  //   try {
-  //     String result = await myRepo.SignUpTeacher('teacher/register', {
-  //       'name': name,
-  //       'email': email,
-  //       'password': password,
-  //       'cpassword': cpassword,
-  //       'link': social
-  //     });
-  //           final prefs = await SharedPreferences.getInstance();
-  //           prefs.setString('user_id', result);
-  //     print('=====cubit====$result');
-  //     emit(SignupTeacherSuccess(userId: result));
-  //   } catch (e) {
-  //     emit(Loginfails());
-  //     print('==email cubit===${e.toString()}');
-  //   }
-  // }
+  Future<FutureOr<void>> signup(String name, String email,
+      String password, String cpassword) async {
+    emit(LoginLoading());
+    try {
+      String result = await myRepo.SignUpUser('users/register', {
+        'name': name,
+        'email': email,
+        'password': password,
+        'cpassword': cpassword,
+      });
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('user_id', result);
+      print('=====cubit====$result');
+      emit(SignupTeacherSuccess(userId: result));
+    } catch (e) {
+      emit(Loginfails());
+      print('==email cubit===${e.toString()}');
+    }
+  }
 }

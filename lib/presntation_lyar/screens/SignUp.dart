@@ -18,7 +18,10 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   String dropdownValue = list.first;
   Widgets _widgets = Widgets();
-  final TextEditingController phonecontroller = TextEditingController();
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
+ 
+
 
   static const List<String> list = <String>['EN', 'AR'];
 
@@ -59,7 +62,9 @@ class _SignUpState extends State<SignUp> {
         return previous != current;
       },
       listener: (context, EmailAuthState state) {
-        if (state is LoginLoading) {}
+        if (state is LoginLoading) {
+          _widgets.buildCircularProgressIndicatorDialog(context);
+        }
         if (state is Loginfails) {
           AlertDialog(
             title: Text('dont play with me'),
@@ -129,13 +134,13 @@ class _SignUpState extends State<SignUp> {
                               ]),
                           child: Column(
                             children: <Widget>[
+                              _widgets.TextFiledLogin('Email', emailcontroller,
+                                  10, 'Enter Correct Email', context),
                               _widgets.TextFiledLogin(
-                                  '+20 | Phone',
-                                  phonecontroller,
-                                  10,
-                                  'Enter 11 Digits',
-                                  'Enter 11 Digits',
-                                  11,
+                                  'Password',
+                                  passwordcontroller,
+                                  8,
+                                  'Short Password',
                                   context),
                             ],
                           ),
@@ -143,16 +148,11 @@ class _SignUpState extends State<SignUp> {
                     SizedBox(
                       height: 20,
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    FadeInUp(
+                                        FadeInUp(
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
-                          print(phonecontroller.toString());
-                          Navigator.pushNamed(context, otp,
-                              arguments: phonecontroller.text);
-                        }, 'Recive OTP')),
+              context.read<EmailAuthCubit>().loginUser( emailcontroller.text, passwordcontroller.text);
+                        }, 'Sign Up')),
                     SizedBox(
                       height: 30,
                     ),
@@ -160,7 +160,10 @@ class _SignUpState extends State<SignUp> {
                         duration: Duration(milliseconds: 2000),
                         child: Center(
                             child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                 Navigator.pushNamed(context, otp);
+
+                                },
                                 child: Text(
                                   "Create Account",
                                   style: TextStyle(
