@@ -29,7 +29,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       String password, String cpassword) async {
     emit(LoginLoading());
     try {
-      String result = await myRepo.SignUpUser('users/register', {
+      String result = await myRepo.SignUpUser('users/store', {
         'name': name,
         'email': email,
         'password': password,

@@ -1,6 +1,4 @@
-
-
-
+import 'dart:convert';
 
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/model/username.dart';
@@ -16,16 +14,14 @@ class MyRepo {
     return userList..shuffle();
   }
 
-
-
-  Future<String> login(String end, Object data ) async {
+  Future<String> login(String end, Object data) async {
     try {
       final result = await nameWebService.LoginDio(end, data);
 
       if (result.isNotEmpty) {
         // final userid = result.map((result) => User.fromJson(result)).toList();
-        dynamic firstItem = result[1];
-        int userId = firstItem['user_id'];
+        dynamic firstItem = result[0];
+        int userId = firstItem['access_token'];
         String userIdAsString = userId.toString();
         print('login $userIdAsString');
         return userIdAsString;
@@ -43,20 +39,25 @@ class MyRepo {
       final result = await nameWebService.SignUpDio(end, data);
 
       if (result.isNotEmpty) {
-        // final userid = result.map((result) => User.fromJson(result)).toList();
+        // Assuming each item in the result list is a map
         dynamic firstItem = result[0];
-        int userId = firstItem['user_id'];
-        String userIdAsString = userId.toString();
-        print('signUp $userIdAsString');
-        return userIdAsString;
+
+        if (firstItem is Map<String, dynamic> &&
+            firstItem.containsKey('access_token')) {
+          String accessToken = firstItem['access_token'];
+          print(accessToken);
+          print('Access Token: $accessToken');
+          return accessToken;
+        } else {
+          throw Exception(
+              "Invalid response format: 'access_token' not found in the first item");
+        }
       } else {
-        throw Exception("Invalid response format: Empty response");
+        throw Exception("Invalid response format: Empty or non-list response");
       }
     } catch (e) {
       print("Error during login: ${e.toString()}");
       throw Exception("Failed to login. Please try again.");
     }
   }
-
-
 }
