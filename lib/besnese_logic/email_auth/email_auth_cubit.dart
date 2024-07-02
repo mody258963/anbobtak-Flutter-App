@@ -36,7 +36,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
         'cpassword': cpassword,
       });
             final prefs = await SharedPreferences.getInstance();
-            prefs.setString('user_id', result);
+            prefs.setString('token', result);
       print('=====cubit====$result');
       emit(SignupTeacherSuccess(userId: result));
     } catch (e) {

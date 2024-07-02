@@ -6,9 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Widgets {
-
-  Widget TextFiledLogin(text, input, int short, String max,
-      BuildContext context) {
+  Widget TextFiledLogin(
+      text, input, int short, String max, BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -33,14 +32,23 @@ class Widgets {
     );
   }
 
-  Widget TextFieldinApp(TextEditingController controller,text, int short, String min, String max,
-      int long,sizeR,sizeL,TextInputType type, BuildContext context) {
+  Widget TextFieldinApp(
+      TextEditingController controller,
+      text,
+      int short,
+      String min,
+      String max,
+      int long,
+      sizeR,
+      sizeL,
+      TextInputType type,
+      BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Padding(
-       padding: EdgeInsets.only(right: width * sizeR,left: width * sizeL),
+      padding: EdgeInsets.only(right: width * sizeR, left: width * sizeL),
       child: TextFormField(
-              validator: (value) {
+        validator: (value) {
           if (value!.length > long) {
             return min;
           }
@@ -51,18 +59,20 @@ class Widgets {
           }
         },
         controller: controller,
-       keyboardType:  type ,
+        keyboardType: type,
         decoration: InputDecoration(
           focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: MyColors.Secondcolor), // Change the color when focused
-    ),
-    enabledBorder:  OutlineInputBorder(
-      borderSide: BorderSide(color: MyColors.whitefade),),
+            borderSide: BorderSide(
+                color: MyColors.Secondcolor), // Change the color when focused
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: MyColors.whitefade),
+          ),
           labelText: text,
           labelStyle: TextStyle(color: Colors.black),
-          border: const OutlineInputBorder( borderRadius:  BorderRadius.all(Radius.circular(10.0))),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
-        
       ),
     );
   }
@@ -162,6 +172,19 @@ class Widgets {
         return buildCircularProgressIndicatorDialog(context);
       },
     );
+  }
+
+  void buildCircularProgressIndicatorDialogV1(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(color: Colors.black),
+        );
+      },
+    );
+  
   }
 
   Future<void> requestLocationPermission() async {

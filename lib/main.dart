@@ -11,10 +11,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
-  var id = prefs.getString('user_id');
+  var id = prefs.getString('token');
 
   if (id != null) {
-    initialRoute = nav;
+    initialRoute = nav; //nav
   } else {
     initialRoute = logain;
   }

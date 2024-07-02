@@ -27,6 +27,15 @@ class CatogoryState extends GetMethodState {
 
 
 }
+
+
+class GetProducts extends GetMethodState {
+ final List<dynamic>  posts;
+
+  GetProducts({required this.posts});
+
+
+}
 class Coursefails extends GetMethodState{
   final String  message ;
 

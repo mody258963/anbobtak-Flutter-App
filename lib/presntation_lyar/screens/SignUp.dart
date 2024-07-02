@@ -20,8 +20,6 @@ class _SignUpState extends State<SignUp> {
   Widgets _widgets = Widgets();
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
- 
-
 
   static const List<String> list = <String>['EN', 'AR'];
 
@@ -63,16 +61,34 @@ class _SignUpState extends State<SignUp> {
       },
       listener: (context, EmailAuthState state) {
         if (state is LoginLoading) {
-          _widgets.buildCircularProgressIndicatorDialog(context);
-        }
-        if (state is Loginfails) {
-          AlertDialog(
-            title: Text('dont play with me'),
+          _widgets.buildCircularProgressIndicatorDialogV1(context);
+        } else if (state is Loginfails) {
+          Navigator.of(context, rootNavigator: true).pop();
+          // if (Navigator.canPop(context)) {
+          //   Navigator.of(context, rootNavigator: true).pop();
+          // }
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Don\'t play with me'),
+              );
+            },
           );
-        }
-        if (state is SignupTeacherSuccess) {
-          Navigator.maybePop(context);
-          Navigator.pushReplacementNamed(context, nav);
+          } else if (state is LoginSuccess) {
+          if (Navigator.canPop(context)) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }            
+                        Navigator.of(context, rootNavigator: true).pushReplacementNamed(homescreen);
+
+        } else if (state is SignupTeacherSuccess) {
+          print('====Lets play====');
+          // Close any open dialog
+          if (Navigator.canPop(context)) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+          // Navigate to the next screen
+          Navigator.of(context, rootNavigator: true).pushReplacementNamed(nav);
         }
       },
       child: Container(),
@@ -106,6 +122,7 @@ class _SignUpState extends State<SignUp> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _widgets.LoginScreenDisign(context),
+              _buildloginAuth(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
@@ -148,10 +165,11 @@ class _SignUpState extends State<SignUp> {
                     SizedBox(
                       height: 20,
                     ),
-                                        FadeInUp(
+                    FadeInUp(
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
-              context.read<EmailAuthCubit>().loginUser( emailcontroller.text, passwordcontroller.text);
+                          context.read<EmailAuthCubit>().loginUser(
+                              emailcontroller.text, passwordcontroller.text);
                         }, 'Sign Up')),
                     SizedBox(
                       height: 30,
@@ -161,8 +179,7 @@ class _SignUpState extends State<SignUp> {
                         child: Center(
                             child: TextButton(
                                 onPressed: () {
-                                 Navigator.pushNamed(context, otp);
-
+                                  Navigator.pushNamed(context, otp);
                                 },
                                 child: Text(
                                   "Create Account",

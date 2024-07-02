@@ -75,13 +75,12 @@ class AppRouter {
                 ));
             case nav:
               return MaterialPageRoute(
-          
              builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
               BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
             ],
-            child: NavigationBars(),
+            child: const NavigationBars(),
           ),
         );
 
