@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anbobtak/web_servese/model/auth.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
@@ -15,10 +16,10 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
     emit(LoginLoading());
 
     try {
-      String result = await myRepo
+      List<Auth> result = await myRepo
           .login('users/login', {'email': email, 'password': password});
       print('=====cubit====$result');
-      emit(LoginSuccess(userId: result));
+      emit(LoginSuccess());
     } catch (e) {
       emit(Loginfails());
       print('==email cubit===${e.toString()}');
@@ -29,7 +30,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       String password, String cpassword) async {
     emit(LoginLoading());
     try {
-      String result = await myRepo.SignUpUser('users/store', {
+      List<Auth> result = await myRepo.SignUpUser('users/store', {
         'name': name,
         'email': email,
         'password': password,
@@ -37,7 +38,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       });
       
       print('=====cubit====$result');
-      emit(SignupTeacherSuccess(userId: result));
+      emit(SignupTeacherSuccess());
     } catch (e) {
       emit(Loginfails());
       print('==email cubit===${e.toString()}');
