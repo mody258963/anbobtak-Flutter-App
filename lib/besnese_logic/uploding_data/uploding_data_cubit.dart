@@ -45,4 +45,11 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //     emit(ErrorOccurred(errorMsg: error.toString()));
   //   }
   // }
+
+  Future<void> MakeItem()async {
+    final prefs = await SharedPreferences.getInstance();  
+    final id = prefs.getString('user_id');
+    
+
+  }
 }

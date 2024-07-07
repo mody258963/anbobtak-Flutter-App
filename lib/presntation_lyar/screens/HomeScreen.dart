@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 itemBuilder: (context, index) {
                   final allList = items[index];
+
                   print("=====lolo=====${allList.name.toString()}");
                   return _container(allList);
                 },
@@ -66,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget                     _container(allList) {
+  Widget _container(allList) {
     print(allList);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -159,7 +161,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           IconButton(
                             icon: Icon(Icons.remove),
                             padding: EdgeInsets.zero,
-                            onPressed: () {
+                            onPressed: () async {
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.remove('Product');
+                              prefs.setInt('Product', allList.id);
+                              print(prefs.getInt('Product'));
                               setState(() {
                                 if (counter > 0) {
                                   counter--;
@@ -177,7 +184,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           IconButton(
                             padding: EdgeInsets.zero,
                             icon: Icon(Icons.add),
-                            onPressed: () {
+                            onPressed: () async {
+                                final prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.remove('Product');
+                              prefs.setInt('Product', allList.id);
+                              print(prefs.getInt('Product'));
                               setState(() {
                                 counter++;
                               });
