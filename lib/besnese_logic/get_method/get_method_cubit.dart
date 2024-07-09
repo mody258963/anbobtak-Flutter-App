@@ -24,6 +24,7 @@ class GetMethodCubit extends Cubit<GetMethodState> {
       print('========cubits=======${e.toString()}');
     }
   }
+
+
 }
-// emit(state.copyWith(isLoading: true));
 	

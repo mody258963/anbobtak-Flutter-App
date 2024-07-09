@@ -14,8 +14,6 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
 
   final List<String> UrlPhotos = [];
 
-
-
   // Future<void> uploadImagesAndSaveUrls(File? image, String title, String book,
   //     String description, int category) async {
   //   final prefs = await SharedPreferences.getInstance();
@@ -33,7 +31,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //     });
   //     List<dynamic> getfile =
   //         await myRepo.CourseUpload('add-course/$category/$id', formData);
-          
+
   //     await Future.delayed(const Duration(seconds: 2));
   //     if (getfile.isEmpty) {
   //       return print('=============erorr1=======');
@@ -46,10 +44,12 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //   }
   // }
 
-  Future<void> MakeItem()async {
-    final prefs = await SharedPreferences.getInstance();  
+  Future<void> MakeItem() async {
+    final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('user_id');
+    final productId = prefs.getInt('Product');
     
+
 
   }
 }
