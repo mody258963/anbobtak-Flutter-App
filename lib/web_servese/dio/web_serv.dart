@@ -68,9 +68,11 @@ class NameWebServise {
     }
   }
 
-  Future<List<dynamic>> post(String end, Object data, String token) async {
+  Future<List<dynamic>> post(String end, Object data) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
     try {
-      // Create a map for headers
       Map<String, dynamic> headers = {
         'Authorization':
             'Bearer $token', // Assuming token is prefixed with 'Bearer '

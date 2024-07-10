@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,12 +45,50 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //   }
   // }
 
-  Future<void> MakeItem() async {
+  Future<void> MakeItemB() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('user_id');
     final productId = prefs.getInt('Product');
-    
+    try {
+      List<Item> Items = await myRepo.getItemB('order/add/b/quntaty', {
+        'product_id': productId,
+        'user_id': id,
+      });
+      print('====Items=====$Items');
+      emit(Uploaded(Items: Items));
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
+  }
 
+  Future<void> MakeItemM() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('user_id');
+    final productId = prefs.getInt('Product');
+    try {
+      List<Item> Items = await myRepo.getItemM('order/add/m/quntaty', {
+        'product_id': productId,
+        'user_id': id,
+      });
 
+      emit(Uploaded(Items: Items));
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
+  }
+    Future<void> getItem() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('user_id');
+    final productId = prefs.getInt('Product');
+    try {
+      List<Item> Items = await myRepo.getItem('order/add/a/quntaty', {
+        'product_id': productId,
+        'user_id': id,
+      });
+
+      emit(Uploaded(Items: Items));
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
   }
 }

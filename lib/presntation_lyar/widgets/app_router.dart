@@ -84,6 +84,16 @@ class AppRouter {
           ),
         );
 
+  case realhomescreen:
+              return MaterialPageRoute(
+             builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+              BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
+            ],
+            child: const HomeScreen(),
+          ),
+        );
     }
     return null;
   }

@@ -1,10 +1,10 @@
-class OrderItem {
+class Item {
   int id;
   int orderId;
   int productId;
   int quantity;
 
-  OrderItem({
+  Item({
     required this.id,
     required this.orderId,
     required this.productId,
@@ -12,8 +12,8 @@ class OrderItem {
   });
 
   // Factory constructor to create an instance from JSON
-  factory OrderItem.fromJson(Map<String, dynamic> json) {
-    return OrderItem(
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(
       id: json['id'],
       orderId: json['order_id'],
       productId: json['product_id'],

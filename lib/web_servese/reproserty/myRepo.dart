@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/model/auth.dart';
+import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/username.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,27 @@ class MyRepo {
   Future<List<Product>> getProduct(String end) async {
     final names = await nameWebService.get(end);
     final userList = names.map((names) => Product.fromJson(names)).toList();
-    print("=========#$userList");
+    print("=====Product====#$userList");
+    return userList..shuffle();
+  }
+
+  Future<List<Item>> getItemB(String end , Object data) async {
+    final names = await nameWebService.post(end , data ,);
+    final userList = names.map((names) => Item.fromJson(names)).toList();
+    print("=====Item====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
+    Future<List<Item>> getItem(String end , Object data) async {
+    final names = await nameWebService.post(end , data );
+    final userList = names.map((names) => Item.fromJson(names)).toList();
+    print("=====Item====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
+
+  Future<List<Item>> getItemM(String end , Object data) async {
+    final names = await nameWebService.post(end , data ,);
+    final userList = names.map((names) => Item.fromJson(names)).toList();
+    print("=====Item====#${userList..shuffle()}");
     return userList..shuffle();
   }
 

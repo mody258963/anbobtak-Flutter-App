@@ -13,3 +13,4 @@ const nav = '/NAV';
 const lecture = '/LECTURE';
 const contant = '/CONTANT';
 const addresspage = '/ADDRESSPAGE';
+const realhomescreen = '/REALHOME';

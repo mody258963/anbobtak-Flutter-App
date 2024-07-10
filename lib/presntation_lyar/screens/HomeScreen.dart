@@ -1,5 +1,7 @@
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
@@ -25,9 +27,42 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
+    BlocProvider.of<UplodingDataCubit>(context).getItem();
   }
 
   Widgets _widgets = Widgets();
+
+  Widget _Getquntaty() {
+    return BlocBuilder<UplodingDataCubit, UplodingDataState>(
+      builder: (context, state) {
+        if (state is Uploaded) {
+          final items = state.Items;
+          print('====items====${items}');
+          if (items.isNotEmpty) {
+            print('====quantity====${items.first.quantity}');
+            return Text(
+              '${items.first.quantity}',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          } else {
+            print('====no items====');
+            return Text(
+              'No items available',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          }
+        }
+        print('====state not Uploaded====');
+        return Container(); // Return a loading or placeholder widget if needed
+      },
+    );
+  }
 
   Widget _buildProductList() {
     double width = MediaQuery.of(context).size.width;
@@ -72,7 +107,6 @@ class _HomeScreenState extends State<HomeScreen> {
     print(allList);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    int counter = 0;
     return GestureDetector(
       onTap: () async {},
       child: Container(
@@ -167,32 +201,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               prefs.remove('Product');
                               prefs.setInt('Product', allList.id);
                               print(prefs.getInt('Product'));
-                              setState(() {
-                                if (counter > 0) {
-                                  counter--;
-                                }
-                              });
+                              BlocProvider.of<UplodingDataCubit>(context)
+                                  .MakeItemM();
+                              setState(() {});
                             },
                           ),
-                          Text(
-                            '$counter',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          _Getquntaty(),
                           IconButton(
                             padding: EdgeInsets.zero,
                             icon: Icon(Icons.add),
                             onPressed: () async {
-                                final prefs =
+                              final prefs =
                                   await SharedPreferences.getInstance();
                               prefs.remove('Product');
                               prefs.setInt('Product', allList.id);
                               print(prefs.getInt('Product'));
-                              setState(() {
-                                counter++;
-                              });
+                              setState(() {});
                             },
                           ),
                         ],
@@ -260,6 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           )),
                     ),
                     _buildProductList(),
+                    _Getquntaty(),
                   ],
                 ),
               ),
