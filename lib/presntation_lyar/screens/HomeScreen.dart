@@ -27,42 +27,51 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
-    BlocProvider.of<UplodingDataCubit>(context).getItem();
   }
 
   Widgets _widgets = Widgets();
+  int counter = 0;
 
-  Widget _Getquntaty() {
-    return BlocBuilder<UplodingDataCubit, UplodingDataState>(
-      builder: (context, state) {
-        if (state is Uploaded) {
-          final items = state.Items;
-          print('====items====${items}');
-          if (items.isNotEmpty) {
-            print('====quantity====${items.first.quantity}');
-            return Text(
-              '${items.first.quantity}',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          } else {
-            print('====no items====');
-            return Text(
-              'No items available',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          }
-        }
-        print('====state not Uploaded====');
-        return Container(); // Return a loading or placeholder widget if needed
-      },
-    );
+  void _incrementCounter() {
+    setState(() {
+      counter++;
+    });
   }
+
+  void _decrementCounter() {
+    setState(() {
+      if (counter > 0) {
+        counter--;
+      }
+    });
+  }
+
+  // Widget _Getquntaty() {
+  //   return BlocBuilder<UplodingDataCubit, UplodingDataState>(
+  //     builder: (context, state) {
+  //       if (state is Uploaded) {
+  //         final items = state.Items;
+
+  //         print('====items====${items.first.data?.quantity}');
+  //         if (items.isNotEmpty) {
+  //           print('====quantity====${items.first.data?.quantity}');
+  //           return Text(
+  //             '${items.first.data?.quantity}',
+  //             style: TextStyle(
+  //               fontSize: 20.0,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //           );
+  //         }
+  //       }
+  //       if (state is ErrorOccurred) {
+  //         print("=======error======${state.errorMsg}");
+  //       }
+  //       print('====state not Uploaded====');
+  //       return Container(); // Return a loading or placeholder widget if needed
+  //     },
+  //   );
+  // }
 
   Widget _buildProductList() {
     double width = MediaQuery.of(context).size.width;
@@ -201,12 +210,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               prefs.remove('Product');
                               prefs.setInt('Product', allList.id);
                               print(prefs.getInt('Product'));
-                              BlocProvider.of<UplodingDataCubit>(context)
-                                  .MakeItemM();
-                              setState(() {});
+
+                              setState(() {
+                                _decrementCounter();
+                              });
                             },
                           ),
-                          _Getquntaty(),
+                          Text(
+                            '$counter',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           IconButton(
                             padding: EdgeInsets.zero,
                             icon: Icon(Icons.add),
@@ -215,8 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   await SharedPreferences.getInstance();
                               prefs.remove('Product');
                               prefs.setInt('Product', allList.id);
-                              print(prefs.getInt('Product'));
-                              setState(() {});
+                              setState(() {
+                                print(counter);
+                                _incrementCounter();
+                              });
                             },
                           ),
                         ],
@@ -247,7 +265,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: MyColors.Secondcolor),
-                  onPressed: () {
+                  onPressed: () async {
+                    BlocProvider.of<UplodingDataCubit>(context)
+                        .MakeItemB(counter);
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: MapScreen(),
@@ -284,7 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           )),
                     ),
                     _buildProductList(),
-                    _Getquntaty(),
                   ],
                 ),
               ),

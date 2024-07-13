@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:dio/dio.dart';
@@ -45,37 +46,24 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //   }
   // }
 
-  Future<void> MakeItemB() async {
+  Future<void> MakeItemB(quantity) async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('user_id');
     final productId = prefs.getInt('Product');
     try {
       List<Item> Items = await myRepo.getItemB('order/add/b/quntaty', {
         'product_id': productId,
+        'quantity' : quantity,
         'user_id': id,
       });
       print('====Items=====$Items');
-      emit(Uploaded(Items: Items));
+      emit(ItemUploaded(Items: Items));
     } catch (e) {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
 
-  Future<void> MakeItemM() async {
-    final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getString('user_id');
-    final productId = prefs.getInt('Product');
-    try {
-      List<Item> Items = await myRepo.getItemM('order/add/m/quntaty', {
-        'product_id': productId,
-        'user_id': id,
-      });
 
-      emit(Uploaded(Items: Items));
-    } catch (e) {
-      emit(ErrorOccurred(errorMsg: e.toString()));
-    }
-  }
     Future<void> getItem() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('user_id');
@@ -86,7 +74,24 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
         'user_id': id,
       });
 
-      emit(Uploaded(Items: Items));
+      emit(ItemUploaded(Items: Items));
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
+  }
+
+
+    Future<void> addLatLong(lat, long) async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('user_id');
+    try {
+      List<Address> address = await myRepo.addLatLong('address/store/lat', {
+        'user_id': id,
+        'lat': lat,
+        'long': long,
+      });
+
+      emit(AddressLatUploaded(address: address));
     } catch (e) {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }

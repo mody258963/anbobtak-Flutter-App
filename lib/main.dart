@@ -1,5 +1,6 @@
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/widgets/app_router.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,12 +12,50 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
-  var id = prefs.getString('token');
 
-  if (id != null) {
+  Future<bool> checkToken() async {
+    final dio = Dio();
+    try {
+      final token = prefs.getString('token');
+      if (token == null) {
+        return false;
+      }
+      Map<String, dynamic> headers = {
+        'Authorization':
+            'Bearer $token', // Assuming token is prefixed with 'Bearer '
+        'Content-Type': 'application/json', // Adjust content type as needed
+      };
+
+      final response = await dio.get(
+        'http://127.0.0.1:8000/api/SMS/check',
+        options: Options(
+          headers: headers,
+        ),
+      );
+      if (response.statusCode == 200) {
+        //final data = response.data;
+        print('cooool');
+        return true;
+      } else {
+        print('fuck');
+        return false;
+      }
+    } catch (e) {
+      return false;
+      //throw Exception('Failed to check token: $e');
+    }
+  }
+
+  bool tokenValid = await checkToken();
+
+  if (tokenValid) {
     initialRoute = nav; //nav
   } else {
     initialRoute = logain;
+    await prefs.remove('user_id');
+    await prefs.remove('token');
+    await prefs.remove('Product');
+
   }
 
   runApp(MyApp(

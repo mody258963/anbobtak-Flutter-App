@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,9 +44,9 @@ class _MapScreenState extends State<MapScreen> {
     print('1Latitude: ${lat}, Longitude: ${long}');
   }
 
-  void _onCameraMove(CameraPosition position) {
-    _currentMapPosition = position.target;
-  }
+  // void _onCameraMove(CameraPosition position) {
+  //   _currentMapPosition = position.target;
+  // }
 
   Widget _buildGoogleMaps() {
     return GoogleMap(
@@ -56,7 +58,7 @@ class _MapScreenState extends State<MapScreen> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
-      onCameraMove: _onCameraMove,
+      
       onCameraIdle: _onCameraIdle,
       myLocationEnabled: true,
     );
@@ -130,6 +132,8 @@ class _MapScreenState extends State<MapScreen> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: MyColors.Secondcolor),
                     onPressed: () {
+                         BlocProvider.of<UplodingDataCubit>(context)
+                        .addLatLong(lat, long);
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
                         screen: AddressScreen(lat: lat,long: long),

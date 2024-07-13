@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
+import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/auth.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
@@ -35,6 +36,13 @@ class MyRepo {
     final names = await nameWebService.post(end , data );
     final userList = names.map((names) => Item.fromJson(names)).toList();
     print("=====Item====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
+
+    Future<List<Address>> addLatLong(String end , Object data) async {
+    final names = await nameWebService.post(end , data );
+    final userList = names.map((names) => Address.fromJson(names)).toList();
+    print("=====Address====#${userList..shuffle()}");
     return userList..shuffle();
   }
 

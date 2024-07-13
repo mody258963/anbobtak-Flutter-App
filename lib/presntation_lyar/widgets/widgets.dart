@@ -187,6 +187,8 @@ class Widgets {
   
   }
 
+
+
   Future<void> requestLocationPermission() async {
     var status = await Permission.location.request();
     if (status.isGranted) {
@@ -198,4 +200,6 @@ class Widgets {
       openAppSettings(); // Opens app settings where user can manually allow permission
     }
   }
+
+
 }
