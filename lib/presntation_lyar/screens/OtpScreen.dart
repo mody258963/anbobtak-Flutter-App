@@ -59,7 +59,7 @@ class _OTPScreenState extends State<OTPScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _widgets.LoginScreenDisign(context),
+              _widgets.Logo(context),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(

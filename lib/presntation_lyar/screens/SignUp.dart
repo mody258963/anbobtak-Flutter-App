@@ -6,6 +6,7 @@ import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
@@ -75,12 +76,12 @@ class _SignUpState extends State<SignUp> {
               );
             },
           );
-          } else if (state is LoginSuccess) {
+        } else if (state is LoginSuccess) {
           if (Navigator.canPop(context)) {
             Navigator.of(context, rootNavigator: true).pop();
-          }            
-                        Navigator.of(context, rootNavigator: true).pushReplacementNamed(homescreen);
-
+          }
+          Navigator.of(context, rootNavigator: true)
+              .pushReplacementNamed(homescreen);
         } else if (state is SignupTeacherSuccess) {
           print('====Lets play====');
           // Close any open dialog
@@ -111,6 +112,8 @@ class _SignUpState extends State<SignUp> {
         ));
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -121,19 +124,15 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _widgets.LoginScreenDisign(context),
+              _widgets.Logo(context),
               _buildloginAuth(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    FadeInUp(
-                        duration: Duration(milliseconds: 1500),
-                        child: _widgets.TitleText("Enter Phone Number", 30)),
-                    SizedBox(
-                      height: 30,
-                    ),
+
+            
                     FadeInUp(
                         duration: Duration(milliseconds: 1700),
                         child: Container(
@@ -175,6 +174,17 @@ class _SignUpState extends State<SignUp> {
                       height: 30,
                     ),
                     FadeInUp(
+                      duration: Duration(milliseconds: 2100),
+                      child: _widgets.ThiredParty(FontAwesomeIcons.google, (){}, 'Google')
+                    ),
+                      SizedBox(
+                      height: 20,
+                    ),
+                    FadeInUp(
+                      duration: Duration(milliseconds: 2100),
+                      child: _widgets.ThiredParty(FontAwesomeIcons.facebook, (){}, 'Facebook')
+                    ),
+                    FadeInUp(
                         duration: Duration(milliseconds: 2000),
                         child: Center(
                             child: TextButton(
@@ -182,7 +192,7 @@ class _SignUpState extends State<SignUp> {
                                   Navigator.pushNamed(context, otp);
                                 },
                                 child: Text(
-                                  "Create Account",
+                                  "Create Account ?",
                                   style: TextStyle(
                                       color: Color.fromRGBO(49, 39, 79, .6)),
                                 )))),

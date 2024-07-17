@@ -2,6 +2,7 @@ import 'package:anbobtak/costanse/colors.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -120,6 +121,42 @@ class Widgets {
     );
   }
 
+  Widget ThiredParty(IconData icon , onPressed, text) {
+    return Container(
+      decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: Offset(0, 1), // changes position of shadow
+                  ),
+                ],
+              ),
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: FaIcon(icon, color: Colors.black),
+        label: Text(
+          'Continue with $text',
+          style: TextStyle(fontSize: 16, color: Colors.black),
+        ),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          overlayColor: Colors.white,
+          foregroundColor: Colors.white,
+          side: BorderSide(color: Colors.white),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget TitleText(name, double font) {
     return FittedBox(
       fit: BoxFit.scaleDown,
@@ -186,9 +223,36 @@ class Widgets {
     );
   
   }
+//----------------------------------------------------------
+  Widget Logo( BuildContext context) {
+        double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return ClipPath(
+clipper: CurvedClipper(),
+      child: Container(
+        height: height * 0.4,
+        decoration: BoxDecoration(
+          color: Colors.lightBlue[100],
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(50),
+            bottomRight: Radius.circular(50),
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Image.asset(
+              'assets/logo.png', // Replace with your logo path
+              height: 250,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
 
-
+//_----------------------------------------------------
   Future<void> requestLocationPermission() async {
     var status = await Permission.location.request();
     if (status.isGranted) {
@@ -202,4 +266,20 @@ class Widgets {
   }
 
 
+}
+class CurvedClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.8);
+    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height * 0.7);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
 }
