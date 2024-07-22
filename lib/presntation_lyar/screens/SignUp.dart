@@ -1,59 +1,26 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/pages.dart';
-import 'package:anbobtak/presntation_lyar/screens/OtpScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class OTPScreen extends StatefulWidget {
+  const OTPScreen({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<OTPScreen> createState() => _OTPScreenState();
 }
 
-class _SignUpState extends State<SignUp> {
-  String dropdownValue = list.first;
-  Widgets _widgets = Widgets();
+class _OTPScreenState extends State<OTPScreen> {
+  final TextEditingController namecontroller = TextEditingController();
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
+  final TextEditingController cpasswordcontroller = TextEditingController();
 
-  static const List<String> list = <String>['EN', 'AR'];
-
-  Widget _dropbox() {
-    return DropdownMenu<String>(
-      inputDecorationTheme: InputDecorationTheme(
-          floatingLabelAlignment: FloatingLabelAlignment.start),
-      initialSelection: list.first,
-      onSelected: (String? value) async {
-        // This is called when the user selects an item.
-        setState(() {
-          dropdownValue = value!;
-        });
-        final prefs = await SharedPreferences.getInstance();
-        if (dropdownValue == 'AR') {
-          prefs.remove('lang1');
-          prefs.remove('lang2');
-          prefs.setString('lang1', 'ar');
-          prefs.setString('lang2', 'en');
-        } else {
-          prefs.remove('lang1');
-          prefs.remove('lang2');
-          prefs.setString('lang1', 'en');
-          prefs.setString('lang2', 'ar');
-        }
-        print(prefs.getString('lang1'));
-        print(prefs.getString('lang2'));
-      },
-      dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-        return DropdownMenuEntry<String>(value: value, label: value);
-      }).toList(),
-    );
-  }
+  Widgets _widgets = Widgets();
 
   Widget _buildloginAuth() {
     return BlocListener<EmailAuthCubit, EmailAuthState>(
@@ -62,57 +29,23 @@ class _SignUpState extends State<SignUp> {
       },
       listener: (context, EmailAuthState state) {
         if (state is LoginLoading) {
-          _widgets.buildCircularProgressIndicatorDialogV1(context);
-        } else if (state is Loginfails) {
-          Navigator.of(context, rootNavigator: true).pop();
-          // if (Navigator.canPop(context)) {
-          //   Navigator.of(context, rootNavigator: true).pop();
-          // }
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Don\'t play with me'),
-              );
-            },
+          _widgets.buildCircularProgressIndicatorDialog(context);
+        }
+        if (state is Loginfails) {
+          AlertDialog(
+            title: Text('dont play with me'),
           );
-        } else if (state is LoginSuccess) {
-          if (Navigator.canPop(context)) {
-            Navigator.of(context, rootNavigator: true).pop();
-          }
+        }
+        if (state is SignupSuccess) {
+          print(state.name);
+          Navigator.maybePop(context);
           Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed(homescreen);
-        } else if (state is SignupTeacherSuccess) {
-          print('====Lets play====');
-          // Close any open dialog
-          if (Navigator.canPop(context)) {
-            Navigator.of(context, rootNavigator: true).pop();
-          }
-          // Navigate to the next screen
-          Navigator.of(context, rootNavigator: true).pushReplacementNamed(nav);
+              .pushReplacementNamed(nav, arguments: state.name);
         }
       },
       child: Container(),
     );
   }
-
-  Widget _TitleText(String text) {
-    return Text(text);
-  }
-
-  Widget _Button(onPressed) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    return Container(
-        height: height * 0.10,
-        width: width * 0.70,
-        child: ElevatedButton(
-          onPressed: onPressed,
-          child: Text('Sign up'),
-        ));
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -122,17 +55,15 @@ class _SignUpState extends State<SignUp> {
         backgroundColor: MyColors.white,
         body: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _widgets.Logo(context),
               _buildloginAuth(),
+              _widgets.Logo(context),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-
-            
                     FadeInUp(
                         duration: Duration(milliseconds: 1700),
                         child: Container(
@@ -148,53 +79,62 @@ class _SignUpState extends State<SignUp> {
                                   offset: Offset(0, 10),
                                 )
                               ]),
-                          child: Column(
-                            children: <Widget>[
-                              _widgets.TextFiledLogin('Email', emailcontroller,
-                                  10, 'Enter Correct Email', context),
-                              _widgets.TextFiledLogin(
-                                  'Password',
-                                  passwordcontroller,
-                                  8,
-                                  'Short Password',
-                                  context),
-                            ],
+                          child: Center(
+                            child: Column(
+                              children: [
+                                _widgets.TextFiledLogin('Name', namecontroller,
+                                    7, 'Name is very short', context),
+                                _widgets.TextFiledLogin(
+                                    'Email',
+                                    emailcontroller,
+                                    9,
+                                    'Very short email',
+                                    context),
+                                _widgets.TextFiledLogin(
+                                    'Password',
+                                    passwordcontroller,
+                                    8,
+                                    'Please enter more then 8 charactor',
+                                    context),
+                                _widgets.TextFiledLogin(
+                                    'Confirm Password',
+                                    cpasswordcontroller,
+                                    8,
+                                    'Please enter more then 8 charactor',
+                                    context),
+                              ],
+                            ),
                           ),
                         )),
                     SizedBox(
-                      height: 20,
+                      height: 15,
                     ),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 1900),
-                        child: _widgets.AppButton(() {
-                          context.read<EmailAuthCubit>().loginUser(
-                              emailcontroller.text, passwordcontroller.text);
-                        }, 'Sign Up')),
                     SizedBox(
                       height: 30,
                     ),
                     FadeInUp(
-                      duration: Duration(milliseconds: 2100),
-                      child: _widgets.ThiredParty(FontAwesomeIcons.google, (){}, 'Google')
-                    ),
-                      SizedBox(
-                      height: 20,
-                    ),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 2100),
-                      child: _widgets.ThiredParty(FontAwesomeIcons.facebook, (){}, 'Facebook')
+                        duration: Duration(milliseconds: 1900),
+                        child: _widgets.AppButton(() {
+                          context.read<EmailAuthCubit>().signup(
+                              namecontroller.text,
+                              emailcontroller.text,
+                              passwordcontroller.text);
+                        }, 'Sign Up')),
+                    SizedBox(
+                      height: 30,
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 2000),
                         child: Center(
                             child: TextButton(
                                 onPressed: () {
-                                  Navigator.pushNamed(context, otp);
+                                  Navigator.pushNamed(context, logain);
                                 },
                                 child: Text(
-                                  "Create Account ?",
+                                  "Sign In ?",
                                   style: TextStyle(
-                                      color: Color.fromRGBO(49, 39, 79, .6)),
+                                      color: Color.fromRGBO(49, 39, 79, .6),
+                                      fontSize: width * 0.04),
                                 )))),
                   ],
                 ),

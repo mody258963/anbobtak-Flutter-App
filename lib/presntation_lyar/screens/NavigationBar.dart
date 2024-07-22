@@ -1,4 +1,3 @@
-
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
@@ -8,21 +7,20 @@ import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-
 class NavigationBars extends StatefulWidget {
-  const NavigationBars({super.key});
-
+  const NavigationBars({super.key, required this.name});
+  final String name;
   @override
   State<NavigationBars> createState() => _NavigationBarsState();
 }
 
-
 class _NavigationBarsState extends State<NavigationBars> {
-@override
+  @override
   void didChangeDependencies() {
-   // BlocProvider.of<GetMethodCubit>(context).emitGetAllCourseOfTeacher();
+    // BlocProvider.of<GetMethodCubit>(context).emitGetAllCourseOfTeacher();
     super.didChangeDependencies();
   }
+
   List<PersistentBottomNavBarItem> _navBarItems() {
     return [
       PersistentBottomNavBarItem(
@@ -31,7 +29,7 @@ class _NavigationBarsState extends State<NavigationBars> {
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.delivery_dining_sharp ),
+        icon: Icon(Icons.delivery_dining_sharp),
         activeColorPrimary: MyColors.Secondcolor,
         inactiveColorPrimary: Colors.grey,
       ),
@@ -43,19 +41,20 @@ class _NavigationBarsState extends State<NavigationBars> {
     ];
   }
 
-  PersistentTabController _controller =
-      PersistentTabController();
+  PersistentTabController _controller = PersistentTabController();
   List<Widget> _screens() {
     return [
-      HomeScreen(),
+      HomeScreen(
+        name: widget.name,
+      ),
       MyOrderScreen(),
       ProfileScreen(),
     ];
   }
 
-
   @override
   Widget build(BuildContext context) {
+    print('${widget.name}');
     return MaterialApp(
       home: Scaffold(
         body: PersistentTabView(

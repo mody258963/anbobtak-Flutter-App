@@ -1,23 +1,57 @@
 class Auth {
-  final String? accessToken;
-  final String? tokenType;
-  final int? userId;
+    Auth({
+        required this.user,
+        required this.token,
+    });
 
-  Auth({required this.accessToken,required this.tokenType,required this.userId});
+    final User? user;
+    final String? token;
 
-  factory Auth.fromJson(Map<String, dynamic> json) {
-    return Auth(
-      accessToken: json['access_token'] ?? '',
-      tokenType: json['token_type'] ?? '',
-      userId: json['user_id'] ?? 0,
-    );
-  }
+    factory Auth.fromJson(Map<String, dynamic> json){ 
+        return Auth(
+            user: json["user"] == null ? null : User.fromJson(json["user"]),
+            token: json["token"],
+        );
+    }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'access_token': accessToken,
-      'token_type': tokenType,
-      'user_id': userId,
+    Map<String, dynamic> toJson() => {
+        "user": user?.toJson(),
+        "token": token,
     };
-  }
+
+}
+
+class User {
+    User({
+        required this.name,
+        required this.email,
+        required this.updatedAt,
+        required this.createdAt,
+        required this.id,
+    });
+
+    final String? name;
+    final String? email;
+    final DateTime? updatedAt;
+    final DateTime? createdAt;
+    final int? id;
+
+    factory User.fromJson(Map<String, dynamic> json){ 
+        return User(
+            name: json["name"],
+            email: json["email"],
+            updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+            createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+            id: json["id"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "name": name,
+        "email": email,
+        "updated_at": updatedAt?.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
+        "id": id,
+    };
+
 }

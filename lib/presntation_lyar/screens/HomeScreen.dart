@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
@@ -16,18 +18,19 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
+  const HomeScreen({super.key,  this.name});
+  final name;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
+ initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
   }
+
 
   Widgets _widgets = Widgets();
   int counter = 0;
@@ -300,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 right: width * 0.20,
                                 left: width * 0.06),
                             child: _widgets.TitleText(
-                                'Hi, Name form database', 30),
+                                'Hi, ${widget.name} ', 30),
                           )),
                     ),
                     _buildProductList(),

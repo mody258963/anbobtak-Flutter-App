@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Widgets {
   Widget TextFiledLogin(
@@ -224,6 +225,19 @@ class Widgets {
   
   }
 //----------------------------------------------------------
+  Future<void> requestLocationPermission() async {
+    var status = await Permission.location.request();
+    if (status.isGranted) {
+      // Permission is granted, proceed
+    } else if (status.isDenied) {
+      // Permission denied, handle appropriately
+    } else if (status.isPermanentlyDenied) {
+      // The user opted not to grant permission and should not be asked again
+      openAppSettings(); // Opens app settings where user can manually allow permission
+    }
+  }
+
+ //LOGO of the main Screen  
   Widget Logo( BuildContext context) {
         double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -252,19 +266,6 @@ clipper: CurvedClipper(),
   }
 
 
-//_----------------------------------------------------
-  Future<void> requestLocationPermission() async {
-    var status = await Permission.location.request();
-    if (status.isGranted) {
-      // Permission is granted, proceed
-    } else if (status.isDenied) {
-      // Permission denied, handle appropriately
-    } else if (status.isPermanentlyDenied) {
-      // The user opted not to grant permission and should not be asked again
-      openAppSettings(); // Opens app settings where user can manually allow permission
-    }
-  }
-
 
 }
 class CurvedClipper extends CustomClipper<Path> {
@@ -283,3 +284,4 @@ class CurvedClipper extends CustomClipper<Path> {
     return false;
   }
 }
+//_----------------------------------------------------

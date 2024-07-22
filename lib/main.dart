@@ -34,7 +34,6 @@ void main() async {
       );
       if (response.statusCode == 200) {
         //final data = response.data;
-        print('cooool');
         return true;
       } else {
         print('fuck');
@@ -55,6 +54,7 @@ void main() async {
     await prefs.remove('user_id');
     await prefs.remove('token');
     await prefs.remove('Product');
+    await prefs.remove('name');
 
   }
 

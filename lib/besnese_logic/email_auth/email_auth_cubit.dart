@@ -26,19 +26,19 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
     }
   }
 
-  Future<FutureOr<void>> signup(String name, String email,
-      String password, String cpassword) async {
+  Future<FutureOr<void>> signup(
+      String name, String email, String password) async {
     emit(LoginLoading());
     try {
-      List<Auth> result = await myRepo.SignUpUser('users/store', {
+    
+      List<Auth> result = await myRepo.SignUpUser('users/register', {
         'name': name,
         'email': email,
         'password': password,
-        'cpassword': cpassword,
       });
-      
-      print('=====cubit====$result');
-      emit(SignupTeacherSuccess());
+
+      print('=====email_cubit====${result.first.user?.name}');
+      emit(SignupSuccess(result.first.user?.name));
     } catch (e) {
       emit(Loginfails());
       print('==email cubit===${e.toString()}');

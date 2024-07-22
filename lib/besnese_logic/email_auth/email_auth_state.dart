@@ -10,7 +10,11 @@ class LoginLoading extends EmailAuthState{}
 class LoginSuccess extends EmailAuthState {
 
 }
-class SignupTeacherSuccess extends EmailAuthState {
+class SignupSuccess extends EmailAuthState {
+
+  final String? name  ;
+
+  SignupSuccess(this.name );
 
 
 }
