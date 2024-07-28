@@ -72,7 +72,7 @@ class _SignUpState extends State<SignUp> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Don\'t play with me'),
+                title: Text('Don\'t play with '),
               );
             },
           );
@@ -81,18 +81,8 @@ class _SignUpState extends State<SignUp> {
             Navigator.of(context, rootNavigator: true).pop();
           }
           Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed(homescreen);
-        } else if (state is SignupSuccess) {
-          print('====Lets play====');
-                    print(state.name);
-
-          // Close any open dialog
-          if (Navigator.canPop(context)) {
-            Navigator.of(context, rootNavigator: true).pop();
-          }
-          // Navigate to the next screen
-          Navigator.of(context, rootNavigator: true).pushReplacementNamed(nav, arguments: state.name);
-        }
+              .pushReplacementNamed(nav);
+        } 
       },
       child: Container(),
     );

@@ -18,6 +18,30 @@ class SignupSuccess extends EmailAuthState {
 
 
 }
+class EmailSend extends EmailAuthState{
+    final String? message;
+
+  EmailSend(this.message);
+
+}
+
+class VerificationCodeSend extends EmailAuthState{
+    final String? message;
+
+  VerificationCodeSend(this.message);
+
+}
 
 
-class Loginfails extends EmailAuthState{}
+class CodeSend extends EmailAuthState{
+    final String? message;
+
+  CodeSend(this.message);
+
+}
+
+class Loginfails extends EmailAuthState{
+      final String? message;
+
+  Loginfails(this.message);
+}
