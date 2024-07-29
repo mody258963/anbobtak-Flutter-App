@@ -7,9 +7,12 @@ class EmailAuthInitial extends EmailAuthState {}
 
 class LoginLoading extends EmailAuthState{}
 
-class LoginSuccess extends EmailAuthState {
+class LoginSuccess extends EmailAuthState {}
 
-}
+class SendCodeLoding extends EmailAuthState {}
+
+class SignUpLoading extends EmailAuthState {}
+
 class SignupSuccess extends EmailAuthState {
 
   final String? name  ;
@@ -37,6 +40,10 @@ class CodeSend extends EmailAuthState{
     final String? message;
 
   CodeSend(this.message);
+
+}
+
+class VerifingCodeLoading extends EmailAuthState{
 
 }
 

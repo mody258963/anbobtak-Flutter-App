@@ -28,7 +28,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
   }
 
   Future<FutureOr<void>> sendVerificationCode(String phone) async {
-    emit(LoginLoading());
+    emit(SendCodeLoding());
     try {
       List<Forget> result = await myRepo.sendVerificationCode(
           'send-verification-code', {'phone_number': phone});
@@ -37,21 +37,23 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       emit(Loginfails(e.toString()));
     }
   }
-  Future<FutureOr<void>> VerificationCode(int phone, int code) async {
-    emit(LoginLoading());
+
+  Future<FutureOr<void>> VerificationCode(String phone, String code) async {
+    emit(VerifingCodeLoading());
     try {
+      print('============${[phone,code]}');
       List<Forget> result = await myRepo.sendCode(
-          'verify-code', {'phone_number': phone , 'verification_code': code});
+          'verify-code', {'phone_number': phone, 'verification_code': code});
       emit(CodeSend(result.first.message));
+      print(result.first.message);
     } catch (e) {
       emit(Loginfails(e.toString()));
     }
   }
 
-
   Future<FutureOr<void>> signup(
       String name, String phone, String password) async {
-    emit(LoginLoading());
+    emit(SignUpLoading());
     try {
       List<Auth> result = await myRepo.SignUpUser('register', {
         'name': name,

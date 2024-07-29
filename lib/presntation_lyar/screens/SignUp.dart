@@ -18,7 +18,7 @@ class _OTPScreenState extends State<OTPScreen> {
   final TextEditingController namecontroller = TextEditingController();
   final TextEditingController phonecontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
-  final TextEditingController cpasswordcontroller = TextEditingController();
+  final TextEditingController OPTcontroller = TextEditingController();
   bool _isSend = false;
   bool _isverfiy = false;
   Widgets _widgets = Widgets();
@@ -29,28 +29,40 @@ class _OTPScreenState extends State<OTPScreen> {
         return previous != current;
       },
       listener: (context, EmailAuthState state) {
-        if (state is LoginLoading) {
-          //_widgets.buildCircularProgressIndicatorDialog(context);
+        if (state is SendCodeLoding) {
+          _widgets.buildCircularProgressIndicatorDialog(context);
         }
         if (state is Loginfails) {
-          AlertDialog(
-            title: Text(state.message!),
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(state.message!),
+            ),
           );
         }
         if (state is VerificationCodeSend) {
-          AlertDialog(
-            title: Text(state.message!),
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(state.message!),
+            ),
           );
-          _isSend = true;
+          setState(() {
+            _isSend = true;
+          });
           print(_isSend);
-         // Navigator.pop(context);
+          // Navigator.pop(context);
         }
         if (state is CodeSend) {
-          AlertDialog(
-            title: Text(state.message!),
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(state.message!),
+            ),
           );
-          _isverfiy = true;
-          Navigator.maybePop(context);
+          setState(() {
+            _isverfiy = true;
+          });
         }
         if (state is SignupSuccess) {
           print(state.name);
@@ -109,16 +121,16 @@ class _OTPScreenState extends State<OTPScreen> {
                                 if (_isSend)
                                   _widgets.TextFiledLogin(
                                       'OTP Code',
-                                      passwordcontroller,
+                                      OPTcontroller,
                                       6,
                                       'Enter 6 digits in the What\'sApp SMS ',
                                       context),
                                 if (_isverfiy)
                                   _widgets.TextFiledLogin(
                                       'Password',
-                                      cpasswordcontroller,
+                                      passwordcontroller,
                                       8,
-                                      'Please enter more then 8 charactor',
+                                      'Please enter more than 8 characters',
                                       context),
                               ],
                             ),
@@ -133,16 +145,24 @@ class _OTPScreenState extends State<OTPScreen> {
                     FadeInUp(
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
-                          context
-                              .read<EmailAuthCubit>()
-                              .sendVerificationCode(phonecontroller.text);
                           setState(() {});
-                          if (_isverfiy) {
-                            context.read<EmailAuthCubit>().signup(
-                                namecontroller.text,
-                                phonecontroller.text,
-                                passwordcontroller.text);
+                          if (!_isSend) {
+                            print('===========first');
+                            context
+                                .read<EmailAuthCubit>()
+                                .sendVerificationCode(phonecontroller.text);
                           }
+                          if (_isSend) {
+                            print('=============seconf');
+                            context.read<EmailAuthCubit>().VerificationCode(
+                                phonecontroller.text,OPTcontroller.text);                       
+                          }
+                          // if (_isverfiy) {
+                          //   context.read<EmailAuthCubit>().signup(
+                          //       namecontroller.text,
+                          //       phonecontroller.text,
+                          //       passwordcontroller.text);
+                          // }
                         }, _isverfiy ? 'Sign Up' : 'Verify')),
                     SizedBox(
                       height: 30,

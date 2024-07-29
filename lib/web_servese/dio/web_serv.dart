@@ -68,6 +68,23 @@ class NameWebServise {
     }
   }
 
+
+  Future<List<dynamic>> SendVerfication(String end, Object data) async {
+    try {
+      final response = await dio.post(
+        baseUrl + end,
+        data: data,
+      );
+
+      print('======== $response');
+
+      return [response.data];
+    } catch (e) {
+      print("====== dio error ======= ${e.toString()}");
+      return [];
+    }
+  }
+
   Future<List<dynamic>> post(String end, Object data) async {
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('token');
