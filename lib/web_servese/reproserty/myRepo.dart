@@ -96,7 +96,7 @@ class MyRepo {
     return userList..shuffle();
   }
   Future<List<Forget>> sendCode(String end, Object data) async {
-    final names = await nameWebService.SendVerfication(end, data);
+    final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Forget.fromJson(names)).toList();
     print("=====Item====#${userList..shuffle()}");
     return userList..shuffle();

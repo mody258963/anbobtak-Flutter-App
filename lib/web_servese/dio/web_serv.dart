@@ -1,7 +1,8 @@
-import 'dart:developer';
 
+import 'dart:io';
 import 'package:anbobtak/costanse/strings.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,7 +71,9 @@ class NameWebServise {
 
 
   Future<List<dynamic>> SendVerfication(String end, Object data) async {
+
     try {
+
       final response = await dio.post(
         baseUrl + end,
         data: data,

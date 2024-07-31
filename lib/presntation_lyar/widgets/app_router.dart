@@ -2,6 +2,7 @@ import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
+import 'package:anbobtak/presntation_lyar/screens/OTPScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/SignUp.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/LoginPage.dart';
@@ -54,11 +55,11 @@ class AppRouter {
                   value: getMethodCubit!,
                   child: MapScreen(),
                 ));
-           case addresspage:
+           case signup:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
-                  child: Forgetpassword(),
+                  child: SecondOTP(),
                 ));
       case forgot:
         return MaterialPageRoute(

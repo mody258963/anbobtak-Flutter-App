@@ -38,12 +38,12 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
     }
   }
 
-  Future<FutureOr<void>> VerificationCode(String phone, String code) async {
+  Future<FutureOr<void>> verificationCode(String phone, String code) async {
     emit(VerifingCodeLoading());
     try {
       print('============${[phone,code]}');
       List<Forget> result = await myRepo.sendCode(
-          'verify-code', {'phone_number': phone, 'verification_code': code});
+          'verify-code', {'phone_number': "+201115298888", 'verification_code': code});
       emit(CodeSend(result.first.message));
       print(result.first.message);
     } catch (e) {
