@@ -18,7 +18,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key,  this.name});
+  const HomeScreen({super.key, this.name});
   final name;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,11 +26,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
- initState() {
+  initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
+    _loadData();
   }
 
+  String? _savedValue;
+
+  void _loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _savedValue = prefs.getString('name') ?? 'No name saved';
+    });
+  }
 
   Widgets _widgets = Widgets();
   int counter = 0;
@@ -303,7 +312,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 right: width * 0.20,
                                 left: width * 0.06),
                             child: _widgets.TitleText(
-                                'Hi, ${widget.name} ', 30),
+                                'Hi, ${widget.name != null ? widget.name : _savedValue} ',
+                                30),
                           )),
                     ),
                     _buildProductList(),

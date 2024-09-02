@@ -48,7 +48,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
 
   Future<void> MakeItemB(quantity) async {
     final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getString('user_id');
+    final id = prefs.getInt('user_id');
     final productId = prefs.getInt('Product');
     try {
       List<Item> Items = await myRepo.getItemB('order/add/b/quntaty', {
@@ -66,7 +66,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
 
     Future<void> getItem() async {
     final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getString('user_id');
+    final id = prefs.getInt('user_id');
     final productId = prefs.getInt('Product');
     try {
       List<Item> Items = await myRepo.getItem('order/add/a/quntaty', {
@@ -83,7 +83,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
 
     Future<void> addLatLong(lat, long) async {
     final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getString('user_id');
+    final id = prefs.getInt('user_id');
     try {
       List<Address> address = await myRepo.addLatLong('address/store/lat', {
         'user_id': id,

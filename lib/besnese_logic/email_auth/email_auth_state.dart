@@ -7,7 +7,13 @@ class EmailAuthInitial extends EmailAuthState {}
 
 class LoginLoading extends EmailAuthState{}
 
-class LoginSuccess extends EmailAuthState {}
+class LoginSuccess extends EmailAuthState {
+    final String? name  ;
+
+  LoginSuccess(this.name );
+
+
+}
 
 class SendCodeLoding extends EmailAuthState {}
 

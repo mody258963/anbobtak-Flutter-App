@@ -60,7 +60,7 @@ class _SignUpState extends State<SignUp> {
       listenWhen: (previous, current) {
         return previous != current;
       },
-      listener: (context, EmailAuthState state) {
+      listener: (context, EmailAuthState state) async {
         if (state is LoginLoading) {
           _widgets.buildCircularProgressIndicatorDialogV1(context);
         } else if (state is Loginfails) {
@@ -77,12 +77,15 @@ class _SignUpState extends State<SignUp> {
             },
           );
         } else if (state is LoginSuccess) {
+          final prefs = await SharedPreferences.getInstance();
+          String? name = await prefs.getString('name');
+          print('=======name4========${name}');
           if (Navigator.canPop(context)) {
             Navigator.of(context, rootNavigator: true).pop();
           }
-          Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed(nav);
-        } 
+          Navigator.of(context, rootNavigator: true).pushReplacementNamed(nav,
+              arguments: state.name);
+        }
       },
       child: Container(),
     );
@@ -91,8 +94,6 @@ class _SignUpState extends State<SignUp> {
   Widget _TitleText(String text) {
     return Text(text);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +106,7 @@ class _SignUpState extends State<SignUp> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _widgets.Logo(context),
-               _buildloginAuth(),
+              _buildloginAuth(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
@@ -139,7 +140,18 @@ class _SignUpState extends State<SignUp> {
                             ],
                           ),
                         )),
-                        FadeInUp(duration: Duration(milliseconds: 1900),child: Align( alignment: Alignment.centerLeft,child: TextButton(onPressed: (){ Navigator.pushNamed(context, forgot);}, child: Text('Forgot Password ?',style: TextStyle(color: Colors.grey ),)))),
+                    FadeInUp(
+                        duration: Duration(milliseconds: 1900),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, forgot);
+                                },
+                                child: Text(
+                                  'Forgot Password ?',
+                                  style: TextStyle(color: Colors.grey),
+                                )))),
                     FadeInUp(
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
@@ -151,8 +163,10 @@ class _SignUpState extends State<SignUp> {
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 2100),
-                        child: _widgets.ThiredParty(
-                            FontAwesomeIcons.google, () {}, 'Google')),
+                        child:
+                            _widgets.ThiredParty(FontAwesomeIcons.google, () {
+                          context.read<EmailAuthCubit>().googleSignIn();
+                        }, 'Google')),
                     SizedBox(
                       height: 20,
                     ),
@@ -169,8 +183,7 @@ class _SignUpState extends State<SignUp> {
                                 },
                                 child: Text(
                                   "Create Account ?",
-                                  style: TextStyle(
-                                      color: Colors.grey),
+                                  style: TextStyle(color: Colors.grey),
                                 )))),
                   ],
                 ),

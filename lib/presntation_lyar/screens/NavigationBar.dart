@@ -9,7 +9,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class NavigationBars extends StatefulWidget {
   const NavigationBars({super.key, required this.name});
-  final String name;
+  final String? name;
   @override
   State<NavigationBars> createState() => _NavigationBarsState();
 }

@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:anbobtak/web_servese/model/auth.dart';
 import 'package:anbobtak/web_servese/model/foget.dart';
+import 'package:anbobtak/web_servese/model/google.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'email_auth_state.dart';
 
@@ -20,7 +22,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       List<Auth> result =
           await myRepo.login('login', {'email': email, 'password': password});
       print('=====cubit====$result');
-      emit(LoginSuccess());
+      emit(LoginSuccess(result.first.data!.user?.name));
     } catch (e) {
       emit(Loginfails(e.toString()));
       print('==email cubit===${e.toString()}');
@@ -41,9 +43,9 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
   Future<FutureOr<void>> verificationCode(String phone, String code) async {
     emit(VerifingCodeLoading());
     try {
-      print('============${[phone,code]}');
+      print('============${[phone, code]}');
       List<Forget> result = await myRepo.sendCode(
-          'verify-code', {'phone_number': "+201115298888", 'verification_code': code});
+          'verify-code', {'phone_number': phone, 'verification_code': code});
       emit(CodeSend(result.first.message));
       print(result.first.message);
     } catch (e) {
@@ -61,8 +63,8 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
         'password': password,
       });
 
-      print('=====email_cubit====${result.first.user?.name}');
-      emit(SignupSuccess(result.first.user?.name));
+      print('=====email_cubit====${result.first.data!.user?.name}');
+      emit(SignupSuccess(result.first.data!.user?.name));
     } catch (e) {
       emit(Loginfails(e.toString()));
       print('==email cubit===${e.toString()}');
@@ -79,6 +81,18 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
       emit(EmailSend(result.first.message));
     } catch (e) {
       emit(Loginfails(e.toString()));
+      print('==email cubit===${e.toString()}');
+    }
+  }
+
+  Future<FutureOr<void>> googleSignIn() async {
+    emit(LoginLoading());
+    try {
+      List<Auth> result = await myRepo.GoogleSign('auth/google/app');
+      print('=========name=======${result.first.data!.user?.name}');
+      emit(LoginSuccess(result.first.data!.user?.name));
+    } catch (e) {
+      //emit(Loginfails(e.toString()));
       print('==email cubit===${e.toString()}');
     }
   }

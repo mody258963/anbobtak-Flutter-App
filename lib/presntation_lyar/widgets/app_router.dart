@@ -74,7 +74,7 @@ class AppRouter {
                   child: OTPScreen(),
                 ));
             case nav:
-            final String name = settings.arguments as String;
+            final String? name = settings.arguments as String?;
               return MaterialPageRoute(
              builder: (_) => MultiBlocProvider(
             providers: [

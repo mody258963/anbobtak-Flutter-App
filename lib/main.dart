@@ -17,31 +17,33 @@ void main() async {
     final dio = Dio();
     try {
       final token = prefs.getString('token');
+      print("===token==$token");
       if (token == null) {
         return false;
-      }
-      Map<String, dynamic> headers = {
-        'Authorization':
-            'Bearer $token', // Assuming token is prefixed with 'Bearer '
-        'Content-Type': 'application/json', // Adjust content type as needed
-      };
-
-      final response = await dio.get(
-        'http://127.0.0.1:8000/api/SMS/check',
-        options: Options(
-          headers: headers,
-        ),
-      );
-      if (response.statusCode == 200) {
-        //final data = response.data;
-        return true;
       } else {
-        print('fuck');
-        return false;
+        Map<String, dynamic> headers = {
+          'Authorization':
+              'Bearer $token', // Assuming token is prefixed with 'Bearer '
+          'Content-Type': 'application/json', // Adjust content type as needed
+        };
+
+        final response = await dio.get(
+          'http://127.0.0.1:8000/api/v1/user/me',
+          options: Options(
+            headers: headers,
+          ),
+        );
+        if (response.statusCode == 200) {
+          //final data = response.data;
+          return true;
+        } else {
+          print('fuck');
+          return false;
+        }
       }
     } catch (e) {
+      print(e);
       return false;
-      //throw Exception('Failed to check token: $e');
     }
   }
 
@@ -51,11 +53,7 @@ void main() async {
     initialRoute = nav; //nav
   } else {
     initialRoute = logain;
-    await prefs.remove('user_id');
-    await prefs.remove('token');
-    await prefs.remove('Product');
-    await prefs.remove('name');
-
+    await prefs.clear();
   }
 
   runApp(MyApp(
