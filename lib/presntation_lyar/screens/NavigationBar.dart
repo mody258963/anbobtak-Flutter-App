@@ -5,7 +5,7 @@ import 'package:anbobtak/presntation_lyar/screens/MyorderScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class NavigationBars extends StatefulWidget {
   const NavigationBars({super.key, required this.name});
@@ -60,13 +60,13 @@ class _NavigationBarsState extends State<NavigationBars> {
         body: PersistentTabView(
           screens: _screens(),
           context,
-          confineInSafeArea: true,
+          confineToSafeArea: true,
           controller: _controller,
           items: _navBarItems(),
           navBarStyle: NavBarStyle.style6,
           backgroundColor: MyColors.white,
-          hideNavigationBarWhenKeyboardShows: true,
-          popAllScreensOnTapOfSelectedTab: true,
+          hideNavigationBarWhenKeyboardAppears: true,
+          popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
         ),
       ),
     );
