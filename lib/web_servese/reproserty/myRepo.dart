@@ -23,9 +23,9 @@ class MyRepo {
     return userList..shuffle();
   }
 
-  Future<List<Product>> getProduct(String end) async {
+  Future<List<Datum>> getProduct(String end) async {
     final names = await nameWebService.get(end);
-    final userList = names.map((names) => Product.fromJson(names)).toList();
+    final userList = names.map((names) => Datum.fromJson(names)).toList();
     print("=====Product====#$userList");
     return userList..shuffle();
   }

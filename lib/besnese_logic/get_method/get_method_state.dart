@@ -1,4 +1,5 @@
 
+import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:flutter/widgets.dart';
 
 
@@ -30,7 +31,7 @@ class CatogoryState extends GetMethodState {
 
 
 class GetProducts extends GetMethodState {
- final List<dynamic>  posts;
+ final List<Datum>  posts;
 
   GetProducts({required this.posts});
 

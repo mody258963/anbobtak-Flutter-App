@@ -17,7 +17,7 @@ class GetMethodCubit extends Cubit<GetMethodState> {
   Future<FutureOr<void>> GetProduct() async {
     try {
       emit(LodingState());
-      List<Product> posts = await myRepo.getProduct('product/index');
+      List<Datum> posts = await myRepo.getProduct('product/');
       emit(GetProducts(posts: posts));
       print("======products======$posts");
     } catch (e) {
