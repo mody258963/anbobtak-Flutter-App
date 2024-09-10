@@ -59,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
   Widget _buildProductList() {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -189,25 +188,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: height * 0.14,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
-                                    SizedBox(width: width * 0.1),
+                      SizedBox(width: width * 0.1),
                       Row(
                         children: [
-                            AddToCartCounterButton(
-                    initNumber: 0,
-                    minNumber: 0,
-                    maxNumber: 10,
-                    increaseCallback: () {},
-                    decreaseCallback: () {},
-                    counterCallback: (int count) {
-                      print('Current count: ${allList.id.toString()}');
-
-                    },
-                    backgroundColor: Colors.white,
-                    buttonFillColor: Colors.black,
-                    buttonIconColor: Colors.white,
-                  ),
+                          AddToCartCounterButton(
+                            initNumber: 0,
+                            minNumber: 0,
+                            maxNumber: 10,
+                            increaseCallback: () {},
+                            decreaseCallback: () {},
+                            counterCallback: (int count) {
+                              print('Current count: ${allList.id.toString()}');
+                            },
+                            backgroundColor: Colors.white,
+                            buttonFillColor: Colors.black,
+                            buttonIconColor: Colors.white,
+                          ),
                         ],
                       ),
                     ],
@@ -233,15 +230,15 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
               width: width * 0.90,
               height: height * 0.07,
-              child: _widgets.AppButton(()async{   BlocProvider.of<UplodingDataCubit>(context)
-                        .MakeItemB(counter);
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: MapScreen(),
-                      withNavBar: true, // OPTIONAL VALUE. True by default.
-                      pageTransitionAnimation:
-                          PageTransitionAnimation.cupertino,
-                    );}, "Pay   EGP 100.50") ),
+              child: _widgets.AppButton(() async {
+                BlocProvider.of<UplodingDataCubit>(context).MakeItemB(counter);
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: MapScreen(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              }, "Pay   EGP 100.50")),
         ),
         backgroundColor: MyColors.white,
         body: Column(
