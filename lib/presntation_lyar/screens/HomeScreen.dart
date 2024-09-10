@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:add_to_cart_button/add_to_cart_button.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
@@ -58,32 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Widget _Getquntaty() {
-  //   return BlocBuilder<UplodingDataCubit, UplodingDataState>(
-  //     builder: (context, state) {
-  //       if (state is Uploaded) {
-  //         final items = state.Items;
-
-  //         print('====items====${items.first.data?.quantity}');
-  //         if (items.isNotEmpty) {
-  //           print('====quantity====${items.first.data?.quantity}');
-  //           return Text(
-  //             '${items.first.data?.quantity}',
-  //             style: TextStyle(
-  //               fontSize: 20.0,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           );
-  //         }
-  //       }
-  //       if (state is ErrorOccurred) {
-  //         print("=======error======${state.errorMsg}");
-  //       }
-  //       print('====state not Uploaded====');
-  //       return Container(); // Return a loading or placeholder widget if needed
-  //     },
-  //   );
-  // }
 
   Widget _buildProductList() {
     double width = MediaQuery.of(context).size.width;
@@ -166,89 +141,73 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${allList.name.toString()}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: width * 0.05,
-                        ),
-                      ),
-                      Text(
-                        '${allList.description.toString()}',
-                        style: TextStyle(
-                          fontSize: width * 0.03,
-                        ),
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Text(
-                            'EGP',
-                            style: TextStyle(
-                              fontSize: width * 0.03,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  child: Container(
+                    height: height * 0.15,
+                    width: width * 0.70,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${allList.name.toString()}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: width * 0.05,
                           ),
-                          SizedBox(width: 5),
-                          Text(
-                            '${allList.price.toString()}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: width * 0.05,
-                            ),
+                        ),
+                        Text(
+                          '${allList.description.toString()}',
+                          style: TextStyle(
+                            fontSize: width * 0.03,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        Spacer(),
+                        Row(
+                          children: [
+                            Text(
+                              'EGP',
+                              style: TextStyle(
+                                fontSize: width * 0.03,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              '${allList.price.toString()}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: width * 0.05,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 40),
                 Container(
                   height: height * 0.14,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+
                     children: [
+                                    SizedBox(width: width * 0.1),
                       Row(
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.remove),
-                            padding: EdgeInsets.zero,
-                            onPressed: () async {
-                              final prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.remove('Product');
-                              prefs.setInt('Product', allList.id);
-                              print(prefs.getInt('Product'));
+                            AddToCartCounterButton(
+                    initNumber: 0,
+                    minNumber: 0,
+                    maxNumber: 10,
+                    increaseCallback: () {},
+                    decreaseCallback: () {},
+                    counterCallback: (int count) {
+                      print('Current count: ${allList.id.toString()}');
 
-                              setState(() {
-                                _decrementCounter();
-                              });
-                            },
-                          ),
-                          Text(
-                            '$counter',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: Icon(Icons.add),
-                            onPressed: () async {
-                              final prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.remove('Product');
-                              prefs.setInt('Product', allList.id);
-                              setState(() {
-                                print(counter);
-                                _incrementCounter();
-                              });
-                            },
-                          ),
+                    },
+                    backgroundColor: Colors.white,
+                    buttonFillColor: Colors.black,
+                    buttonIconColor: Colors.white,
+                  ),
                         ],
                       ),
                     ],
@@ -270,15 +229,11 @@ class _HomeScreenState extends State<HomeScreen> {
       home: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(3.0),
           child: Container(
-              width: width * 0.80,
+              width: width * 0.90,
               height: height * 0.07,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColors.Secondcolor),
-                  onPressed: () async {
-                    BlocProvider.of<UplodingDataCubit>(context)
+              child: _widgets.AppButton(()async{   BlocProvider.of<UplodingDataCubit>(context)
                         .MakeItemB(counter);
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
@@ -286,12 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       withNavBar: true, // OPTIONAL VALUE. True by default.
                       pageTransitionAnimation:
                           PageTransitionAnimation.cupertino,
-                    );
-                  },
-                  child: Text(
-                    'Pay   EGP 100.50',
-                    style: TextStyle(color: Colors.white),
-                  ))),
+                    );}, "Pay   EGP 100.50") ),
         ),
         backgroundColor: MyColors.white,
         body: Column(

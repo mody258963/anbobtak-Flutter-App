@@ -54,6 +54,7 @@ dependencies:
   http: ^1.2.2
   url_launcher: ^6.3.0
   google_sign_in: ^6.2.1
+  add_to_cart_button: ^0.0.6
 
 dev_dependencies:
   flutter_test:

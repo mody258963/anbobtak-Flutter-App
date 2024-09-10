@@ -29,8 +29,16 @@ class NameWebServise {
 
       //print([response.data]);
       return response.data['data'];
-    } catch (e) {
-      print("======dio error=======${e.toString()}");
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // If there's a response from the server
+        print('Error response: ${e.response?.data}');
+        print('Status code: ${e.response?.statusCode}');
+        // Handle the error based on the response status
+      } else {
+        // If there’s no response (like connection issues)
+        print('Error: ${e.message}');
+      }
       return [];
     }
   }
@@ -43,41 +51,42 @@ class NameWebServise {
   );
 
   Future<List<dynamic>> googleIn(String end) async {
-   try {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String idToken = googleAuth.idToken!;
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final String idToken = googleAuth.idToken!;
 
-      // Debug: Check the idToken
-      print("Google ID Token: $idToken");
+        // Debug: Check the idToken
+        print("Google ID Token: $idToken");
 
-      final response = await dio.post(
-        baseUrl + end,
-        data: {'token': idToken},
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-          validateStatus: (status) {
-            // Let Dio handle the response, including 401
-            return status != null && status < 500;
-          },
-        ),
-      );
+        final response = await dio.post(
+          baseUrl + end,
+          data: {'token': idToken},
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+            validateStatus: (status) {
+              // Let Dio handle the response, including 401
+              return status != null && status < 500;
+            },
+          ),
+        );
 
-      // Debug: Check response details
-      print("Response Status: ${response.statusCode}");
-      print("Response Data: ${response.data}");
+        // Debug: Check response details
+        print("Response Status: ${response.statusCode}");
+        print("Response Data: ${response.data}");
 
-      return [response.data];
-    } else {
-      print("Google sign-in was canceled or failed.");
+        return [response.data];
+      } else {
+        print("Google sign-in was canceled or failed.");
+        return [];
+      }
+    } catch (e) {
+      // Debug: Detailed error output
+      print("======dio error=======${e.toString()}");
       return [];
     }
-  } catch (e) {
-    // Debug: Detailed error output
-    print("======dio error=======${e.toString()}");
-    return [];
-  }
   }
 
   Future<List<dynamic>> LoginDio(String end, Object data) async {
@@ -91,8 +100,16 @@ class NameWebServise {
 
       // Return the response data wrapped in a List
       return [response.data];
-    } catch (e) {
-      print("====== dio error ======= ${e.toString()}");
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // If there's a response from the server
+        print('Error response: ${e.response?.data}');
+        print('Status code: ${e.response?.statusCode}');
+        // Handle the error based on the response status
+      } else {
+        // If there’s no response (like connection issues)
+        print('Error: ${e.message}');
+      }
       return [];
     }
   }
@@ -107,8 +124,16 @@ class NameWebServise {
       print('======== $response');
 
       return [response.data];
-    } catch (e) {
-      print("====== dio error ======= ${e.toString()}");
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // If there's a response from the server
+        print('Error response: ${e.response?.data}');
+        print('Status code: ${e.response?.statusCode}');
+        // Handle the error based on the response status
+      } else {
+        // If there’s no response (like connection issues)
+        print('Error: ${e.message}');
+      }
       return [];
     }
   }
@@ -123,8 +148,16 @@ class NameWebServise {
       print('======== $response');
 
       return [response.data];
-    } catch (e) {
-      print("====== dio error ======= ${e.toString()}");
+    }on DioException catch (e) {
+      if (e.response != null) {
+        // If there's a response from the server
+        print('Error response: ${e.response?.data}');
+        print('Status code: ${e.response?.statusCode}');
+        // Handle the error based on the response status
+      } else {
+        // If there’s no response (like connection issues)
+        print('Error: ${e.message}');
+      }
       return [];
     }
   }
@@ -153,8 +186,16 @@ class NameWebServise {
 
       // Return the response data wrapped in a List
       return [response.data];
-    } catch (e) {
-      print("====== dio error ======= ${e.toString()}");
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // If there's a response from the server
+        print('Error response: ${e.response?.data}');
+        print('Status code: ${e.response?.statusCode}');
+        // Handle the error based on the response status
+      } else {
+        // If there’s no response (like connection issues)
+        print('Error: ${e.message}');
+      }
       return [];
     }
   }

@@ -110,7 +110,7 @@ class Widgets {
       onPressed: OnPressed,
       color: MyColors.Secondcolor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(10),
       ),
       height: 50,
       child: Center(

@@ -72,7 +72,7 @@ class User {
             id: json["id"],
             name: json["name"],
             email: json["email"],
-            phone: json["phone"],
+            phone: json["phone"] ?? "",
             role: json["role"],
         );
     }
