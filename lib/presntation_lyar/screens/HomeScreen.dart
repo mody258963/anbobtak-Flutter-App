@@ -176,9 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: height * 0.14,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
-                                    SizedBox(width: width * 0.1),
+                      SizedBox(width: width * 0.1),
                       Row(
                         children: [
                             AddToCartCounterButton(
@@ -192,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     },
                     backgroundColor: Colors.white,
-                    buttonFillColor: MyColors.Secondcolor,
+                    buttonFillColor: Colors.black,
                     buttonIconColor: Colors.white,
                   ),
                         ],
@@ -221,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: width * 0.90,
               height: height * 0.07,
               child: _widgets.AppButton(()async{   BlocProvider.of<UplodingDataCubit>(context)
-                        .addItemInCart();
+                        .MakeItemB(counter);
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: MapScreen(),
