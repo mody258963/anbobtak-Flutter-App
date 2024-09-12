@@ -45,19 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widgets _widgets = Widgets();
   int counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      counter++;
-    });
-  }
-
-  void _decrementCounter() {
-    setState(() {
-      if (counter > 0) {
-        counter--;
-      }
-    });
-  }
 
 
   Widget _buildProductList() {
@@ -205,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     },
                     backgroundColor: Colors.white,
-                    buttonFillColor: Colors.black,
+                    buttonFillColor: MyColors.Secondcolor,
                     buttonIconColor: Colors.white,
                   ),
                         ],
@@ -234,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: width * 0.90,
               height: height * 0.07,
               child: _widgets.AppButton(()async{   BlocProvider.of<UplodingDataCubit>(context)
-                        .MakeItemB(counter);
+                        .addItemInCart();
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: MapScreen(),
@@ -247,6 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Padding(
+              padding:EdgeInsets.only(top :height * 0.05 , left: width * 0.8),
+              child: IconButton(onPressed: (){}, icon: Icon(Icons.shopping_bag_outlined,color: MyColors.Secondcolor,size: width * 0.09,)),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -258,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           duration: Duration(milliseconds: 1500),
                           child: Padding(
                             padding: EdgeInsets.only(
-                                top: height * 0.10,
+                                
                                 right: width * 0.20,
                                 left: width * 0.06),
                             child: _widgets.TitleText(

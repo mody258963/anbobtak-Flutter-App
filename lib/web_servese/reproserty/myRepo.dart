@@ -30,7 +30,7 @@ class MyRepo {
     return userList..shuffle();
   }
 
-  Future<List<Item>> getItemB(String end, Object data) async {
+  Future<List<Item>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(
       end,
       data,
