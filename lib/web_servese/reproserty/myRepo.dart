@@ -30,6 +30,14 @@ class MyRepo {
     return userList..shuffle();
   }
 
+
+  Future<List<Datum>> CreateCart(String end, Object data) async {
+    final names = await nameWebService.post(end,data);
+    final userList = names.map((names) => Datum.fromJson(names)).toList();
+    print("=====Product====#$userList");
+    return userList..shuffle();
+  }
+
   Future<List<Item>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(
       end,

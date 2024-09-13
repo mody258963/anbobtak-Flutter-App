@@ -53,7 +53,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     try {
       List<Item> Items = await myRepo.addItemCart('v1/cart/create-cart', {
         'product_id': productId,
-        'quantity' : quantity,
+        'quantity': quantity,
         'cart_id': id,
       });
       print('====Items=====$Items');
@@ -63,23 +63,18 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-  Future<void> CreateCart() async{
-   final prefs = await SharedPreferences.getInstance();
-   try {
-     List<Cart>
-
-
-
-   } catch (e) {
-     emit(ErrorOccurred(errorMsg: e.toString()));
-
-   }
-
-
+  Future<void> CreateCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      List<Cart> Cart = await myRepo.CreateCart('/create-cart', {
+        'user_id': prefs.getInt('user_id'),
+      });
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
   }
 
-
-    Future<void> getItem() async {
+  Future<void> getItem() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('user_id');
     final productId = prefs.getInt('Product');
@@ -95,8 +90,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-
-    Future<void> addLatLong(lat, long) async {
+  Future<void> addLatLong(lat, long) async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('user_id');
     try {

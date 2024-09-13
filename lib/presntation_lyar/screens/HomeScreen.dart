@@ -219,8 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
               width: width * 0.90,
               height: height * 0.07,
-              child: _widgets.AppButton(()async{   BlocProvider.of<UplodingDataCubit>(context)
-                        .MakeItemB(counter);
+              child: _widgets.AppButton(()async{   
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: MapScreen(),
