@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
+    BlocProvider.of<UplodingDataCubit>(context).CreateCart();
     _loadData();
   }
 

@@ -38,11 +38,14 @@ class AppRouter {
                   child: const SignUp(),
                 ));
       case homescreen:
-        return MaterialPageRoute(
-            builder: (_) => BlocProvider<GetMethodCubit>.value(
-                  value: getMethodCubit!,
-                  child: HomeScreen(),
-                ));
+      MaterialPageRoute(
+      builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+              BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
+            ],
+            child: HomeScreen(),
+          ));
       case account:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<GetMethodCubit>.value(

@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:anbobtak/web_servese/model/address.dart';
+import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
+import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +68,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   Future<void> CreateCart() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      List<Cart> Cart = await myRepo.CreateCart('/create-cart', {
+      List<Carts> Cart = await myRepo.CreateCart('v1/cart/create-cart', {
         'user_id': prefs.getInt('user_id'),
       });
     } catch (e) {

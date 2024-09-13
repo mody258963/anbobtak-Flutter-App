@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/auth.dart';
+import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/foget.dart';
 import 'package:anbobtak/web_servese/model/google.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
@@ -31,11 +32,13 @@ class MyRepo {
   }
 
 
-  Future<List<Datum>> CreateCart(String end, Object data) async {
+  Future<List<Carts>> CreateCart(String end, Object data) async {
+    final prefs = await SharedPreferences.getInstance();
     final names = await nameWebService.post(end,data);
-    final userList = names.map((names) => Datum.fromJson(names)).toList();
-    print("=====Product====#$userList");
-    return userList..shuffle();
+    final cartid = names.map((names) => Carts.fromJson(names)).toList();
+    print("=====cart====#$cartid");
+    prefs.setInt('cart_id', cartid.first.data!.cartId!);
+    return cartid..shuffle();
   }
 
   Future<List<Item>> addItemCart(String end, Object data) async {
