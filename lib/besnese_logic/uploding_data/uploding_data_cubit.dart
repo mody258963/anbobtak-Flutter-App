@@ -48,15 +48,16 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   //   }
   // }
 
-  Future<void> addItemInCart(quantity) async {
+  Future<void> addItemInCart(quantity, productId) async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('user_id');
-    final productId = prefs.getInt('Product');
+    final cart_id = prefs.getInt('cart_id');
+    print('cart_id  $cart_id $quantity $productId');
     try {
-      List<Item> Items = await myRepo.addItemCart('v1/cart/create-cart', {
+      List<Item> Items = await myRepo.addItemCart('v1/cart/add-item', {
         'product_id': productId,
         'quantity': quantity,
-        'cart_id': id,
+        'cart_id': cart_id,
       });
       print('====Items=====$Items');
       emit(ItemUploaded(Items: Items));
