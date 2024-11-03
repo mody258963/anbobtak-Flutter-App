@@ -16,6 +16,11 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>anbobtak</string>
+	<key>UIBackgroundModes</key>
+	<array>
+    	<string>fetch</string>
+    	<string>remote-notification</string>
+	</array>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,6 +50,8 @@
 	<string>This app needs access to your location to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to your location to show you nearby places.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Need access to photo library to select images.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75152996159",
+    "project_id": "anbobtak-d2b94",
+    "storage_bucket": "anbobtak-d2b94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75152996159:android:ab7762f2b7740c9971c58a",
+        "android_client_info": {
+          "package_name": "com.example.anbobtak_flutter_driver_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASmpa4YmxIBRbVL_TM1PpOGjW2jC2R7UQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

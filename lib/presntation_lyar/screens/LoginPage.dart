@@ -164,7 +164,7 @@ class _SignUpState extends State<SignUp> {
                     FadeInUp(
                         duration: Duration(milliseconds: 2100),
                         child:
-                            _widgets.ThiredParty(FontAwesomeIcons.google, () {
+                            _widgets.ThiredParty(FontAwesomeIcons.google, () {  
                           context.read<EmailAuthCubit>().googleSignIn();
                         }, 'Google')),
                     SizedBox(
