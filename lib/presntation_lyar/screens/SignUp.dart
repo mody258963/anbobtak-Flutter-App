@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
@@ -177,7 +178,7 @@ class _OTPScreenState extends State<OTPScreen> {
                           }
                         }, _isverfiy ? 'Sign Up' : 'Verfiy' )),
                     SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 2000),
@@ -192,6 +193,23 @@ class _OTPScreenState extends State<OTPScreen> {
                                       color: Color.fromRGBO(49, 39, 79, .6),
                                       fontSize: width * 0.04),
                                 )))),
+                                  SizedBox(
+                      height: 10,
+                    ),
+                    if (!_isSend)
+                    FadeInUp(
+                        duration: Duration(milliseconds: 2100),
+                        child:
+                            _widgets.ThiredParty(FontAwesomeIcons.google, () {
+                          context.read<EmailAuthCubit>().googleSignIn();
+                        }, 'Google')),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    FadeInUp(
+                        duration: Duration(milliseconds: 2100),
+                        child: _widgets.ThiredParty(
+                            FontAwesomeIcons.facebook, () {}, 'Facebook')),
                   ],
                 ),
               )
