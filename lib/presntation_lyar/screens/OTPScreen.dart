@@ -128,12 +128,7 @@ class _SecondOTPState extends State<SecondOTP> {
                             context.read<EmailAuthCubit>().verificationCode(
                                 phonecontroller.text,OPTcontroller.text);    
 
-                          if (_isverfiy) {
-                            context.read<EmailAuthCubit>().signup(
-                                namecontroller.text,
-                                phonecontroller.text,
-                                passwordcontroller.text);
-                          }
+                   
                         }, 'Sign Up' )),
                     SizedBox(
                       height: 30,

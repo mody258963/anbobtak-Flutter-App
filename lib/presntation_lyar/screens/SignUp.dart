@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
@@ -12,7 +14,7 @@ import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({super.key});
@@ -25,10 +27,74 @@ class _OTPScreenState extends State<OTPScreen> {
   final TextEditingController namecontroller = TextEditingController();
   final TextEditingController phonecontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
+  final TextEditingController cpasswordcontroller = TextEditingController();
   final TextEditingController OPTcontroller = TextEditingController();
-  bool _isSend = false;
   bool _isverfiy = false;
+  bool _isResendEnabled = true;
+  int _start = 30;
+  Timer? _timer;
   Widgets _widgets = Widgets();
+
+  void _startTimer() {
+    _start = 30;
+    _isResendEnabled = false;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_start > 0) {
+          _start--;
+        } else {
+          _isResendEnabled = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  void _showOTPDialog(BuildContext rootContext) {
+  final phoneNumber = '+2${phonecontroller.text}';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text("Enter OTP"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            OtpTextField(
+              fieldWidth: 36.0,
+              numberOfFields: 6,
+              borderColor: Color(0xFF512DA8),
+              showFieldAsBox: true,
+              onCodeChanged: (String code) {
+                // Handle code changes
+              },
+              onSubmit: (String verificationCode) {
+                OPTcontroller.text = verificationCode;
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              rootContext
+                  .read<EmailAuthCubit>()
+                  .verificationCode(phoneNumber, OPTcontroller.text);
+              Navigator.of(context).pop();
+            },
+            child: Text("Confirm"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Cancel"),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildsendCode() {
     return BlocListener<EmailAuthCubit, EmailAuthState>(
@@ -48,6 +114,10 @@ class _OTPScreenState extends State<OTPScreen> {
           );
         }
         if (state is VerificationCodeSend) {
+          _startTimer();
+          _showOTPDialog(context);
+        }
+        if (state is CodeSend) {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -55,33 +125,20 @@ class _OTPScreenState extends State<OTPScreen> {
             ),
           );
           setState(() {
-            _isSend = true;
-          });
-          print(_isSend);
-        }if (state is CodeSend) {
-           showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(state.message!),
-            ),
-
-          );
-                            setState(() {
             //_isSend = false;
             _isverfiy = true;
-            
           });
         }
         if (state is SignupSuccess) {
-             showDialog(
+          showDialog(
             context: context,
             builder: (context) => AlertDialog(
               title: Text(state.name!),
             ),
-          );     Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed(nav,arguments: state.name);
+          );
+          Navigator.of(context, rootNavigator: true)
+              .pushReplacementNamed(nav, arguments: state.name);
         }
-
       },
       child: Container(),
     );
@@ -89,7 +146,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    ScreenUtil.init(context, designSize: const Size(360, 852));
     return MaterialApp(
       home: Scaffold(
         backgroundColor: MyColors.white,
@@ -100,7 +157,7 @@ class _OTPScreenState extends State<OTPScreen> {
               _buildsendCode(),
               _widgets.Logo(context),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
+                padding: EdgeInsets.symmetric(horizontal: 40.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -108,14 +165,14 @@ class _OTPScreenState extends State<OTPScreen> {
                         duration: Duration(milliseconds: 1700),
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10.sp),
                               color: Colors.white,
                               border: Border.all(
                                   color: Color.fromRGBO(196, 135, 198, .3)),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.lightBlue,
-                                  blurRadius: 20,
+                                  blurRadius: 20.sp,
                                   offset: Offset(0, 10),
                                 )
                               ]),
@@ -124,61 +181,66 @@ class _OTPScreenState extends State<OTPScreen> {
                               children: [
                                 _widgets.TextFiledLogin('Name', namecontroller,
                                     7, 'Name is very short', context),
-                                _widgets.TextFiledLogin(
-                                    'Phone Number',
-                                    phonecontroller,
-                                    9,
-                                    'Very short email',
-                                    context),
-                                if (_isSend)
-                                  _widgets.TextFiledLogin(
-                                      'OTP Code',
-                                      OPTcontroller,
-                                      6,
-                                      'Enter 6 digits in the What\'sApp SMS ',
-                                      context),
+                                _widgets.NumberTextField(phonecontroller),
                                 if (_isverfiy)
-                                  _widgets.TextFiledLogin(
-                                      'Password',
-                                      passwordcontroller,
-                                      8,
-                                      'Please enter more than 8 characters',
-                                      context),
+                                  FadeInDown(
+                                    child: _widgets.TextFiledLogin(
+                                        'Password',
+                                        passwordcontroller,
+                                        8,
+                                        'Please enter more than 8 characters',
+                                        context),
+                                  ),
+                                if (_isverfiy)
+                                  FadeInDown(
+                                    child: _widgets.TextFiledLogin(
+                                        'Confirom Password',
+                                        cpasswordcontroller,
+                                        8,
+                                        'Please enter more than 8 characters',
+                                        context),
+                                  ),
                               ],
                             ),
                           ),
                         )),
                     SizedBox(
-                      height: 15,
+                      height: _isResendEnabled ? 20.h : 1.h,
                     ),
+                    if (!_isResendEnabled && !_isverfiy)
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, forgot);
+                              },
+                              child: Text(
+                                'Resend code after $_start',
+                                style: TextStyle(color: Colors.grey),
+                              ))),
                     SizedBox(
-                      height: 30,
+                      height: _isResendEnabled ? 10 : 1,
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
-                          //setState(() {});
-                          if (!_isSend) {
-                            print('===========first');
+                          final phoneNumber = '+2${phonecontroller.text}';
+                          print('phone $phoneNumber');
+                          if (!_isverfiy) {
                             context
                                 .read<EmailAuthCubit>()
-                                .sendVerificationCode(phonecontroller.text);
-                          }
-
-                          if (_isSend && !_isverfiy) {
-                            print('=============seconf');
-                            context.read<EmailAuthCubit>().verificationCode(
-                                phonecontroller.text,OPTcontroller.text);
+                                .sendVerificationCode(phoneNumber);
                           }
                           if (_isverfiy) {
                             context.read<EmailAuthCubit>().signup(
                                 namecontroller.text,
                                 phonecontroller.text,
-                                passwordcontroller.text);
+                                passwordcontroller.text,
+                                cpasswordcontroller.text);
                           }
-                        }, _isverfiy ? 'Sign Up' : 'Verfiy' )),
+                        }, _isverfiy ? 'Sign Up' : 'Verfiy ')),
                     SizedBox(
-                      height: 10,
+                      height: 10.h,
                     ),
                     FadeInUp(
                         duration: Duration(milliseconds: 2000),
@@ -191,25 +253,27 @@ class _OTPScreenState extends State<OTPScreen> {
                                   "Sign In ?",
                                   style: TextStyle(
                                       color: Color.fromRGBO(49, 39, 79, .6),
-                                      fontSize: width * 0.04),
+                                      fontSize: 15.sp),
                                 )))),
-                                  SizedBox(
+                    SizedBox(
                       height: 10,
                     ),
-                    if (!_isSend)
-                    FadeInUp(
-                        duration: Duration(milliseconds: 2100),
-                        child:
-                            _widgets.ThiredParty(FontAwesomeIcons.google, () {
-                          context.read<EmailAuthCubit>().googleSignIn();
-                        }, 'Google')),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 2100),
-                        child: _widgets.ThiredParty(
-                            FontAwesomeIcons.facebook, () {}, 'Facebook')),
+                    if (!_isverfiy)
+                      FadeInUp(
+                          duration: Duration(milliseconds: 2100),
+                          child:
+                              _widgets.ThiredParty(FontAwesomeIcons.google, () {
+                            context.read<EmailAuthCubit>().googleSignIn();
+                          }, 'Google')),
+                    if (!_isverfiy)
+                      SizedBox(
+                        height: 20,
+                      ),
+                    if (!_isverfiy)
+                      FadeInUp(
+                          duration: Duration(milliseconds: 2100),
+                          child: _widgets.ThiredParty(
+                              FontAwesomeIcons.facebook, () {}, 'Facebook')),
                   ],
                 ),
               )

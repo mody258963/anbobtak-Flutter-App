@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +31,46 @@ class Widgets {
             hintText: text,
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.grey.shade700)),
+      ),
+    );
+  }
+
+  Widget NumberTextField(input) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Color.fromRGBO(196, 135, 198, .3)))),
+      child: InternationalPhoneNumberInput(
+        onInputChanged: (PhoneNumber number) {
+          print(number.phoneNumber);
+        },
+        onInputValidated: (bool value) {
+          print(value);
+        },
+        selectorConfig: SelectorConfig(
+          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+          useBottomSheetSafeArea: true,
+        ),
+        ignoreBlank: false,
+        autoValidateMode: AutovalidateMode.disabled,
+        selectorTextStyle: TextStyle(color: Colors.black),
+        textFieldController: input,
+        countries: ['EG' ],
+        textAlignVertical: TextAlignVertical.top,
+        formatInput: true,
+        keyboardType: TextInputType.numberWithOptions(
+          signed: true,
+          decimal: true,
+        ),
+        inputDecoration: InputDecoration(
+          border: InputBorder.none, // Removes any border
+          enabledBorder: InputBorder.none, // Removes enabled border
+          focusedBorder: InputBorder.none, // Removes focused border
+        ),
+        onSaved: (PhoneNumber number) {
+          print('On Saved: $number');
+        },
       ),
     );
   }
@@ -122,20 +163,20 @@ class Widgets {
     );
   }
 
-  Widget ThiredParty(IconData icon , onPressed, text) {
+  Widget ThiredParty(IconData icon, onPressed, text) {
     return Container(
       decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: Offset(0, 1), // changes position of shadow
-                  ),
-                ],
-              ),
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
@@ -222,8 +263,8 @@ class Widgets {
         );
       },
     );
-  
   }
+
 //----------------------------------------------------------
   Future<void> requestLocationPermission() async {
     var status = await Permission.location.request();
@@ -237,12 +278,12 @@ class Widgets {
     }
   }
 
- //LOGO of the main Screen  
-  Widget Logo( BuildContext context) {
-        double width = MediaQuery.of(context).size.width;
+  //LOGO of the main Screen
+  Widget Logo(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return ClipPath(
-clipper: CurvedClipper(),
+      clipper: CurvedClipper(),
       child: Container(
         height: height * 0.4,
         decoration: BoxDecoration(
@@ -264,16 +305,15 @@ clipper: CurvedClipper(),
       ),
     );
   }
-
-
-
 }
+
 class CurvedClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height * 0.8);
-    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height * 0.7);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height * 0.7);
     path.lineTo(size.width, 0);
     path.close();
     return path;

@@ -3,6 +3,7 @@ import 'package:anbobtak/presntation_lyar/widgets/app_router.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -10,6 +11,7 @@ String? initialRoute;
 String? ids;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ScreenUtil.ensureScreenSize();
 
   final prefs = await SharedPreferences.getInstance();
 
