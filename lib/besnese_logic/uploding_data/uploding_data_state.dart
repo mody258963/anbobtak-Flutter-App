@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anbobtak/web_servese/model/address.dart';
+import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
 
 sealed class UplodingDataState {}
@@ -17,7 +18,7 @@ class ErrorOccurred extends UplodingDataState {
 
 
 class ItemUploaded extends UplodingDataState {
- final List<Item>  Items;
+ final List<Carts>  Items;
 
   ItemUploaded({required this.Items});
 

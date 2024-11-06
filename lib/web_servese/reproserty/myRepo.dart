@@ -6,7 +6,6 @@ import 'package:anbobtak/web_servese/model/auth.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/foget.dart';
 import 'package:anbobtak/web_servese/model/google.dart';
-import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/username.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,33 +31,39 @@ class MyRepo {
   }
 
 
-  Future<List<Carts>> CreateCart(String end, Object data) async {
-    final prefs = await SharedPreferences.getInstance();
-    final names = await nameWebService.post(end,data);
-    final cartid = names.map((names) => Carts.fromJson(names)).toList();
-    print("=====cart====#$cartid");
-    prefs.setInt('cart_id', cartid.first.data!.cartId!);
-    return cartid..shuffle();
+Future<List<Item>> GetCart(String end) async {
+  final prefs = await SharedPreferences.getInstance();
+  final response = await nameWebService.getTypeMap(end);
+
+  // Parse the response assuming it's a Map<String, dynamic> from the JSON structure
+  final Carts carts = Carts.fromJson(response);
+
+  // Check if data and items are available before extracting
+  final List<Item> cartItems = carts.data?.items ?? [];
+
+  print("=====cart====#$cartItems");
+
+  // Optional: Save the first cart's ID in shared preferences if needed
+  if (carts.data != null) {
+    prefs.setInt('cart_id', carts.data!.id!);
   }
 
-  Future<List<Item>> addItemCart(String end, Object data) async {
+  return cartItems..shuffle(); // Shuffles the items list
+}
+
+
+  Future<List<Carts>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(
       end,
       data,
     );
 
-    final userList = names.map((names) => Item.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    final userList = names.map((names) => Carts.fromJson(names)).toList();
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 
-  Future<List<Item>> getItem(String end, Object data) async {
-    final names = await nameWebService.post(end, data);
-    final userList = names.map((names) => Item.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
-    return userList..shuffle();
-  }
-
+ 
   Future<List<Address>> addLatLong(String end, Object data) async {
     final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Address.fromJson(names)).toList();
@@ -66,13 +71,13 @@ class MyRepo {
     return userList..shuffle();
   }
 
-  Future<List<Item>> getItemM(String end, Object data) async {
+  Future<List<Carts>> getCartsM(String end, Object data) async {
     final names = await nameWebService.post(
       end,
       data,
     );
-    final userList = names.map((names) => Item.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    final userList = names.map((names) => Carts.fromJson(names)).toList();
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 
@@ -100,28 +105,28 @@ class MyRepo {
   Future<List<Forget>> ForgetEmail(String end, Object data) async {
     final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Forget.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 
   Future<List<Auth>> GoogleSign(String end) async {
     final names = await nameWebService.googleIn(end);
     final userList = names.map((names) => Auth.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 
   Future<List<Forget>> sendVerificationCode(String end, Object data) async {
     final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Forget.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 
   Future<List<Forget>> sendCode(String end, Object data) async {
     final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Forget.fromJson(names)).toList();
-    print("=====Item====#${userList..shuffle()}");
+    print("=====Carts====#${userList..shuffle()}");
     return userList..shuffle();
   }
 

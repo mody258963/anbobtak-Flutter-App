@@ -1,4 +1,5 @@
 
+import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:flutter/widgets.dart';
 
@@ -34,6 +35,13 @@ class GetProducts extends GetMethodState {
  final List<Datum>  posts;
 
   GetProducts({required this.posts});
+
+
+}
+class GetCarts extends GetMethodState {
+ final List<Item>  posts;
+
+  GetCarts({required this.posts});
 
 
 }
