@@ -99,14 +99,14 @@ class _SecondOTPState extends State<SecondOTP> {
                                       'OTP Code',
                                       OPTcontroller,
                                       6,
-                                      'Enter 6 digits in the What\'sApp SMS ',
+                                      'Enter 6 digits in the What\'sApp SMS ', TextInputType.number, 
                                       context),
                                 if (_isverfiy)
                                   _widgets.TextFiledLogin(
                                       'Password',
                                       passwordcontroller,
                                       8,
-                                      'Please enter more than 8 characters',
+                                      'Please enter more than 8 characters',TextInputType.number ,
                                       context),
                               ],
                             ),

@@ -39,9 +39,17 @@ class GetProducts extends GetMethodState {
 
 }
 class GetCarts extends GetMethodState {
- final List<Item>  posts;
+ final List posts;
 
   GetCarts({required this.posts});
+
+
+}
+class GetCartsandProducts extends GetMethodState {
+ final List  cart;
+ final List<Datum>  products;
+
+  GetCartsandProducts({required this.cart, required this.products});
 
 
 }

@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Widgets {
   Widget TextFiledLogin(
-      text, input, int short, String max, BuildContext context) {
+      text, input, int short, String max, type , BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -27,6 +27,7 @@ class Widgets {
           }
         },
         controller: input,
+        keyboardType: type ,
         decoration: InputDecoration(
             hintText: text,
             border: InputBorder.none,

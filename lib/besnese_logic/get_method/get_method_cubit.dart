@@ -15,12 +15,13 @@ class GetMethodCubit extends Cubit<GetMethodState> {
   EmailAuthCubit emailAuthCubit;
   GetMethodCubit(this.myRepo, this.emailAuthCubit) : super(GetMethodInitial());
 
-  Future<FutureOr<void>> GetProduct() async {
+  Future<FutureOr<void>> GetProductAndCart() async {
     try {
       emit(LodingState());
-      List<Datum> posts = await myRepo.getProduct('v1/products/');
-      emit(GetProducts(posts: posts));
-      print("======products======$posts");
+      List<Datum> products = await myRepo.getProduct('v1/products/');
+      List<Item> cart = await myRepo.GetCart('v1/cart/');
+      emit(GetCartsandProducts(cart: cart, products: products));
+      print("======products / cart======${cart.first.price}");
     } catch (e) {
       print('========cubits=======${e.toString()}');
     }

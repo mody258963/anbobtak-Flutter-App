@@ -30,8 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
-    BlocProvider.of<GetMethodCubit>(context).GetCart();
-    BlocProvider.of<GetMethodCubit>(context).GetProduct();
+    BlocProvider.of<GetMethodCubit>(context).GetProductAndCart();
     _loadData();
   }
 
@@ -50,33 +49,36 @@ class _HomeScreenState extends State<HomeScreen> {
   int counter = 0;
   double totalPrice = 0;
   int totalQuantity = 0;
-  
+  int initialQuantaty = 0;
 
-int calculateTotalQuantity() {
-   totalQuantity = 0; // Initialize totalQuantity to 0
+  int calculateTotalQuantity() {
+    totalQuantity = 0; // Initialize totalQuantity to 0
 
-  // Iterate through each item and accumulate the total quantity
-  for (var item in cartItems) {
-    totalQuantity += (item['quantity'] as num).toInt(); // Add quantity to totalQuantity
+    // Iterate through each item and accumulate the total quantity
+    for (var item in cartItems) {
+      totalQuantity +=
+          (item['quantity'] as num).toInt(); // Add quantity to totalQuantity
+    }
+
+    print(totalQuantity);
+    return totalQuantity;
   }
 
-  print(totalQuantity);
-  return totalQuantity;
-}
+  int calculateTotalQuantityM() {
+    totalQuantity = 0; // Initialize totalQuantity to 0
 
-int calculateTotalQuantityM() {
-   totalQuantity = 0; // Initialize totalQuantity to 0
+    // Iterate through each item and accumulate the total quantity
+    for (var item in cartItems) {
+      totalQuantity +=
+          (item['quantity'] as num).toInt(); // Add quantity to totalQuantity
+    }
 
-  // Iterate through each item and accumulate the total quantity
-  for (var item in cartItems) {
-    totalQuantity += (item['quantity'] as num).toInt(); // Add quantity to totalQuantity
+    print(totalQuantity);
+    return totalQuantity;
   }
 
-  print(totalQuantity);
-  return totalQuantity;
-}
   void _forLoopForproductPricePlus() {
-    totalPrice = 0.0; 
+    totalPrice = 0.0;
     for (var item in cartItems) {
       totalPrice += item['quantity'] * item['price'];
     }
@@ -93,8 +95,7 @@ int calculateTotalQuantityM() {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
-      width: width * 0.058
-      , // Diameter of the circle
+      width: width * 0.058, // Diameter of the circle
       height: height * 0.03, // Diameter of the circle
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -113,13 +114,13 @@ int calculateTotalQuantityM() {
     );
   }
 
-  Widget _buildProductList() { 
+  Widget _buildProductList() {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
-        if (state is GetProducts) {
-          final items = state.posts;
+        if (state is GetCartsandProducts) {
+          final items = state.products;
           return MediaQuery.removePadding(
             context: context,
             removeTop: true,
@@ -152,8 +153,41 @@ int calculateTotalQuantityM() {
     );
   }
 
+  Widget _buildCartsList() {
+    return BlocBuilder<GetMethodCubit, GetMethodState>(
+        builder: (context, state) {
+      if (state is GetCartsandProducts) {
+        final items = state.cart;
+        
+        // Clear the cartItems list before adding new items from the database
+        cartItems.clear();
+
+        if (items.isNotEmpty) {
+          // Loop through the items in the cart fetched from the database
+          for (var product in items) {
+            cartItems.add({
+              'id': product.product.id,
+              'name': product.product.name,
+              'quantity': product.quantity,
+              'price': product.price,
+              'image': product.product.image
+            });
+          }
+
+          // Return a widget that shows the cart is populated, if necessary
+          return Container();
+        }
+        // If the cart is empty, return an empty container or a message
+        return Container();
+      }
+      // If no cart data is available, return a placeholder or loader
+      return CircularProgressIndicator();
+    });
+  }
+
   Widget _container(allList, items) {
     print(allList);
+    print('asdjoajhsdkljaskld$cartItems');
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return GestureDetector(
@@ -279,8 +313,7 @@ int calculateTotalQuantityM() {
                                       found = true;
                                       if (item['quantity'] <= 0) {
                                         cartItems.remove(item);
-                                          totalQuantity = 0;
-
+                                        totalQuantity = 0;
                                       }
                                       break;
                                     }
@@ -329,8 +362,9 @@ int calculateTotalQuantityM() {
               width: width * 0.90,
               height: height * 0.07,
               child: _widgets.AppButton(() async {
-                for(var item in cartItems){
-                      BlocProvider.of<UplodingDataCubit>(context).addItemInCart(item['quantity'], item['id']);
+                for (var item in cartItems) {
+                  BlocProvider.of<UplodingDataCubit>(context)
+                      .addItemInCart(item['quantity'], item['id']);
                 }
                 // PersistentNavBarNavigator.pushNewScreen(
                 //   context,
@@ -377,6 +411,7 @@ int calculateTotalQuantityM() {
                           )),
                     ),
                     _buildProductList(),
+                    _buildCartsList()
                   ],
                 ),
               ),

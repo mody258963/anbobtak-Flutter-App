@@ -35,18 +35,18 @@ Future<List<Item>> GetCart(String end) async {
   final prefs = await SharedPreferences.getInstance();
   final response = await nameWebService.getTypeMap(end);
 
+  print("=====Raw Response====#${response.toString()}");
   // Parse the response assuming it's a Map<String, dynamic> from the JSON structure
   final Carts carts = Carts.fromJson(response);
 
   // Check if data and items are available before extracting
-  final List<Item> cartItems = carts.data?.items ?? [];
+  final List<Item> cartItems = carts.items;
 
-  print("=====cart====#$cartItems");
+  print("=====Carts====#${carts.items.first.price}");
 
   // Optional: Save the first cart's ID in shared preferences if needed
-  if (carts.data != null) {
-    prefs.setInt('cart_id', carts.data!.id!);
-  }
+  if (carts.id != null) {
+    prefs.setInt('cart_id', carts.id!);  }
 
   return cartItems..shuffle(); // Shuffles the items list
 }

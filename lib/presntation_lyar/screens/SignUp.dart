@@ -180,7 +180,7 @@ class _OTPScreenState extends State<OTPScreen> {
                             child: Column(
                               children: [
                                 _widgets.TextFiledLogin('Name', namecontroller,
-                                    7, 'Name is very short', context),
+                                    7, 'Name is very short',TextInputType.name ,  context),
                                 _widgets.NumberTextField(phonecontroller),
                                 if (_isverfiy)
                                   FadeInDown(
@@ -188,7 +188,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                         'Password',
                                         passwordcontroller,
                                         8,
-                                        'Please enter more than 8 characters',
+                                        'Please enter more than 8 characters', TextInputType.visiblePassword  ,
                                         context),
                                   ),
                                 if (_isverfiy)
@@ -197,7 +197,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                         'Confirom Password',
                                         cpasswordcontroller,
                                         8,
-                                        'Please enter more than 8 characters',
+                                        'Please enter more than 8 characters',TextInputType.visiblePassword ,
                                         context),
                                   ),
                               ],

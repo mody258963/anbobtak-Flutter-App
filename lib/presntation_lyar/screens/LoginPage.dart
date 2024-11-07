@@ -129,13 +129,13 @@ class _SignUpState extends State<SignUp> {
                               ]),
                           child: Column(
                             children: <Widget>[
-                              _widgets.TextFiledLogin('Email', emailcontroller,
-                                  10, 'Enter Correct Email', context),
+                              _widgets.TextFiledLogin('Phone', emailcontroller,
+                                  10, 'Enter Correct Email',TextInputType.phone ,  context),
                               _widgets.TextFiledLogin(
                                   'Password',
                                   passwordcontroller,
                                   8,
-                                  'Short Password',
+                                  'Short Password',TextInputType.visiblePassword , 
                                   context),
                             ],
                           ),

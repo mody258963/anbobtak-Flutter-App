@@ -20,7 +20,7 @@ class EmailAuthCubit extends Cubit<EmailAuthState> {
 
     try {
       List<Auth> result =
-          await myRepo.login('login', {'email': email, 'password': password});
+          await myRepo.login('login', {'phone': email, 'password': password});
       print('=====cubit====$result');
       emit(LoginSuccess(result.first.data!.user?.name));
     } catch (e) {
