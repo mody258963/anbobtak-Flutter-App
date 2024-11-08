@@ -1,6 +1,6 @@
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
-import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
+import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/MyorderScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
 import 'package:flutter/material.dart' hide ModalBottomSheetRoute;

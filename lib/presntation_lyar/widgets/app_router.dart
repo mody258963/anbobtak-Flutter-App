@@ -1,6 +1,6 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
-import 'package:anbobtak/presntation_lyar/screens/HomeScreen.dart';
+import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
 import 'package:anbobtak/presntation_lyar/screens/OTPScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/SignUp.dart';
