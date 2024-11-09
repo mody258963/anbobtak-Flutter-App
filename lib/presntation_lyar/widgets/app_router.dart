@@ -38,13 +38,17 @@ class AppRouter {
                   child: const SignUp(),
                 ));
       case homescreen:
+          final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+    // Your callback function logic here
+    print('Cart updated: $cartItems');
+  };
       MaterialPageRoute(
       builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
               BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
             ],
-            child: HomeScreen(),
+            child: HomeScreen(onCartUpdate:onCartUpdate,),
           ));
       case account:
         return MaterialPageRoute(
@@ -89,13 +93,17 @@ class AppRouter {
         );
 
   case realhomescreen:
+    final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+    // Your callback function logic here
+    print('Cart updated: $cartItems');
+  };
               return MaterialPageRoute(
              builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
               BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
             ],
-            child: const HomeScreen(),
+            child: HomeScreen(onCartUpdate: onCartUpdate,),
           ),
         );
     }

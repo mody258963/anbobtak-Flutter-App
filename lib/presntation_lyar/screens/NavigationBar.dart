@@ -43,9 +43,14 @@ class _NavigationBarsState extends State<NavigationBars> {
 
   PersistentTabController _controller = PersistentTabController();
   List<Widget> _screens() {
+     final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+    // Your callback function logic here
+    print('Cart updated: $cartItems');
+  };
+
     return [
       HomeScreen(
-        name: widget.name,
+        name: widget.name, onCartUpdate: onCartUpdate,
       ),
       MyOrderScreen(),
       ProfileScreen(),

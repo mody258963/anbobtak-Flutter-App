@@ -8,7 +8,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductContainer extends StatefulWidget {
-  const ProductContainer({super.key});
+  final Function(List<Map<String, dynamic>>) onCartUpdate;  // Callback to update cart in HomeScreen
+
+  const ProductContainer({super.key, required this.onCartUpdate});
 
   @override
   State<ProductContainer> createState() => _ProductContainerState();
@@ -19,7 +21,6 @@ class _ProductContainerState extends State<ProductContainer> {
   double totalPrice = 0;
 
   void _forLoopForproductPricePlus() {
- 
     for (var item in cartItems) {
       totalPrice += item['quantity'] * item['price'];
     }
@@ -63,8 +64,7 @@ class _ProductContainerState extends State<ProductContainer> {
                   crossAxisCount: 1,
                   crossAxisSpacing: 5.0,
                   mainAxisSpacing: 1.0,
-                  childAspectRatio:
-                      (width / 0.12) / (height - kToolbarHeight - 50) / 2.1,
+                  childAspectRatio: (width / 0.12) / (height - kToolbarHeight - 50) / 2.1,
                 ),
                 itemBuilder: (context, index) {
                   final allList = items[index];
@@ -214,9 +214,12 @@ class _ProductContainerState extends State<ProductContainer> {
                   'image': product.image
                 });
               }
-              print('=============cart==========$cartItems');
-                 print('=============price==========$totalPrice');
 
+              // After cart update, pass the updated cart to the HomeScreen
+              widget.onCartUpdate(cartItems);
+
+              print('=============cart==========$cartItems');
+              print('=============price==========$totalPrice');
             },
             backgroundColor: Colors.white,
             buttonFillColor: MyColors.Secondcolor,
