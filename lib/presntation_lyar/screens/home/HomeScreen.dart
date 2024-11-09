@@ -17,7 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -103,6 +103,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
+
+  void showBottomSheet(BuildContext context) {
+    showMaterialModalBottomSheet(
+      context: context,
+      builder: (context) => SingleChildScrollView(
+        controller: ModalScrollController.of(context),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: const Text("This is your cart"),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -123,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   BlocProvider.of<UplodingDataCubit>(context)
                       .addItemInCart(item['quantity'], item['id']);
                 }
+                print('=================$cartItems');
                 // PersistentNavBarNavigator.pushNewScreen(
                 //   context,
                 //   screen: MapScreen(),
