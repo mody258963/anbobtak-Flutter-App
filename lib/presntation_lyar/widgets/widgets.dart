@@ -158,7 +158,8 @@ class Widgets {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,  fontFamily: 'Poppins',
+    fontWeight: FontWeight.bold,),
         ),
       ),
     );

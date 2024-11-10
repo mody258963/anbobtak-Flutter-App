@@ -5,12 +5,14 @@ import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/presntation_lyar/screens/home/Cart.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/productContaner.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,10 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-    void _calculateTotalQuantity() {
+  void _calculateTotalQuantity() {
     int total = 0;
     for (var item in cartItems) {
-      total += item['quantity'] as int ; // If quantity is null, use 0
+      total += item['quantity'] as int; // If quantity is null, use 0
     }
     setState(() {
       totalQuantity = total; // Update the total quantity
@@ -83,6 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(), // Include a child widget (for example, a list view)
     );
+  }
+
+  Future<dynamic> _buttomSheetCart() {
+    return showMaterialModalBottomSheet(
+        context: context, builder: (context) => CartScreen());
   }
 
   Widget _CircleWithNumber() {
@@ -123,11 +130,13 @@ class _HomeScreenState extends State<HomeScreen> {
               width: width * 0.90,
               height: height * 0.07,
               child: _widgets.AppButton(() async {
-                for (var item in cartItems) {
-                  BlocProvider.of<UplodingDataCubit>(context)
-                      .addItemInCart(item['quantity'], item['id']);
+                if (cartItems.isNotEmpty) {
+                  for (var item in cartItems) {
+                    BlocProvider.of<UplodingDataCubit>(context)
+                        .addItemInCart(item['quantity'], item['id']);
+                  }
                 }
-                print('=================$cartItems');
+                _buttomSheetCart();
                 // PersistentNavBarNavigator.pushNewScreen(
                 //   context,
                 //   screen: MapScreen(),
@@ -141,12 +150,15 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-                padding: EdgeInsets.only(top: height * 0.05, left: width * 0.8),
+                padding:
+                    EdgeInsets.only(top: height * 0.05, left: width * 0.85),
                 child: Stack(
                   children: [
                     _buildCartsList(),
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _buttomSheetCart();
+                        },
                         icon: Icon(
                           Icons.shopping_bag_outlined,
                           color: MyColors.Secondcolor,
@@ -162,10 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: EdgeInsets.only(
                           right: width * 0.29, left: width * 0.06),
-                      child: Text(
-                        'Hi, ${widget.name ?? _savedValue ?? "Guest"}',
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold),
+                      child: FadeInUp(
+                        duration: Duration(milliseconds: 1500),
+                        child: Text(
+                          'Hi, ${widget.name ?? _savedValue ?? "Guest"}',
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                     // Pass the cart update function to ProductContainer

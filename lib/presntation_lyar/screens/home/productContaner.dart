@@ -197,20 +197,15 @@ class _ProductContainerState extends State<ProductContainer> {
             minNumber: 0,
             maxNumber: 10,
             increaseCallback: () {
-              Future.delayed(Duration(seconds: 2), () {
-                setState(() {
-
-                  _CartEditing();
-                });
+              setState(() {
+                _CartEditing();
               });
             },
             decreaseCallback: () {
-              Future.delayed(Duration(seconds: 2), () {
-                setState(() {
-
-                  _CartEditing();
-                });
+              setState(() {
+                _CartEditing();
               });
+              ;
             },
             counterCallback: (int count) {
               bool found = false;
