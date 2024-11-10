@@ -1,6 +1,7 @@
 import 'package:add_to_cart_button/add_to_cart_button.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductContainer extends StatefulWidget {
-  final Function(List<Map<String, dynamic>>) onCartUpdate;  // Callback to update cart in HomeScreen
+  final Function(List<Map<String, dynamic>>)
+      onCartUpdate; // Callback to update cart in HomeScreen
 
   const ProductContainer({super.key, required this.onCartUpdate});
 
@@ -20,17 +22,36 @@ class _ProductContainerState extends State<ProductContainer> {
   List<Map<String, dynamic>> cartItems = [];
   double totalPrice = 0;
 
-  void _forLoopForproductPricePlus() {
+  void _CartEditing() {
     for (var item in cartItems) {
-      totalPrice += item['quantity'] * item['price'];
+      setState(() {
+        BlocProvider.of<UplodingDataCubit>(context)
+            .addItemInCart(item['quantity'], item['id']);
+      });
     }
   }
 
-  void _forLoopForproductPriceMines() {
-    // Reset totalPrice to 0 before calculation
-    for (var item in cartItems) {
-      totalPrice -= item['quantity'] * item['price'];
-    }
+  // Sort cartItems by id
+  void sortCart() {
+    cartItems.sort((a, b) {
+      // Handle null ids, consider them last
+      if (a['id'] == null && b['id'] == null) return 0;
+      if (a['id'] == null) return 1;
+      if (b['id'] == null) return -1;
+      return a['id'].compareTo(b['id']);
+    });
+  }
+
+  // Sorting products by id
+  List<dynamic> _sortProducts(List<dynamic> products) {
+    products.sort((a, b) {
+      // Handle null ids, consider them last
+      if (a.id == null && b.id == null) return 0;
+      if (a.id == null) return 1;
+      if (b.id == null) return -1;
+      return a.id!.compareTo(b.id!);
+    });
+    return products;
   }
 
   Widget _buildProductList() {
@@ -40,15 +61,8 @@ class _ProductContainerState extends State<ProductContainer> {
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
         if (state is GetCartsandProducts) {
-          final items = state.products;
-          final cart = state.cart;
-
-          items.sort((a, b) {
-            if (a.id == null && b.id == null) return 0;
-            if (a.id == null) return 1;
-            if (b.id == null) return -1;
-            return a.id!.compareTo(b.id!);
-          });
+          final items = _sortProducts(state.products); // Sort products by id
+          final cart = _sortProducts(state.cart);
 
           return MediaQuery.removePadding(
             context: context,
@@ -64,7 +78,8 @@ class _ProductContainerState extends State<ProductContainer> {
                   crossAxisCount: 1,
                   crossAxisSpacing: 5.0,
                   mainAxisSpacing: 1.0,
-                  childAspectRatio: (width / 0.12) / (height - kToolbarHeight - 50) / 2.1,
+                  childAspectRatio:
+                      (width / 0.12) / (height - kToolbarHeight - 50) / 2.1,
                 ),
                 itemBuilder: (context, index) {
                   final allList = items[index];
@@ -170,6 +185,7 @@ class _ProductContainerState extends State<ProductContainer> {
   Widget _buildCounter(product, cartItem) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     return Container(
       height: height * 0.14,
       child: Column(
@@ -181,24 +197,29 @@ class _ProductContainerState extends State<ProductContainer> {
             minNumber: 0,
             maxNumber: 10,
             increaseCallback: () {
-              Future.delayed(Duration(microseconds: 500), () {
+              Future.delayed(Duration(seconds: 2), () {
                 setState(() {
-                  _forLoopForproductPricePlus();
+
+                  _CartEditing();
                 });
               });
             },
             decreaseCallback: () {
-              setState(() {
-                _forLoopForproductPriceMines();
+              Future.delayed(Duration(seconds: 2), () {
+                setState(() {
+
+                  _CartEditing();
+                });
               });
             },
             counterCallback: (int count) {
               bool found = false;
 
-              // Check if the product is already in the cart
+              // Find the cart item matching the product id
               for (var item in cartItems) {
                 if (item['id'] == product.id) {
-                  item['quantity'] = count; // Update the quantity
+                  item['quantity'] =
+                      count; // Update the quantity for this product
                   found = true;
                   break;
                 }
@@ -215,7 +236,10 @@ class _ProductContainerState extends State<ProductContainer> {
                 });
               }
 
-              // After cart update, pass the updated cart to the HomeScreen
+              // Sort cart items by id to maintain order
+              sortCart();
+
+              // After updating the cart, notify the parent widget
               widget.onCartUpdate(cartItems);
 
               print('=============cart==========$cartItems');
