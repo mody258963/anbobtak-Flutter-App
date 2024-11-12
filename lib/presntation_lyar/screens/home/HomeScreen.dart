@@ -7,12 +7,14 @@ import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/Cart.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/productContaner.dart';
+import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -89,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<dynamic> _buttomSheetCart() {
     return showMaterialModalBottomSheet(
-        context: context, builder: (context) => CartScreen());
+        context: context, builder: (context) => CartScreen( quantity: totalQuantity,));
   }
 
   Widget _CircleWithNumber() {
@@ -137,12 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 }
                 _buttomSheetCart();
-                // PersistentNavBarNavigator.pushNewScreen(
-                //   context,
-                //   screen: MapScreen(),
-                //   withNavBar: true, // OPTIONAL VALUE. True by default.
-                //   pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                // );
+            
               }, "Pay")),
         ),
         backgroundColor: MyColors.white,
@@ -157,7 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildCartsList(),
                     IconButton(
                         onPressed: () {
-                          _buttomSheetCart();
+                           if (cartItems.isNotEmpty) {
+                  for (var item in cartItems) {
+                    BlocProvider.of<UplodingDataCubit>(context)
+                        .addItemInCart(item['quantity'], item['id']);
+                  }
+                }
+                _buttomSheetCart();
                         },
                         icon: Icon(
                           Icons.shopping_bag_outlined,
@@ -184,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     // Pass the cart update function to ProductContainer
-                    ProductContainer(onCartUpdate: _updateCart),
+                    ProductContainer(onCartUpdate: _updateCart ),
                   ],
                 ),
               ),

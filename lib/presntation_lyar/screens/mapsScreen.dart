@@ -27,30 +27,26 @@ class _MapScreenState extends State<MapScreen> {
   double? lat;
   double? long;
   Widgets _widgets = Widgets();
-  LatLng _currentMapPosition = LatLng(30.092560466679437, 31.282181737999366);
+  LatLng _currentMapPosition =    LatLng(29.945433862143442, 31.503439692154068);
   GoogleMapController? mapController;
 
   final List<LatLng> _polygons = const [
-    // LatLng(29.986553176166016, 31.368548188503613),
-    // LatLng(29.972331632561385, 31.366626907023097),
-    // LatLng(29.957200094976344, 31.43142648958498),
-    //     LatLng(29.957005294165747, 31.4491234702441),
+    LatLng(29.986553176166016, 31.368548188503613),
+    LatLng(29.972331632561385, 31.366626907023097),
+    LatLng(29.957200094976344, 31.43142648958498),
+    LatLng(29.957005294165747, 31.4491234702441),
+    LatLng(29.96665757548781, 31.46950279528975),
+    LatLng(29.945433862143442, 31.503439692154068),
+    LatLng(29.93269596428944, 31.526654051023183),
+    LatLng(29.957079, 31.536741),
+    LatLng(29.967275, 31.547741),
+    LatLng(30.004082, 31.529569),
+    LatLng(30.018687918717433, 31.511628611178345),
+    LatLng(30.025142, 31.498537),
+    LatLng(30.025309, 31.457322),
+    LatLng(30.016156, 31.445518),
+    LatLng(30.016003, 31.401297),
 
-    // LatLng(29.96665757548781, 31.46950279528975),
-    // LatLng(29.945433862143442, 31.503439692154068),
-    // LatLng(29.93269596428944, 31.526654051023183),
-    // LatLng(29.957079, 31.536741),
-    // LatLng(29.967275, 31.547741),
-    // LatLng(30.004082, 31.529569),
-    //     LatLng(30.018687918717433, 31.511628611178345),
-    // LatLng(30.025142, 31.498537),
-    // LatLng(30.025309, 31.457322),
-    // LatLng(30.016156, 31.445518),
-    // LatLng(30.016003, 31.401297),
-    LatLng(30.092560466679437, 31.282181737999366),
-    LatLng(30.092533509352425, 31.282456122119832),
-    LatLng(30.09235017450115, 31.282442711075706),
-    LatLng(30.092224856812248, 31.28210475276369),
   ];
 
   final Completer<GoogleMapController> _controller =
@@ -154,34 +150,17 @@ class _MapScreenState extends State<MapScreen> {
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: Padding(
             padding:
-                EdgeInsets.only(right: width * 0.12, bottom: height * 0.013),
+                EdgeInsets.only(right: width * 0.12, top: height * 0.09),
             child: Container(
                 width: width * 0.75,
                 height: height * 0.065,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColors.Secondcolor),
-                    onPressed: () {
-                      BlocProvider.of<UplodingDataCubit>(context)
-                          .addLatLong(lat, long);
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: AddressScreen(lat: lat, long: long),
-                        withNavBar: true, // OPTIONAL VALUE. True by default.
-                        pageTransitionAnimation:
-                            PageTransitionAnimation.cupertino,
-                      );
-                    },
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white),
-                    ))),
+                child: _widgets.AppButton((){}, 'Submit') ),
           ),
           backgroundColor: MyColors.white,
           appBar: AppBar(
             backgroundColor: MyColors.white,
             leading: Padding(
-              padding: EdgeInsets.only(left: width * 0.01),
+              padding: EdgeInsets.only(left: width * 0.02),
               child: IconButton(
                 onPressed: () {
                   Navigator.of(context).pop(ModalRoute.withName(homescreen));

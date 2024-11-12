@@ -30,4 +30,12 @@ class AddressLatUploaded extends UplodingDataState {
 
 }
 
+class GetCarts extends UplodingDataState {
+ final List posts;
+
+  GetCarts({required this.posts});
+
+
+}
+
 class PhoneOTPVerified extends UplodingDataState {}

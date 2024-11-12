@@ -1,14 +1,17 @@
-import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
-import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
-
+final int quantity;
+  const CartScreen({super.key,  required this.quantity });
   @override
   State<CartScreen> createState() => _CartScreenState();
 }
@@ -19,15 +22,16 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    // Trigger the cart loading when the screen is opened
+      BlocProvider.of<UplodingDataCubit>(context).GetCart();
+print('Quantity passed to CartScreen: ${widget.quantity}'); 
   }
 
   // Method to build the cart list and update the quantity
   Widget _buildCartList() {
-    return BlocBuilder<GetMethodCubit, GetMethodState>(
+    return BlocBuilder<UplodingDataCubit, UplodingDataState>(
       builder: (context, state) {
-        if (state is GetCartsandProducts) {
-          final cart = state.cart;
+        if (state is GetCarts) {
+          final cart = state.posts;
           return MediaQuery.removePadding(
             context: context,
             removeTop: true,
@@ -81,9 +85,9 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GetMethodCubit, GetMethodState>(
+    return BlocListener<UplodingDataCubit, UplodingDataState>(
       listener: (context, state) {
-        if (state is GetCartsandProducts) {
+        if (state is GetCarts) {
           // Once the cart is fetched, you may perform any other action
           // For now, we will simply ensure that cart data is loaded when entering the screen
         }
@@ -98,7 +102,14 @@ class _CartScreenState extends State<CartScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildCartList(),
-            _widgets.AppButton(() {}, "Pay")
+            _widgets.AppButton(() {
+                  PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: MapScreen(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+            }, "Pay")
           ],
         ),
       ),

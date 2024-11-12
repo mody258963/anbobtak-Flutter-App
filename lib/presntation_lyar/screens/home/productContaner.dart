@@ -24,10 +24,9 @@ class _ProductContainerState extends State<ProductContainer> {
 
   void _CartEditing() {
     for (var item in cartItems) {
-      setState(() {
         BlocProvider.of<UplodingDataCubit>(context)
             .addItemInCart(item['quantity'], item['id']);
-      });
+ 
     }
   }
 
@@ -198,6 +197,7 @@ class _ProductContainerState extends State<ProductContainer> {
             maxNumber: 10,
             increaseCallback: () {
               setState(() {
+          
                 _CartEditing();
               });
             },

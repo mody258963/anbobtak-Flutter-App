@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
-import 'package:anbobtak/web_servese/model/item.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:dio/dio.dart';
@@ -79,4 +79,15 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
+
+   Future<FutureOr<void>> GetCart() async {
+    try {
+      emit(Loading());
+      List<Item> posts = await myRepo.GetCart('v1/cart/');
+      emit(GetCarts(posts: posts));
+      print("======Carts======$posts");
+    } catch (e) {
+      print('========cubits/ carts=======${e.toString()}');
+    }
+  } 
 }
