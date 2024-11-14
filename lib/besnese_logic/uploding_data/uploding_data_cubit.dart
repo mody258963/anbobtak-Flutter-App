@@ -49,7 +49,6 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   // }
 
   Future<void> addItemInCart(quantity, productId) async {
-
     try {
       List<Carts> Items = await myRepo.addItemCart('v1/cart/add-item', {
         'product_id': productId,
@@ -61,8 +60,6 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
-
-
 
   Future<void> addLatLong(lat, long) async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,7 +77,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-   Future<FutureOr<void>> GetCart() async {
+  Future<FutureOr<void>> GetCart() async {   // to do : divide the cubits  
     try {
       emit(Loading());
       List<Item> posts = await myRepo.GetCart('v1/cart/');
@@ -89,5 +86,5 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     } catch (e) {
       print('========cubits/ carts=======${e.toString()}');
     }
-  } 
+  }
 }

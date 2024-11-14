@@ -1,20 +1,14 @@
 import 'dart:async';
-import 'dart:ffi';
-
-import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
-import 'package:anbobtak/costanse/pages.dart';
-import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as map_tool;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -24,49 +18,81 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  double? lat;
-  double? long;
+  LatLng _currentMapPosition = LatLng(29.945433862143442, 31.503439692154068);
+  
+  final Completer<GoogleMapController> _controller = Completer();
+  Set<Polygon> _polygons = {};
   Widgets _widgets = Widgets();
-  LatLng _currentMapPosition =    LatLng(29.945433862143442, 31.503439692154068);
-  GoogleMapController? mapController;
 
-  final List<LatLng> _polygons = const [
-    LatLng(29.986553176166016, 31.368548188503613),
-    LatLng(29.972331632561385, 31.366626907023097),
-    LatLng(29.957200094976344, 31.43142648958498),
-    LatLng(29.957005294165747, 31.4491234702441),
-    LatLng(29.96665757548781, 31.46950279528975),
-    LatLng(29.945433862143442, 31.503439692154068),
-    LatLng(29.93269596428944, 31.526654051023183),
-    LatLng(29.957079, 31.536741),
-    LatLng(29.967275, 31.547741),
-    LatLng(30.004082, 31.529569),
-    LatLng(30.018687918717433, 31.511628611178345),
-    LatLng(30.025142, 31.498537),
-    LatLng(30.025309, 31.457322),
-    LatLng(30.016156, 31.445518),
-    LatLng(30.016003, 31.401297),
-
-  ];
-
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  bool isInSelectedArea = true;
 
   @override
   void initState() {
     super.initState();
-    _widgets.requestLocationPermission();
+    // Fetch regions' polygons data from the database
+    BlocProvider.of<GetMethodCubit>(context).GetRegions();
   }
 
   void _onCameraIdle() {
-    lat = _currentMapPosition.latitude;
-    long = _currentMapPosition.longitude;
-    print('1Latitude: ${lat}, Longitude: ${long}');
+    final lat = _currentMapPosition.latitude;
+    final long = _currentMapPosition.longitude;
+    print('Updated Camera Position - Latitude: $lat, Longitude: $long');
+    checkUpdataLocation(_currentMapPosition);
   }
 
-  // void _onCameraMove(CameraPosition position) {
-  //   _currentMapPosition = position.target;
-  // }
+  void checkUpdataLocation(LatLng pointLatLng) {
+    // Convert the LatLng points of the polygons to map_tool.LatLng
+    List<map_tool.LatLng> convertedPolygonPoints = _polygons.expand((polygon) {
+      return polygon.points.map((point) {
+        return map_tool.LatLng(point.latitude, point.longitude);
+      });
+    }).toList();
+
+    // Now check if the point is inside any of the polygons
+    setState(() {
+      isInSelectedArea = map_tool.PolygonUtil.containsLocation(
+        map_tool.LatLng(pointLatLng.latitude, pointLatLng.longitude),
+        convertedPolygonPoints,
+        false, // Use 'false' for non-inclusive boundaries (optional)
+      );
+      print('==========================================$isInSelectedArea');
+    });
+  }
+
+  void _loadPolygonsFromDatabase(List<Region> regions) {
+    Set<Polygon> polygons = {};
+
+    for (var region in regions) {
+      List<LatLng> points = [];
+
+      for (var point in region.polygons) {
+        try {
+          double latitude = double.parse(point.lat.toString().trim());
+          double longitude = double.parse(point.lang.toString().trim());
+          points.add(LatLng(latitude, longitude));
+        } catch (e) {
+          print("Error parsing coordinates for region ${region.name}: $e");
+        }
+      }
+
+      if (points.isNotEmpty) {
+        polygons.add(
+          Polygon(
+            polygonId: PolygonId(region.id.toString()),
+            points: points,
+            fillColor: MyColors.skyblue.withOpacity(0.2),
+            strokeColor: MyColors.Secondcolor,
+            strokeWidth: 2,
+          ),
+        );
+        print("Added polygon for region ${region.name} with points: $points");
+      }
+    }
+
+    setState(() {
+      _polygons = polygons;
+    });
+  }
 
   Widget _buildGoogleMaps() {
     return GoogleMap(
@@ -78,125 +104,74 @@ class _MapScreenState extends State<MapScreen> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
-      polygons: {
-        Polygon(
-            polygonId: PolygonId("1"),
-            points: _polygons,
-            fillColor: MyColors.skyblue.withOpacity(0.2),
-            strokeWidth: 1)
-      },
+      polygons: _polygons,
       onCameraIdle: _onCameraIdle,
       myLocationEnabled: true,
-    );
-  }
-
-  Widget buildFloatingSearchBar() {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-
-    return FloatingSearchBar(
-      hint: 'Search...',
-      scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
-      transitionDuration: const Duration(milliseconds: 800),
-      transitionCurve: Curves.easeInOut,
-      physics: const BouncingScrollPhysics(),
-      axisAlignment: isPortrait ? 0.0 : -1.0,
-      openAxisAlignment: 0.0,
-      width: isPortrait ? 600 : 500,
-      debounceDelay: const Duration(milliseconds: 500),
-      onQueryChanged: (query) {
-        // Call your model, bloc, controller here.
-      },
-      // Specify a custom transition to be used forseup
-      // animating between opened and closed stated.
-      transition: CircularFloatingSearchBarTransition(),
-      actions: [
-        FloatingSearchBarAction(
-          showIfOpened: false,
-          child: CircularButton(
-            icon: const Icon(Icons.place),
-            onPressed: () {},
-          ),
-        ),
-        FloatingSearchBarAction.searchToClear(
-          showIfClosed: false,
-        ),
-      ],
-      builder: (context, transition) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Material(
-            color: Colors.white,
-            elevation: 4.0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: Colors.accents.map((color) {
-                return Container(height: 112, color: color);
-              }).toList(),
-            ),
-          ),
-        );
+      onCameraMove: (CameraPosition position) {
+        setState(() {
+          _currentMapPosition =
+              position.target; // Update position as the camera moves
+        });
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    return MaterialApp(
-      home: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: Padding(
-            padding:
-                EdgeInsets.only(right: width * 0.12, top: height * 0.09),
+    ScreenUtil.init(context, designSize: const Size(360, 852));
+    return BlocListener<GetMethodCubit, GetMethodState>(
+      listener: (context, state) {
+        if (state is GetRegion) {
+          print("Regions fetched successfully.");
+          _loadPolygonsFromDatabase(state.regions);
+        } else if (state is Fail) {
+          AlertDialog(
+            title: Text("${state.message}"),
+          );
+          print("Failed to fetch regions: ${state.message}");
+        }
+      },
+      child: Scaffold(
+        floatingActionButton: Align(
+          alignment: Alignment .bottomRight,
+          child: Padding(
+            padding:  EdgeInsets.only(bottom: 20),
             child: Container(
-                width: width * 0.75,
-                height: height * 0.065,
-                child: _widgets.AppButton((){}, 'Submit') ),
+                height: 60.h, width: 280.w, child: _widgets.AppButton(() {}, 'text')),
           ),
+        ),
+        appBar: AppBar(
+          title: const Text("Set Delivery Location"),
           backgroundColor: MyColors.white,
-          appBar: AppBar(
-            backgroundColor: MyColors.white,
-            leading: Padding(
-              padding: EdgeInsets.only(left: width * 0.02),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop(ModalRoute.withName(homescreen));
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                ),
-                highlightColor: Colors.transparent,
-                color: MyColors.Secondcolor,
-              ),
-            ),
-            title: const Text(
-              "Set Delivery Location",
-              style: TextStyle(color: MyColors.Secondcolor),
-            ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: width * 0.04),
-                child: Icon(
-                  Icons.navigation_rounded,
-                  color: MyColors.Secondcolor,
-                ),
-              ),
-            ],
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
-          body: Stack(children: [
-            _buildGoogleMaps(),
+          actions: [
+            Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
+          ],
+        ),
+        body: Stack(
+          children: [
+            _polygons.isNotEmpty
+                ? _buildGoogleMaps()
+                : Center(
+                    child:
+                        CircularProgressIndicator()), // Wait for polygons to load
             Center(
-              // This creates the fixed pin in the center of the map view
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 37),
                 child: Icon(Icons.location_pin,
-                    size: 50.0, color: MyColors.Secondcolor),
+                    size: 50.0,
+                    color:
+                        isInSelectedArea ? MyColors.Secondcolor : Colors.red),
               ),
             ),
-          ])),
+          ],
+        ),
+      ),
     );
   }
 }

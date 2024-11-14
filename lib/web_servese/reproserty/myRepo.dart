@@ -7,6 +7,7 @@ import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/foget.dart';
 import 'package:anbobtak/web_servese/model/google.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
+import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:anbobtak/web_servese/model/username.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,16 @@ class MyRepo {
     print("=====Product====#$userList");
     return userList..shuffle();
   }
+
+
+Future<List<Region>> GetRegions(String end) async {
+    final names = await nameWebService.get(end);
+    final userList = names.map((names) => Region.fromJson(names)).toList();
+    print("=====Region====#$userList");
+    return userList..shuffle();
+}
+
+
 
 
 Future<List<Item>> GetCart(String end) async {
