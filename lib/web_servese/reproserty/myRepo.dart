@@ -40,12 +40,29 @@ Future<List<Region>> GetRegions(String end) async {
     return userList..shuffle();
 }
 
-Future<List<Me>> GetMe(String end) async {
-    final names = await nameWebService.get(end);
-    final userList = names.map((names) => Me.fromJson(names)).toList();
-    print("=====Region====#$userList");
-    return userList..shuffle();
+Future<Me> GetMe(String end) async {
+  // Fetch the response from the web service
+  final response = await nameWebService.getTypeMap(end);
+
+  print("=====Raw Response==== #$response");
+
+  // Ensure the response is a valid Map and directly parse it
+  if (response is Map<String, dynamic>) {
+    // Parse the response using the Me model
+    final Me me = Me.fromJson(response);
+
+    // Log the details of the "me" object for debugging
+    print("=====User Info==== Name: ${me.name}, Email: ${me.email}");
+
+    return me;
+  } else {
+    // Handle invalid response format
+    print("Error: The response is not a valid Map<String, dynamic>.");
+    throw Exception("The response is not a valid Map<String, dynamic>.");
+  }
 }
+
+
 
 
 

@@ -37,20 +37,31 @@ class _AddressScreenState extends State<AddressScreen> {
     // Fetch regions' polygons data from the database
     BlocProvider.of<GetMethodCubit>(context).GetMe();
   }
-
-  Widget _buildMe() {
-    return BlocBuilder<GetMethodCubit, GetMethodState>(
-        builder: (context, state) {
+Widget _buildMe() {
+  return BlocBuilder<GetMethodCubit, GetMethodState>(
+    builder: (context, state) {
       if (state is GetMee) {
-        final me = state.me.first.data?.phone;
-        setState(() {
-          phone = me!;
-          print('========me=$me=======phone=$phone');
-        });
+        final me = state.me;
+        if (me.phone != null && me.phone != phone) {
+          
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                phone = me.phone!;
+              });
+            }
+          });
+          print('========me=${me.name}=======phone=$phone');
+        } else if (me.phone == null) {
+          print('========No phone found=======');
+        }
       }
       return Container();
-    });
-  }
+    },
+  );
+}
+
+
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -87,6 +98,49 @@ class _AddressScreenState extends State<AddressScreen> {
       ],
     );
   }
+
+ Widget _phoneInputField() {
+  return Row(
+    children: [
+      Expanded(
+        child: TextFormField(
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length > 11 || value.length < 11) {
+              return 'Invalid phone number';
+            }
+            return null;
+          },
+          controller: phonecontroller,
+          decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: MyColors.Secondcolor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: MyColors.whitefade),
+            ),
+            prefixText: phone.isNotEmpty ? phone : '+20 ',
+            labelText: 'Phone number',
+            labelStyle: TextStyle(color: Colors.black),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                borderSide: BorderSide(color: MyColors.Secondcolor)),
+          ),
+        ),
+      ),
+      if (phone.isEmpty) // Conditional rendering based on phone
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: 100.w,
+            height: 50.h,
+            child: _widgets.AppButton(() {}, 'Verify'),
+          ),
+        )
+    ],
+  );
+}
+
+
 
   Widget _TextField() {
     double width = MediaQuery.of(context).size.width;
@@ -158,44 +212,7 @@ class _AddressScreenState extends State<AddressScreen> {
           child: Row(
             children: [
               Expanded(
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.length > 8) {
-                      return 'min';
-                    }
-                    if (value.length < 1) {
-                      return 'max';
-                    } else {
-                      return null;
-                    }
-                  },
-                  controller: phonecontroller,
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: MyColors
-                              .Secondcolor), // Change the color when focused
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: MyColors.whitefade),
-                    ),
-                    prefixText: phone == '' ? '+20 ' : phone,
-                    labelText: 'Phone number',
-                    labelStyle: TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        borderSide: BorderSide(color: MyColors.Secondcolor)),
-                  ),
-                ),
-              ),
-              if (phone == '')
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      width: 100.w,
-                      height: 50.h,
-                      child: _widgets.AppButton(() {}, 'Verfiy')),
-                )
+                child: _phoneInputField())
             ],
           ),
         ),
@@ -213,7 +230,7 @@ class _AddressScreenState extends State<AddressScreen> {
                   Streetcontroller,
                   phonecontroller);
             }, "Confirm")),
-        _buildMe()
+  
       ],
     );
   }
@@ -256,6 +273,7 @@ class _AddressScreenState extends State<AddressScreen> {
                   height: 150,
                   width: 360,
                   child: Stack(children: [
+                      _buildMe(),
                     _buildGoogleMaps(),
                     Center(
                       // This creates the fixed pin in the center of the map view
@@ -304,7 +322,8 @@ class _AddressScreenState extends State<AddressScreen> {
                   ),
                 ),
                 _twoButton(),
-                _TextField()
+                _TextField(),
+              
               ],
             ),
           ),

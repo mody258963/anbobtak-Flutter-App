@@ -63,7 +63,7 @@ class GetRegion extends GetMethodState{
 
 
 class GetMee extends GetMethodState{
-  final List<Me> me;
+  final Me me;
   GetMee({required this.me});
 }
 

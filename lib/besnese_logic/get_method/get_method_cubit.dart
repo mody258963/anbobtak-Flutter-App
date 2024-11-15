@@ -55,7 +55,7 @@ class GetMethodCubit extends Cubit<GetMethodState> {
   Future<FutureOr<void>> GetMe() async {
     try {
       emit(LodingState());
-      List<Me> posts = await myRepo.GetMe('v1/user/me');
+      Me posts = await myRepo.GetMe('v1/user/me');
       emit(GetMee(me: posts));
       print("======me======$posts");
     } catch (e) {
