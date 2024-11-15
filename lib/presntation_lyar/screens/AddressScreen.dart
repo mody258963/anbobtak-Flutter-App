@@ -31,6 +31,12 @@ class _AddressScreenState extends State<AddressScreen> {
 
   Widgets _widgets = Widgets();
   String phone = '';
+  String? selectedAddress;
+    List<String> addresses = [
+    "123 Main St, Springfield",
+    "456 Elm St, Shelbyville",
+    "789 Oak St, Capital City",
+  ];
   @override
   void initState() {
     super.initState();
@@ -264,6 +270,33 @@ Widget _buildMe() {
         appBar: AppBar(
           backgroundColor: MyColors.white,
           title: Center(child: Text('Enter your address')),
+          actions: [
+  Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: DropdownButton<String>(
+                value: selectedAddress, // Set the current selected address
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedAddress = newValue!;
+                  });
+                  print('Selected Address: $selectedAddress');
+                },
+                hint: Text(
+                  'Select Address',
+                  style: TextStyle(color: Colors.white),
+                ),
+                items: addresses.map<DropdownMenuItem<String>>((address) {
+                  return DropdownMenuItem<String>(
+                    value: address,
+                    child: Text(address),
+                  );
+                }).toList(),
+                dropdownColor: Colors.blue, // Style dropdown background
+                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                underline: SizedBox(), // Remove underline
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Center(
