@@ -60,6 +60,7 @@ class Widgets {
         countries: ['EG' ],
         textAlignVertical: TextAlignVertical.top,
         formatInput: true,
+        
         keyboardType: TextInputType.numberWithOptions(
           signed: true,
           decimal: true,

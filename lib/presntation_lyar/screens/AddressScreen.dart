@@ -1,8 +1,13 @@
+import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -17,7 +22,35 @@ class AddressScreen extends StatefulWidget {
 class _AddressScreenState extends State<AddressScreen> {
   bool? isOffice = false;
   final TextEditingController otpcontroller = TextEditingController();
+  final TextEditingController buidingcontroller = TextEditingController();
+  final TextEditingController aptcontroller = TextEditingController();
+  final TextEditingController floorcontroller = TextEditingController();
+  final TextEditingController Streetcontroller = TextEditingController();
+  final TextEditingController Addcontroller = TextEditingController();
+  final TextEditingController phonecontroller = TextEditingController();
+
   Widgets _widgets = Widgets();
+  String phone = '';
+  @override
+  void initState() {
+    super.initState();
+    // Fetch regions' polygons data from the database
+    BlocProvider.of<GetMethodCubit>(context).GetMe();
+  }
+
+  Widget _buildMe() {
+    return BlocBuilder<GetMethodCubit, GetMethodState>(
+        builder: (context, state) {
+      if (state is GetMee) {
+        final me = state.me.first.data?.phone;
+        setState(() {
+          phone = me!;
+          print('========me=$me=======phone=$phone');
+        });
+      }
+      return Container();
+    });
+  }
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -62,7 +95,7 @@ class _AddressScreenState extends State<AddressScreen> {
       children: [
         SizedBox(height: height * 0.01),
         _widgets.TextFieldinApp(
-            TextEditingController(),
+            buidingcontroller,
             'Building name',
             6,
             'more detals',
@@ -78,7 +111,7 @@ class _AddressScreenState extends State<AddressScreen> {
             children: [
               Expanded(
                 child: _widgets.TextFieldinApp(
-                    TextEditingController(),
+                    aptcontroller,
                     'Apt. no.',
                     6,
                     'more detals',
@@ -91,7 +124,7 @@ class _AddressScreenState extends State<AddressScreen> {
               ),
               Expanded(
                 child: _widgets.TextFieldinApp(
-                    TextEditingController(),
+                    floorcontroller,
                     'Floor',
                     0,
                     'more detals',
@@ -105,20 +138,11 @@ class _AddressScreenState extends State<AddressScreen> {
             ],
           ),
         SizedBox(height: height * 0.01),
-        _widgets.TextFieldinApp(
-            TextEditingController(),
-            'Street',
-            6,
-            'more detals',
-            'alot of detals',
-            65,
-            0.05,
-            0.05,
-            TextInputType.text,
-            context),
+        _widgets.TextFieldinApp(Streetcontroller, 'Street', 6, 'more detals',
+            'alot of detals', 65, 0.05, 0.05, TextInputType.text, context),
         SizedBox(height: height * 0.01),
         _widgets.TextFieldinApp(
-            TextEditingController(),
+            Addcontroller,
             'Additional directions (optional)',
             6,
             'more detals',
@@ -131,40 +155,65 @@ class _AddressScreenState extends State<AddressScreen> {
         SizedBox(height: height * 0.01),
         Padding(
           padding: EdgeInsets.only(right: width * 0.05, left: width * 0.05),
-          child: TextFormField(
-            validator: (value) {
-              if (value!.length > 8) {
-                return 'min';
-              }
-              if (value.length < 1) {
-                return 'max';
-              } else {
-                return null;
-              }
-            },
-            decoration: const InputDecoration(
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color:
-                        MyColors.Secondcolor), // Change the color when focused
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.length > 8) {
+                      return 'min';
+                    }
+                    if (value.length < 1) {
+                      return 'max';
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: phonecontroller,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: MyColors
+                              .Secondcolor), // Change the color when focused
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: MyColors.whitefade),
+                    ),
+                    prefixText: phone == '' ? '+20 ' : phone,
+                    labelText: 'Phone number',
+                    labelStyle: TextStyle(color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderSide: BorderSide(color: MyColors.Secondcolor)),
+                  ),
+                ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: MyColors.whitefade),
-              ),
-              prefixText: '+20 ',
-              labelText: 'Phone number',
-              labelStyle: TextStyle(color: Colors.black),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  borderSide: BorderSide(color: MyColors.Secondcolor)),
-            ),
+              if (phone == '')
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      width: 100.w,
+                      height: 50.h,
+                      child: _widgets.AppButton(() {}, 'Verfiy')),
+                )
+            ],
           ),
         ),
         SizedBox(height: height * 0.015),
         Container(
             height: height * 0.07,
             width: width * 0.80,
-            child: _widgets.AppButton(() {}, "Confirm"))
+            child: _widgets.AppButton(() {
+              BlocProvider.of<UplodingDataCubit>(context).addAddress(
+                  buidingcontroller,
+                  aptcontroller,
+                  floorcontroller,
+                  widget.lat,
+                  widget.long,
+                  Streetcontroller,
+                  phonecontroller);
+            }, "Confirm")),
+        _buildMe()
       ],
     );
   }
@@ -190,9 +239,9 @@ class _AddressScreenState extends State<AddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    ScreenUtil.init(context, designSize: const Size(360, 852));
     return MaterialApp(
+      theme: ThemeData(fontFamily: 'Poppins'),
       home: Scaffold(
         backgroundColor: MyColors.white,
         appBar: AppBar(
@@ -204,8 +253,8 @@ class _AddressScreenState extends State<AddressScreen> {
             child: Column(
               children: [
                 Container(
-                  height: height * 0.15,
-                  width: width * 0.90,
+                  height: 150,
+                  width: 360,
                   child: Stack(children: [
                     _buildGoogleMaps(),
                     Center(
@@ -221,8 +270,8 @@ class _AddressScreenState extends State<AddressScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    height: height * 0.08,
-                    width: width * 0.90,
+                    height: 80,
+                    width: 360,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: MyColors.white,
@@ -241,12 +290,20 @@ class _AddressScreenState extends State<AddressScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(Icons.location_pin),
                         ),
-                        Text('${widget.lat} , ${widget.long}')
+                        Expanded(
+                          // Allows the text to wrap within available space
+                          child: Text(
+                            '${widget.lat} , ${widget.long}',
+                            overflow: TextOverflow
+                                .ellipsis, // Add ellipsis if text is too long
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                    _twoButton(),
+                _twoButton(),
                 _TextField()
               ],
             ),

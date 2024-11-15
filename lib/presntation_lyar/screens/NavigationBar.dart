@@ -61,6 +61,7 @@ class _NavigationBarsState extends State<NavigationBars> {
   Widget build(BuildContext context) {
     print('${widget.name}');
     return MaterialApp(
+            theme: ThemeData(fontFamily: 'Poppins'),
       home: Scaffold(
         body: PersistentTabView(
           screens: _screens(),

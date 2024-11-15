@@ -1,5 +1,6 @@
 
 import 'package:anbobtak/web_servese/model/cart.dart';
+import 'package:anbobtak/web_servese/model/me.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:flutter/widgets.dart';
@@ -58,6 +59,12 @@ class GetCartsandProducts extends GetMethodState {
 class GetRegion extends GetMethodState{
   final List<Region> regions;
   GetRegion({required this.regions});
+}
+
+
+class GetMee extends GetMethodState{
+  final List<Me> me;
+  GetMee({required this.me});
 }
 
 class Fail extends GetMethodState{

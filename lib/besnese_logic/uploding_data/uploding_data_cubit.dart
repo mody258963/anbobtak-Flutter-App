@@ -61,14 +61,18 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-  Future<void> addLatLong(lat, long) async {
+  Future<void> addAddress(building,apt,floor,lat, long,street,phone) async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('user_id');
     try {
-      List<Address> address = await myRepo.addLatLong('v1/address/store/lat', {
-        'user_id': id,
-        'lat': lat,
-        'long': long,
+      List<Address> address = await myRepo.addAddress('v1/address', {
+    'building_number': building,
+    'apartment_number': apt,
+    'floor': floor,
+    'lat': lat,
+    'long': long,
+    'street': street,
+    'phone': phone
       });
 
       emit(AddressLatUploaded(address: address));

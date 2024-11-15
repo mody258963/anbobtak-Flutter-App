@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as map_tool;
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -19,7 +21,8 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   LatLng _currentMapPosition = LatLng(29.945433862143442, 31.503439692154068);
-  
+  double longitude = 0.0;
+  double latitude = 0.0;
   final Completer<GoogleMapController> _controller = Completer();
   Set<Polygon> _polygons = {};
   Widgets _widgets = Widgets();
@@ -36,6 +39,7 @@ class _MapScreenState extends State<MapScreen> {
   void _onCameraIdle() {
     final lat = _currentMapPosition.latitude;
     final long = _currentMapPosition.longitude;
+
     print('Updated Camera Position - Latitude: $lat, Longitude: $long');
     checkUpdataLocation(_currentMapPosition);
   }
@@ -96,6 +100,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget _buildGoogleMaps() {
     return GoogleMap(
+      padding: EdgeInsets.only(bottom: 20.sp),
       mapType: MapType.normal,
       initialCameraPosition: CameraPosition(
         target: _currentMapPosition,
@@ -110,7 +115,9 @@ class _MapScreenState extends State<MapScreen> {
       onCameraMove: (CameraPosition position) {
         setState(() {
           _currentMapPosition =
-              position.target; // Update position as the camera moves
+              position.target; 
+             latitude =  _currentMapPosition.latitude;
+             longitude = _currentMapPosition.longitude;
         });
       },
     );
@@ -132,12 +139,21 @@ class _MapScreenState extends State<MapScreen> {
         }
       },
       child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
         floatingActionButton: Align(
-          alignment: Alignment .bottomRight,
+          alignment: Alignment.bottomCenter,
           child: Padding(
-            padding:  EdgeInsets.only(bottom: 20),
+            padding:  EdgeInsets.only(right: 55),
             child: Container(
-                height: 60.h, width: 280.w, child: _widgets.AppButton(() {}, 'text')),
+                height: 60.h, width: 280.w, child: _widgets.AppButton(() {
+                   PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: AddressScreen(lat:  latitude,long: longitude,),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+
+                }, 'Confirm')),
           ),
         ),
         appBar: AppBar(
@@ -146,20 +162,21 @@ class _MapScreenState extends State<MapScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
             onPressed: () {
+                  BlocProvider.of<GetMethodCubit>(context).GetProductAndCart();
               Navigator.of(context).pop();
+
             },
           ),
           actions: [
-            Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
+            Padding(
+              padding:  EdgeInsets.all(8.sp),
+              child: Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
+            ),
           ],
         ),
         body: Stack(
           children: [
-            _polygons.isNotEmpty
-                ? _buildGoogleMaps()
-                : Center(
-                    child:
-                        CircularProgressIndicator()), // Wait for polygons to load
+                 _buildGoogleMaps(),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 37),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
+import 'package:anbobtak/web_servese/model/me.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
@@ -42,12 +43,24 @@ class GetMethodCubit extends Cubit<GetMethodState> {
   Future<FutureOr<void>> GetRegions() async {
     try {
       emit(LodingState());
-      List<Region> posts = await myRepo.GetRegions('regions');
+      List<Region> posts = await myRepo.GetRegions('v1/address/regions');
       emit(GetRegion(regions: posts));
       print("======Regions======$posts");
     } catch (e) {
       emit(Fail(e.toString()));
       print('========cubits/ Rigions=======${e.toString()}');
+    }
+  }
+
+  Future<FutureOr<void>> GetMe() async {
+    try {
+      emit(LodingState());
+      List<Me> posts = await myRepo.GetMe('v1/user/me');
+      emit(GetMee(me: posts));
+      print("======me======$posts");
+    } catch (e) {
+      emit(Fail(e.toString()));
+      print('========cubits/ me=======${e.toString()}');
     }
   }
 }
