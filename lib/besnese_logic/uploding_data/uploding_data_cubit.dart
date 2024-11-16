@@ -61,9 +61,8 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-  Future<void> addAddress(building,apt,floor,lat, long,street,phone) async {
+  Future<void> addAddress(String building,String apt,String floor,String lat,String long, String street,String phone) async {
     final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getInt('user_id');
     try {
       List<Address> address = await myRepo.addAddress('v1/address', {
     'building_number': building,
@@ -74,9 +73,11 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     'street': street,
     'phone': phone
       });
+      print('====address====$address');
 
       emit(AddressLatUploaded(address: address));
     } catch (e) {
+      print('====adress====${e.toString()}');
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
