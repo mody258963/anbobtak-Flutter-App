@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:add_to_cart_button/add_to_cart_button.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/Cart.dart';

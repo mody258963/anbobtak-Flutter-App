@@ -82,14 +82,5 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-  Future<FutureOr<void>> GetCart() async {   // to do : divide the cubits  
-    try {
-      emit(Loading());
-      List<Item> posts = await myRepo.GetCart('v1/cart/');
-      emit(GetCarts(posts: posts));
-      print("======Carts======$posts");
-    } catch (e) {
-      print('========cubits/ carts=======${e.toString()}');
-    }
-  }
+
 }

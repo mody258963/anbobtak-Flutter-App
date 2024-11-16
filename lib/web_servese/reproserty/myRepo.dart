@@ -86,6 +86,12 @@ Future<List<Item>> GetCart(String end) async {
   return cartItems..shuffle(); // Shuffles the items list
 }
 
+  Future<List<Address>> GetAddress(String end) async {
+    final names = await nameWebService.get(end);
+    final userList = names.map((names) => Address.fromJson(names)).toList();
+    print("=====Address====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
 
   Future<List<Carts>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(

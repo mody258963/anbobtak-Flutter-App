@@ -1,6 +1,7 @@
 
-import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
-import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
+
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
@@ -22,13 +23,13 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-      BlocProvider.of<UplodingDataCubit>(context).GetCart();
+      BlocProvider.of<GetMethodCubitV2>(context).GetCart();
 print('Quantity passed to CartScreen: ${widget.quantity}'); 
   }
 
   // Method to build the cart list and update the quantity
   Widget _buildCartList() {
-    return BlocBuilder<UplodingDataCubit, UplodingDataState>(
+    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
       builder: (context, state) {
         if (state is GetCarts) {
           final cart = state.posts;
@@ -85,7 +86,7 @@ print('Quantity passed to CartScreen: ${widget.quantity}');
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UplodingDataCubit, UplodingDataState>(
+    return BlocListener<GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
         if (state is GetCarts) {
           // Once the cart is fetched, you may perform any other action

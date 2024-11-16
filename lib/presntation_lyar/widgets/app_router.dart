@@ -1,4 +1,5 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
@@ -18,6 +19,7 @@ import '../../besnese_logic/uploding_data/uploding_data_cubit.dart';
 class AppRouter {
   UplodingDataCubit? uplodingDataCubit;
   GetMethodCubit? getMethodCubit;
+  GetMethodCubitV2? getMethodCubitV2;
   EmailAuthCubit? emailAuthCubit;
   AppRouter() {
     MyRepo myRepoInstance = MyRepo(NameWebServise());
@@ -27,29 +29,36 @@ class AppRouter {
     );
     getMethodCubit = GetMethodCubit(
         myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
+    getMethodCubitV2 = GetMethodCubitV2(
+        myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
   }
 
   Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
-       case logain:
+      case logain:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
                   child: const SignUp(),
                 ));
       case homescreen:
-          final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
-    // Your callback function logic here
-    print('Cart updated: $cartItems');
-  };
-      MaterialPageRoute(
-      builder: (_) => MultiBlocProvider(
-            providers: [
-              BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
-              BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
-            ],
-            child: HomeScreen(onCartUpdate:onCartUpdate,),
-          ));
+        final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+          // Your callback function logic here
+          print('Cart updated: $cartItems');
+        };
+        MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+                    BlocProvider<UplodingDataCubit>.value(
+                        value: uplodingDataCubit!),
+                    BlocProvider<GetMethodCubitV2>.value(
+                        value: getMethodCubitV2!),
+                  ],
+                  child: HomeScreen(
+                    onCartUpdate: onCartUpdate,
+                  ),
+                ));
       case account:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<GetMethodCubit>.value(
@@ -62,7 +71,7 @@ class AppRouter {
                   value: getMethodCubit!,
                   child: MapScreen(),
                 ));
-           case signup:
+      case signup:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
                   value: emailAuthCubit!,
@@ -80,30 +89,34 @@ class AppRouter {
                   value: emailAuthCubit!,
                   child: OTPScreen(),
                 ));
-            case nav:
-            final String? name = settings.arguments as String?;
-              return MaterialPageRoute(
-             builder: (_) => MultiBlocProvider(
+      case nav:
+        final String? name = settings.arguments as String?;
+        return MaterialPageRoute(
+          builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
-              BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
+              BlocProvider<GetMethodCubitV2>.value(value: getMethodCubitV2!),
+              BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!),
             ],
-            child: NavigationBars(name:  name),
+            child: NavigationBars(name: name),
           ),
         );
 
-  case realhomescreen:
-    final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
-    // Your callback function logic here
-    print('Cart updated: $cartItems');
-  };
-              return MaterialPageRoute(
-             builder: (_) => MultiBlocProvider(
+      case realhomescreen:
+        final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+          // Your callback function logic here
+          print('Cart updated: $cartItems');
+        };
+        return MaterialPageRoute(
+          builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+              BlocProvider<GetMethodCubitV2>.value(value: getMethodCubitV2!),
               BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!)
             ],
-            child: HomeScreen(onCartUpdate: onCartUpdate,),
+            child: HomeScreen(
+              onCartUpdate: onCartUpdate,
+            ),
           ),
         );
     }

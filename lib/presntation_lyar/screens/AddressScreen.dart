@@ -1,3 +1,5 @@
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
@@ -31,43 +33,56 @@ class _AddressScreenState extends State<AddressScreen> {
 
   Widgets _widgets = Widgets();
   String phone = '';
-  String? selectedAddress;
-    List<String> addresses = [
-    "123 Main St, Springfield",
-    "456 Elm St, Shelbyville",
-    "789 Oak St, Capital City",
-  ];
+ Map<String, dynamic>? selectedAddress;
+List<Map<String, dynamic>> addresses = [
+  {'id': 1, 'name': '123 Main St'},
+  {'id': 2, 'name': '456 Elm St'},
+  {'id': 3, 'name': '789 Oak St'},
+];
+
   @override
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
     BlocProvider.of<GetMethodCubit>(context).GetMe();
   }
-Widget _buildMe() {
-  return BlocBuilder<GetMethodCubit, GetMethodState>(
-    builder: (context, state) {
-      if (state is GetMee) {
-        final me = state.me;
-        if (me.phone != null && me.phone != phone) {
-          
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                phone = me.phone!;
-              });
-            }
-          });
-          print('========me=${me.name}=======phone=$phone');
-        } else if (me.phone == null) {
-          print('========No phone found=======');
+
+  Widget _buildMe() {
+    return BlocBuilder<GetMethodCubit, GetMethodState>(
+      builder: (context, state) {
+        if (state is GetMee) {
+          final me = state.me;
+          if (me.phone != null && me.phone != phone) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  phone = me.phone!;
+                });
+              }
+            });
+            print('========me=${me.name}=======phone=$phone');
+          } else if (me.phone == null) {
+            print('========No phone found=======');
+          }
         }
-      }
-      return Container();
-    },
-  );
-}
+        return Container();
+      },
+    );
+  }
 
+  Widget _buildAddress() {
+    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+      builder: (context, state) {
+        if (state is GetAddres) {
+          final address = state.posts;
+          if (address.isNotEmpty) {
 
+          }
+        }
+        return Container();
+      },
+    );
+  }
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -105,48 +120,49 @@ Widget _buildMe() {
     );
   }
 
- Widget _phoneInputField() {
-  return Row(
-    children: [
-      Expanded(
-        child: TextFormField(
-          validator: (value) {
-            if (value == null || value.isEmpty || value.length > 11 || value.length < 11) {
-              return 'Invalid phone number';
-            }
-            return null;
-          },
-          controller: phonecontroller,
-          decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: MyColors.Secondcolor),
+  Widget _phoneInputField() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            validator: (value) {
+              if (value == null ||
+                  value.isEmpty ||
+                  value.length > 11 ||
+                  value.length < 11) {
+                return 'Invalid phone number';
+              }
+              return null;
+            },
+            controller: phonecontroller,
+            decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: MyColors.Secondcolor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: MyColors.whitefade),
+              ),
+              prefixText: phone.isNotEmpty ? phone : '+20 ',
+              labelText: 'Phone number',
+              labelStyle: TextStyle(color: Colors.black),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  borderSide: BorderSide(color: MyColors.Secondcolor)),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: MyColors.whitefade),
-            ),
-            prefixText: phone.isNotEmpty ? phone : '+20 ',
-            labelText: 'Phone number',
-            labelStyle: TextStyle(color: Colors.black),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                borderSide: BorderSide(color: MyColors.Secondcolor)),
           ),
         ),
-      ),
-      if (phone.isEmpty) // Conditional rendering based on phone
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            width: 100.w,
-            height: 50.h,
-            child: _widgets.AppButton(() {}, 'Verify'),
-          ),
-        )
-    ],
-  );
-}
-
-
+        if (phone.isEmpty) // Conditional rendering based on phone
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: 100.w,
+              height: 50.h,
+              child: _widgets.AppButton(() {}, 'Verify'),
+            ),
+          )
+      ],
+    );
+  }
 
   Widget _TextField() {
     double width = MediaQuery.of(context).size.width;
@@ -216,10 +232,7 @@ Widget _buildMe() {
         Padding(
           padding: EdgeInsets.only(right: width * 0.05, left: width * 0.05),
           child: Row(
-            children: [
-              Expanded(
-                child: _phoneInputField())
-            ],
+            children: [Expanded(child: _phoneInputField())],
           ),
         ),
         SizedBox(height: height * 0.015),
@@ -228,15 +241,15 @@ Widget _buildMe() {
             width: width * 0.80,
             child: _widgets.AppButton(() {
               BlocProvider.of<UplodingDataCubit>(context).addAddress(
-                  buidingcontroller,
-                  aptcontroller,
-                  floorcontroller,
-                  widget.lat,
-                  widget.long,
-                  Streetcontroller,
-                  phonecontroller);
+                  buidingcontroller.text,
+                  aptcontroller.text,
+                  floorcontroller.text,
+                  widget.lat.toString(),
+                  widget.long.toString(),
+                  Streetcontroller.text,
+                  phone);
+              print(phone);
             }, "Confirm")),
-  
       ],
     );
   }
@@ -271,30 +284,30 @@ Widget _buildMe() {
           backgroundColor: MyColors.white,
           title: Center(child: Text('Enter your address')),
           actions: [
-  Padding(
+            Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: DropdownButton<String>(
-                value: selectedAddress, // Set the current selected address
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedAddress = newValue!;
-                  });
-                  print('Selected Address: $selectedAddress');
-                },
-                hint: Text(
-                  'Select Address',
-                  style: TextStyle(color: Colors.white),
-                ),
-                items: addresses.map<DropdownMenuItem<String>>((address) {
-                  return DropdownMenuItem<String>(
-                    value: address,
-                    child: Text(address),
-                  );
-                }).toList(),
-                dropdownColor: Colors.blue, // Style dropdown background
-                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                underline: SizedBox(), // Remove underline
-              ),
+              child: DropdownButton<Map<String, dynamic>>(
+    value: selectedAddress, // The currently selected address as a map
+    onChanged: (Map<String, dynamic>? newValue) {
+      setState(() {
+        selectedAddress = newValue; // Update the selected address
+      });
+      print('Selected Address: ${selectedAddress?['name']}');
+    },
+    hint: Text(
+      'Select Address',
+      style: TextStyle(color: Colors.black),
+    ),
+    items: addresses.map<DropdownMenuItem<Map<String, dynamic>>>((address) {
+      return DropdownMenuItem<Map<String, dynamic>>(
+        value: address, // Assign the full map as the value
+        child: Text(address['name'] ?? ''), // Display the 'name' field
+      );
+    }).toList(),
+    dropdownColor: MyColors.Secondcolor, // Style dropdown background
+    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+    underline: SizedBox(), // Remove underline
+  ),
             ),
           ],
         ),
@@ -306,7 +319,7 @@ Widget _buildMe() {
                   height: 150,
                   width: 360,
                   child: Stack(children: [
-                      _buildMe(),
+                    _buildMe(),
                     _buildGoogleMaps(),
                     Center(
                       // This creates the fixed pin in the center of the map view
@@ -356,7 +369,6 @@ Widget _buildMe() {
                 ),
                 _twoButton(),
                 _TextField(),
-              
               ],
             ),
           ),
