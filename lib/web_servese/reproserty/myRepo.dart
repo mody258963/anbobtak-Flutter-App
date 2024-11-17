@@ -32,66 +32,78 @@ class MyRepo {
     return userList..shuffle();
   }
 
-
-Future<List<Region>> GetRegions(String end) async {
+  Future<List<Region>> GetRegions(String end) async {
     final names = await nameWebService.get(end);
     final userList = names.map((names) => Region.fromJson(names)).toList();
     print("=====Region====#$userList");
     return userList..shuffle();
-}
+  }
 
-Future<Me> GetMe(String end) async {
-  // Fetch the response from the web service
+  Future<Me> GetMe(String end) async {
+    // Fetch the response from the web service
+    final response = await nameWebService.getTypeMap(end);
+
+    print("=====Raw Response==== #$response");
+
+    // Ensure the response is a valid Map and directly parse it
+    if (response is Map<String, dynamic>) {
+      // Parse the response using the Me model
+      final Me me = Me.fromJson(response);
+
+      // Log the details of the "me" object for debugging
+      print("=====User Info==== Name: ${me.name}, Email: ${me.email}");
+
+      return me;
+    } else {
+      // Handle invalid response format
+      print("Error: The response is not a valid Map<String, dynamic>.");
+      throw Exception("The response is not a valid Map<String, dynamic>.");
+    }
+  }
+
+  Future<List<Item>> GetCart(String end) async {
+    final prefs = await SharedPreferences.getInstance();
+    final response = await nameWebService.getTypeMap(end);
+
+    print("=====Raw Response====#${response.toString()}");
+    // Parse the response assuming it's a Map<String, dynamic> from the JSON structure
+    final Carts carts = Carts.fromJson(response);
+
+    // Check if data and items are available before extracting
+    final List<Item> cartItems = carts.items;
+
+    print("=====Carts====#${carts.items.first.price}");
+
+    // Optional: Save the first cart's ID in shared preferences if needed
+
+    return cartItems..shuffle(); // Shuffles the items list
+  }
+
+Future<List<Datas>> GetAddress(String end) async {
   final response = await nameWebService.getTypeMap(end);
 
-  print("=====Raw Response==== #$response");
+  print("=====Raw Response Address====#${response.toString()}");
 
-  // Ensure the response is a valid Map and directly parse it
-  if (response is Map<String, dynamic>) {
-    // Parse the response using the Me model
-    final Me me = Me.fromJson(response);
-
-    // Log the details of the "me" object for debugging
-    print("=====User Info==== Name: ${me.name}, Email: ${me.email}");
-
-    return me;
-  } else {
-    // Handle invalid response format
-    print("Error: The response is not a valid Map<String, dynamic>.");
-    throw Exception("The response is not a valid Map<String, dynamic>.");
+  try {
+    // Check if the response is a Map or a List
+    if (response is Map<String, dynamic>) {
+      final Address address = Address.fromJson(response);
+      return address.data..shuffle();
+    } else if (response is List<dynamic>) {
+      // If the response is just the data array
+      final List<Datas> addresses = response
+          .map((x) => Datas.fromJson(x as Map<String, dynamic>))
+          .toList();
+      return addresses..shuffle();
+    } else {
+      throw Exception("Unexpected response format");
+    }
+  } catch (e) {
+    print('Error parsing response: $e');
+    throw Exception('Failed to parse addresses');
   }
 }
 
-
-
-
-
-Future<List<Item>> GetCart(String end) async {
-  final prefs = await SharedPreferences.getInstance();
-  final response = await nameWebService.getTypeMap(end);
-
-  print("=====Raw Response====#${response.toString()}");
-  // Parse the response assuming it's a Map<String, dynamic> from the JSON structure
-  final Carts carts = Carts.fromJson(response);
-
-  // Check if data and items are available before extracting
-  final List<Item> cartItems = carts.items;
-
-  print("=====Carts====#${carts.items.first.price}");
-
-  // Optional: Save the first cart's ID in shared preferences if needed
-  if (carts.id != null) {
-    prefs.setInt('cart_id', carts.id!);  }
-
-  return cartItems..shuffle(); // Shuffles the items list
-}
-
-  Future<List<Address>> GetAddress(String end) async {
-    final names = await nameWebService.get(end);
-    final userList = names.map((names) => Address.fromJson(names)).toList();
-    print("=====Address====#${userList..shuffle()}");
-    return userList..shuffle();
-  }
 
   Future<List<Carts>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(
@@ -104,7 +116,6 @@ Future<List<Item>> GetCart(String end) async {
     return userList..shuffle();
   }
 
- 
   Future<List<Address>> addAddress(String end, Object data) async {
     final names = await nameWebService.post(end, data);
     final userList = names.map((names) => Address.fromJson(names)).toList();

@@ -3,22 +3,25 @@ class Address {
         required this.data,
     });
 
-    final Data? data;
+final List<Datas> data;
+
 
     factory Address.fromJson(Map<String, dynamic> json){ 
         return Address(
-            data: json["data"] == null ? null : Data.fromJson(json["data"]),
+           data: json["data"] != null
+          ? List<Datas>.from(json["data"].map((x) => Datas.fromJson(x)))
+          : [],
         );
     }
 
     Map<String, dynamic> toJson() => {
-        "data": data?.toJson(),
+        "data": data.map((x) => x.toJson()).toList(),
     };
 
 }
 
-class Data {
-    Data({
+class Datas {
+    Datas({
         required this.id,
         required this.buildingNumber,
         required this.apartmentNumber,
@@ -46,22 +49,23 @@ class Data {
     final DateTime? createdAt;
     final DateTime? updatedAt;
 
-    factory Data.fromJson(Map<String, dynamic> json){ 
-        return Data(
-            id: json["id"] ?? 0,
-            buildingNumber: json["building_number"] ?? "",
-            apartmentNumber: json["apartment_number"] ?? "",
-            floor: json["floor"] ?? "",
-            lat: json["lat"] ?? "", 
-            long: json["long"] ?? "",
-            street: json["street"] ?? "" ,
-            status: json["status"] ?? "",
-            userId: json["user_id"] ?? "",
-            additionalAddress: json["additional_address"] ?? "",
-            createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-        );
-    }
+factory Datas.fromJson(Map<String, dynamic> json) {
+  return Datas(
+    id: json["id"] ?? 0,
+    buildingNumber: json["building_number"] ?? "",
+    apartmentNumber: json["apartment_number"] ?? "",
+    floor: json["floor"] ?? "N/A",
+    lat: double.tryParse(json["lat"]?.toString() ?? "0"),  // Convert to double
+    long: double.tryParse(json["long"]?.toString() ?? "0"), // Convert to double
+    street: json["street"] ?? "N/A",
+    status: json["status"].toString(), // Ensure status is handled as a string
+    userId: json["user_id"] ?? "",
+    additionalAddress: json["additional_address"] ?? "",
+    createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+    updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+  );
+}
+
 
     Map<String, dynamic> toJson() => {
         "id": id,

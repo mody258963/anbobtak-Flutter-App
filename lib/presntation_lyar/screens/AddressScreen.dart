@@ -5,6 +5,7 @@ import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
+import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,7 +23,6 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  bool? isOffice = false;
   final TextEditingController otpcontroller = TextEditingController();
   final TextEditingController buidingcontroller = TextEditingController();
   final TextEditingController aptcontroller = TextEditingController();
@@ -30,21 +30,21 @@ class _AddressScreenState extends State<AddressScreen> {
   final TextEditingController Streetcontroller = TextEditingController();
   final TextEditingController Addcontroller = TextEditingController();
   final TextEditingController phonecontroller = TextEditingController();
+  bool? isOffice = false;
 
   Widgets _widgets = Widgets();
   String phone = '';
- Map<String, dynamic>? selectedAddress;
-List<Map<String, dynamic>> addresses = [
-  {'id': 1, 'name': '123 Main St'},
-  {'id': 2, 'name': '456 Elm St'},
-  {'id': 3, 'name': '789 Oak St'},
-];
+ String? selectedAddressString;  // Store the address string (for display)
+Map<String, dynamic>? selectedAddressMap;  // Store the full map for internal use
+
+  List<Map<String, dynamic>> addresses = [];
 
   @override
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
     BlocProvider.of<GetMethodCubit>(context).GetMe();
+    BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
   }
 
   Widget _buildMe() {
@@ -70,19 +70,41 @@ List<Map<String, dynamic>> addresses = [
     );
   }
 
-  Widget _buildAddress() {
-    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
-      builder: (context, state) {
-        if (state is GetAddres) {
-          final address = state.posts;
-          if (address.isNotEmpty) {
+ Widget _buildAddress() {
+  return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+    builder: (context, state) {
+      if (state is GetAddres) {
+        final List<Datas> addressList = state.posts; // Ensure it’s a list
+print('State posts type: ${state.posts.runtimeType}');
+print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No data'}');
 
+        if (addressList.isNotEmpty) {
+          addresses.clear(); // Avoid duplicate entries
+          for (var item in addressList) {
+            if (mounted) {
+
+  addresses.add({
+    'building_number': item.buildingNumber ?? 'N/A',
+    'apartment_number': item.apartmentNumber ?? 'N/A',
+    'additional_address': item.additionalAddress ?? 'N/A',
+    'floor': item.floor ?? 'N/A',
+    'lat': item.lat?.toString() ?? '0',
+    'long': item.long?.toString() ?? '0',
+    'street': item.street ?? 'N/A',
+  });
+}
           }
+        } else {
+          print('No address data found');
         }
-        return Container();
-      },
-    );
-  }
+
+        print('Processed addresses: $addresses');
+      }
+      return Container(); // Return a widget as required
+    },
+  );
+}
+
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -243,6 +265,7 @@ List<Map<String, dynamic>> addresses = [
               BlocProvider.of<UplodingDataCubit>(context).addAddress(
                   buidingcontroller.text,
                   aptcontroller.text,
+                  Addcontroller.text,
                   floorcontroller.text,
                   widget.lat.toString(),
                   widget.long.toString(),
@@ -285,30 +308,36 @@ List<Map<String, dynamic>> addresses = [
           title: Center(child: Text('Enter your address')),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: DropdownButton<Map<String, dynamic>>(
-    value: selectedAddress, // The currently selected address as a map
-    onChanged: (Map<String, dynamic>? newValue) {
-      setState(() {
-        selectedAddress = newValue; // Update the selected address
-      });
-      print('Selected Address: ${selectedAddress?['name']}');
-    },
-    hint: Text(
-      'Select Address',
-      style: TextStyle(color: Colors.black),
-    ),
-    items: addresses.map<DropdownMenuItem<Map<String, dynamic>>>((address) {
-      return DropdownMenuItem<Map<String, dynamic>>(
-        value: address, // Assign the full map as the value
-        child: Text(address['name'] ?? ''), // Display the 'name' field
+                padding: const EdgeInsets.only(right: 10),
+                child: DropdownButton<String>(
+  value: selectedAddressString,
+  onChanged: (String? newValue) {
+    setState(() {
+      selectedAddressString = newValue;
+      selectedAddressMap = addresses.firstWhere(
+        (address) => '${address['street']} ${address['floor']}' == newValue,
+        orElse: () => {},  // Return an empty map if not found
       );
-    }).toList(),
-    dropdownColor: MyColors.Secondcolor, // Style dropdown background
-    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-    underline: SizedBox(), // Remove underline
+    });
+    print('Selected Address: $selectedAddressMap');
+  },
+  hint: Text(
+    'Select Address',
+    style: TextStyle(color: Colors.black),
   ),
-            ),
+  items: addresses
+      .map<DropdownMenuItem<String>>((address) {
+    return DropdownMenuItem<String>(
+      value: '${address['street']} ${address['floor']}',  // Concatenate street and floor
+      child: Text(
+        '${address['street'] ?? 'Unknown Street'}, Floor: ${address['floor'] ?? 'N/A'}',
+      ),
+    );
+  }).toList(),
+  dropdownColor: MyColors.Secondcolor,
+  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+  underline: SizedBox(),
+),),
           ],
         ),
         body: SingleChildScrollView(
@@ -320,6 +349,7 @@ List<Map<String, dynamic>> addresses = [
                   width: 360,
                   child: Stack(children: [
                     _buildMe(),
+                    _buildAddress(),
                     _buildGoogleMaps(),
                     Center(
                       // This creates the fixed pin in the center of the map view

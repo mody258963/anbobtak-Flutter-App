@@ -20,7 +20,7 @@ class LodingState extends GetMethodStateV1{}
 
 
 class GetAddres extends GetMethodStateV1 {
- final List<Address>  posts;
+ final List<Datas>  posts;
 
   GetAddres({required this.posts});
 

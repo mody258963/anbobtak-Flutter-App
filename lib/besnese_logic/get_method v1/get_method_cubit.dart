@@ -34,8 +34,9 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
       Future<FutureOr<void>> GetAddress() async {   // to do : divide the cubits  
     try {
       emit(LodingState());
-      List<Address> posts = await myRepo.GetAddress('v1/address/');
+      List<Datas> posts = await myRepo.GetAddress('v1/address/');
       emit(GetAddres(posts: posts));
+      
       print("======Carts======$posts");
     } catch (e) {
       print('========cubits/ Address=======${e.toString()}');
