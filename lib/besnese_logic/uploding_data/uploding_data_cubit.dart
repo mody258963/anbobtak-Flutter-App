@@ -84,4 +84,16 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
   }
 
 
+  Future<void> deleteProduct( productId) async {
+    try {
+      List<Carts> Items = await myRepo.deleteProduct('v1/cart/remove-item', {
+        'product_id': productId,
+        '_method': 'delete'
+      });
+      print('====CArt Items=====$Items');
+      emit(ItemUploaded(Items: Items));
+    } catch (e) {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
+  }
 }

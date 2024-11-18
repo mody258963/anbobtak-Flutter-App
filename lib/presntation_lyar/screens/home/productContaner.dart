@@ -1,4 +1,6 @@
 import 'package:add_to_cart_button/add_to_cart_button.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
@@ -24,9 +26,8 @@ class _ProductContainerState extends State<ProductContainer> {
 
   void _CartEditing() {
     for (var item in cartItems) {
-        BlocProvider.of<UplodingDataCubit>(context)
-            .addItemInCart(item['quantity'], item['id']);
- 
+      BlocProvider.of<UplodingDataCubit>(context)
+          .addItemInCart(item['quantity'], item['id']);
     }
   }
 
@@ -59,9 +60,9 @@ class _ProductContainerState extends State<ProductContainer> {
 
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
-        if (state is GetCartsandProducts) {
-          final items = _sortProducts(state.products); // Sort products by id
-          final cart = _sortProducts(state.cart);
+        if (state is GetProducts) {
+          // Sort both products and cart lists by ID
+          final items = _sortProducts(state.posts);
 
           return MediaQuery.removePadding(
             context: context,
@@ -81,21 +82,26 @@ class _ProductContainerState extends State<ProductContainer> {
                       (width / 0.12) / (height - kToolbarHeight - 50) / 2.1,
                 ),
                 itemBuilder: (context, index) {
-                  final allList = items[index];
-                  final allcart = cart[index];
+                  // Retrieve the product
+                  final product = items[index];
 
-                  return _buildProductItem(allList, allcart);
+                  // Build the product item
+                  return _buildProductItem(product);
                 },
               ),
             ),
           );
         }
-        return Container();
+
+        // If state is not `GetCartsandProducts`, return an empty container
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
 
-  Widget _buildProductItem(product, cartItem) {
+  Widget _buildProductItem(product) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -175,79 +181,97 @@ class _ProductContainerState extends State<ProductContainer> {
             ),
           ),
           SizedBox(width: 40),
-          _buildCounter(product, cartItem),
+          _buildCounter(product),
         ],
       ),
     );
   }
 
-  Widget _buildCounter(product, cartItem) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+Widget _buildCounter(product) {
+  double width = MediaQuery.of(context).size.width;
+  double height = MediaQuery.of(context).size.height;
 
-    return Container(
-      height: height * 0.14,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: width * 0.1),
-          AddToCartCounterButton(
-            initNumber: cartItem.quantity,
-            minNumber: 0,
-            maxNumber: 10,
-            increaseCallback: () {
-              setState(() {
-          
-                _CartEditing();
-              });
-            },
-            decreaseCallback: () {
-              setState(() {
-                _CartEditing();
-              });
-              ;
-            },
-            counterCallback: (int count) {
-              bool found = false;
+  return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+    builder: (context, state) {
+      if (state is GetCartsV1) {
+        // Cast state.posts from List<dynamic> to List<Map<String, dynamic>>
+        cartItems = List<Map<String, dynamic>>.from(state.posts);
+      }
 
-              // Find the cart item matching the product id
-              for (var item in cartItems) {
-                if (item['id'] == product.id) {
-                  item['quantity'] =
-                      count; // Update the quantity for this product
-                  found = true;
-                  break;
-                }
-              }
-
-              // If the product was not found in the cart, add it
-              if (!found) {
-                cartItems.add({
-                  'id': product.id,
-                  'name': product.name,
-                  'quantity': count,
-                  'price': product.price,
-                  'image': product.image
+      return Container(
+        height: height * 0.14,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: width * 0.1),
+            AddToCartCounterButton(
+              initNumber: cartItems.isNotEmpty
+                  ? cartItems.firstWhere(
+                      (item) => item['id'] == product.id,
+                      orElse: () => {'quantity': 0},
+                    )['quantity']
+                  : 0,
+              minNumber: 0,
+              maxNumber: 10,
+              increaseCallback: () {
+                setState(() {
+                  _CartEditing();
                 });
-              }
+              },
+              decreaseCallback: () {
+                setState(() {
+                  final cartItem = cartItems.firstWhere(
+                    (item) => item['id'] == product.id,
+                    orElse: () => {}, // Return an empty map if the product is not found
+                  );
 
-              // Sort cart items by id to maintain order
-              sortCart();
+                  if (cartItem.isNotEmpty && cartItem['quantity'] == 1) {
+                    BlocProvider.of<UplodingDataCubit>(context)
+                        .deleteProduct(cartItem['id']);
+                  }
 
-              // After updating the cart, notify the parent widget
-              widget.onCartUpdate(cartItems);
+                  _CartEditing();
+                });
+              },
+              counterCallback: (int count) {
+                setState(() {
+                  bool found = false;
 
-              print('=============cart==========$cartItems');
-              print('=============price==========$totalPrice');
-            },
-            backgroundColor: Colors.white,
-            buttonFillColor: MyColors.Secondcolor,
-            buttonIconColor: Colors.white,
-          ),
-        ],
-      ),
-    );
-  }
+                  for (var item in cartItems) {
+                    if (item['id'] == product.id) {
+                      item['quantity'] = count;
+                      found = true;
+                      break;
+                    }
+                  }
+
+                  if (!found) {
+                    cartItems.add({
+                      'id': product.id,
+                      'name': product.name,
+                      'quantity': count,
+                      'price': product.price,
+                      'image': product.image
+                    });
+                  }
+
+                  sortCart();
+
+                  widget.onCartUpdate(cartItems);
+
+                  print('Updated Cart: $cartItems');
+                });
+              },
+              backgroundColor: Colors.white,
+              buttonFillColor: MyColors.Secondcolor,
+              buttonIconColor: Colors.white,
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {

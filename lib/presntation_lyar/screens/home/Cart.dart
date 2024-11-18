@@ -31,7 +31,7 @@ print('Quantity passed to CartScreen: ${widget.quantity}');
   Widget _buildCartList() {
     return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
       builder: (context, state) {
-        if (state is GetCarts) {
+        if (state is GetCartsV1) {
           final cart = state.posts;
           return MediaQuery.removePadding(
             context: context,
@@ -88,7 +88,7 @@ print('Quantity passed to CartScreen: ${widget.quantity}');
   Widget build(BuildContext context) {
     return BlocListener<GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
-        if (state is GetCarts) {
+        if (state is GetCartsV1) {
           // Once the cart is fetched, you may perform any other action
           // For now, we will simply ensure that cart data is loaded when entering the screen
         }

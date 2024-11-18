@@ -26,10 +26,10 @@ class GetAddres extends GetMethodStateV1 {
 
 
 }
-class GetCarts extends GetMethodStateV1 {
+class GetCartsV1 extends GetMethodStateV1 {
  final List posts;
 
-  GetCarts({required this.posts});
+  GetCartsV1({required this.posts});
 
 
 }

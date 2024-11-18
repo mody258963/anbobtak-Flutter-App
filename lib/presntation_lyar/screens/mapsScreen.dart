@@ -162,7 +162,7 @@ class _MapScreenState extends State<MapScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
             onPressed: () {
-                  BlocProvider.of<GetMethodCubit>(context).GetProductAndCart();
+                  BlocProvider.of<GetMethodCubit>(context).GetProduct();
               Navigator.of(context).pop();
 
             },

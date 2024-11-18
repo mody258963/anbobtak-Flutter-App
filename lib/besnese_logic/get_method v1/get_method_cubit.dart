@@ -23,7 +23,7 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
     try {
       emit(LodingState());
       List<Item> posts = await myRepo.GetCart('v1/cart/');
-      emit(GetCarts(posts: posts));
+      emit(GetCartsV1(posts: posts));
       print("======Carts======$posts");
     } catch (e) {
       print('========cubits/ carts=======${e.toString()}');

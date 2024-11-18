@@ -53,7 +53,7 @@ factory Datas.fromJson(Map<String, dynamic> json) {
   return Datas(
     id: json["id"] ?? 0,
     buildingNumber: json["building_number"] ?? "",
-    apartmentNumber: json["apartment_number"] ?? "",
+    apartmentNumber: json["apartment_number"] ?? "N/A",
     floor: json["floor"] ?? "N/A",
     lat: double.tryParse(json["lat"]?.toString() ?? "0"),  // Convert to double
     long: double.tryParse(json["long"]?.toString() ?? "0"), // Convert to double

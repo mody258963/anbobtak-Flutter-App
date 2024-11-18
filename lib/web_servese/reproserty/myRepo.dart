@@ -79,31 +79,40 @@ class MyRepo {
     return cartItems..shuffle(); // Shuffles the items list
   }
 
-Future<List<Datas>> GetAddress(String end) async {
-  final response = await nameWebService.getTypeMap(end);
+  Future<List<Datas>> GetAddress(String end) async {
+    final response = await nameWebService.getTypeMap(end);
 
-  print("=====Raw Response Address====#${response.toString()}");
+    print("=====Raw Response Address====#${response.toString()}");
 
-  try {
-    // Check if the response is a Map or a List
-    if (response is Map<String, dynamic>) {
-      final Address address = Address.fromJson(response);
-      return address.data..shuffle();
-    } else if (response is List<dynamic>) {
-      // If the response is just the data array
-      final List<Datas> addresses = response
-          .map((x) => Datas.fromJson(x as Map<String, dynamic>))
-          .toList();
-      return addresses..shuffle();
-    } else {
-      throw Exception("Unexpected response format");
+    try {
+      // Check if the response is a Map or a List
+      if (response is Map<String, dynamic>) {
+        final Address address = Address.fromJson(response);
+        return address.data..shuffle();
+      } else if (response is List<dynamic>) {
+        // If the response is just the data array
+        final List<Datas> addresses = response
+            .map((x) => Datas.fromJson(x as Map<String, dynamic>))
+            .toList();
+        return addresses..shuffle();
+      } else {
+        throw Exception("Unexpected response format");
+      }
+    } catch (e) {
+      print('Error parsing response: $e');
+      throw Exception('Failed to parse addresses');
     }
-  } catch (e) {
-    print('Error parsing response: $e');
-    throw Exception('Failed to parse addresses');
   }
-}
 
+  Future<List<Carts>> deleteProduct(String end, Object data) async {
+    final names = await nameWebService.post(
+      end,
+      data,
+    );
+        final userList = names.map((names) => Carts.fromJson(names)).toList();
+    print("=====Carts====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
 
   Future<List<Carts>> addItemCart(String end, Object data) async {
     final names = await nameWebService.post(

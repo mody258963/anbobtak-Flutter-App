@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:add_to_cart_button/add_to_cart_button.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
-import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
-import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart' as cart;
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart' ;
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/Cart.dart';
@@ -37,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<GetMethodCubit>(context).GetProductAndCart();
+    BlocProvider.of<GetMethodCubit>(context).GetProduct();
+    BlocProvider.of<cart.GetMethodCubitV2>(context).GetCart();
     _loadData();
   }
 
@@ -66,18 +67,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCartsList() {
-    return BlocListener<GetMethodCubit, GetMethodState>(
+    return BlocListener<cart.GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
-        if (state is GetCartsandProducts) {
-          final items = state.cart;
+        if (state is GetCartsV1) {
 
           int totalQuantity = 0; // Variable to hold the total quantity
+ setState(() {
+          cartItems = state.posts
+              .map((item) => {
+                    'id': item.id,
+                    'name': item.name,
+                    'quantity': item.quantity ?? 0,
+                    'price': item.price,
+                    'image': item.image,
+                  })
+              .toList();
+        });
 
-          // Iterate through each cart item and calculate total quantity
-          for (var item in items) {
-            totalQuantity += item.quantity
-                as int; // Assuming quantity is a field in each cart item
-          }
 
           // Update the total quantity
           setState(() {
