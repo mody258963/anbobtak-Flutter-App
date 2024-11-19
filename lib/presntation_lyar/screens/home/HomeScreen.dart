@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:add_to_cart_button/add_to_cart_button.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
-import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart' as cart;
-import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart' ;
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart'
+    as cart;
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/main.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/Cart.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/productContaner.dart';
 import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
@@ -15,6 +17,7 @@ import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,20 +73,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<cart.GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
         if (state is GetCartsV1) {
-
           int totalQuantity = 0; // Variable to hold the total quantity
- setState(() {
-          cartItems = state.posts
-              .map((item) => {
-                    'id': item.id,
-                    'name': item.name,
-                    'quantity': item.quantity ?? 0,
-                    'price': item.price,
-                    'image': item.image,
-                  })
-              .toList();
-        });
-
+          setState(() {
+            cartItems = state.posts
+                .map((item) => {
+                      'id': item.product.id,
+                      'name': item.product.name,
+                      'quantity': item.quantity ?? 0,
+                      'price': item.product.price,
+                      'image': item.product.image,
+                    })
+                .toList();
+          });
 
           // Update the total quantity
           setState(() {
@@ -99,28 +100,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<dynamic> _buttomSheetCart() {
     return showMaterialModalBottomSheet(
-        context: context, builder: (context) => CartScreen( quantity: totalQuantity,));
+        context: context,
+        builder: (context) =>
+            CartScreen(quantity: totalQuantity, onCartUpdate: _updateCart));
   }
 
   Widget _CircleWithNumber() {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return Container(
-      width: width * 0.058, // Diameter of the circle
-      height: height * 0.03, // Diameter of the circle
+      width: 14.w, // Diameter of the circle
+      height: 14.h, // Diameter of the circle
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.blue, // Background color of the circle
-      ),
-      child: Center(
-        child: Text(
-          totalQuantity.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width * 0.04,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        color: const Color.fromARGB(
+            255, 155, 48, 42), // Background color of the circle
       ),
     );
   }
@@ -129,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    ScreenUtil.init(context, designSize: const Size(360, 852));
 
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Poppins'),
@@ -147,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 }
                 _buttomSheetCart();
-            
               }, "Pay")),
         ),
         backgroundColor: MyColors.white,
@@ -155,20 +147,24 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-                padding:
-                    EdgeInsets.only(top: height * 0.05, left: width * 0.85),
+                padding: EdgeInsets.only(top: 40.sp, left: 300.sp),
                 child: Stack(
                   children: [
                     _buildCartsList(),
+                    if (cartItems.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(left: 1.sp, top: 5.sp),
+                        child: _CircleWithNumber(),
+                      ),
                     IconButton(
                         onPressed: () {
-                           if (cartItems.isNotEmpty) {
-                  for (var item in cartItems) {
-                    BlocProvider.of<UplodingDataCubit>(context)
-                        .addItemInCart(item['quantity'], item['id']);
-                  }
-                }
-                _buttomSheetCart();
+                          if (cartItems.isNotEmpty) {
+                            for (var item in cartItems) {
+                              BlocProvider.of<UplodingDataCubit>(context)
+                                  .addItemInCart(item['quantity'], item['id']);
+                            }
+                          }
+                          _buttomSheetCart();
                         },
                         icon: Icon(
                           Icons.shopping_bag_outlined,
@@ -195,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     // Pass the cart update function to ProductContainer
-                    ProductContainer(onCartUpdate: _updateCart ),
+                    ProductContainer(onCartUpdate: _updateCart),
                   ],
                 ),
               ),

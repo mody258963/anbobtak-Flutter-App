@@ -1,8 +1,9 @@
-
-
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/mapsScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,8 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class CartScreen extends StatefulWidget {
-final int quantity;
-  const CartScreen({super.key,  required this.quantity });
+  final int quantity;
+  final Function(List<Map<String, dynamic>>) onCartUpdate;
+  const CartScreen(
+      {super.key, required this.quantity, required this.onCartUpdate});
   @override
   State<CartScreen> createState() => _CartScreenState();
 }
@@ -23,11 +26,10 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-      BlocProvider.of<GetMethodCubitV2>(context).GetCart();
-print('Quantity passed to CartScreen: ${widget.quantity}'); 
+    BlocProvider.of<GetMethodCubitV2>(context).GetCart();
+    print('Quantity passed to CartScreen: ${widget.quantity}');
   }
 
-  // Method to build the cart list and update the quantity
   Widget _buildCartList() {
     return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
       builder: (context, state) {
@@ -68,11 +70,52 @@ print('Quantity passed to CartScreen: ${widget.quantity}');
                       fontFamily: 'Poppins',
                     ),
                   ),
-                  trailing: Text(
-                    'EGP ${allcart.price}',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                    ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'EGP ${allcart.price}',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          setState(() {
+                            try {
+                              final productId = allcart.product.id;
+
+                              // Call the delete product method from the bloc
+                              BlocProvider.of<UplodingDataCubit>(context)
+                                  .deleteProduct(productId);
+
+                              // Remove the product from the cart (cartItems is updated)
+                              final updatedCart = List<
+                                      Map<String, dynamic>>.from(
+                                  cart.map((item) => item
+                                      .toJson()) // Correct method to convert Item to map
+                                  )
+                                ..removeWhere((item) =>
+                                    item['id'] ==
+                                    productId); // Remove item based on the ID
+
+                              // Ensure the count for the deleted item resets to 0
+                              widget.onCartUpdate(
+                                  updatedCart); // Update cart in parent widget
+
+                                   Navigator.pop(context);
+
+
+                              print(
+                                  'Updated Cart after deletion: $updatedCart');
+                            } catch (e) {
+                              print('==========delete=======${e.toString()}');
+                            }
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
@@ -104,12 +147,12 @@ print('Quantity passed to CartScreen: ${widget.quantity}');
           children: [
             _buildCartList(),
             _widgets.AppButton(() {
-                  PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: MapScreen(),
-                  withNavBar: true, // OPTIONAL VALUE. True by default.
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: MapScreen(),
+                withNavBar: true, // OPTIONAL VALUE. True by default.
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
             }, "Pay")
           ],
         ),

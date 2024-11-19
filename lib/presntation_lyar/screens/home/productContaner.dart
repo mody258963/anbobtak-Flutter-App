@@ -26,8 +26,10 @@ class _ProductContainerState extends State<ProductContainer> {
 
   void _CartEditing() {
     for (var item in cartItems) {
-      BlocProvider.of<UplodingDataCubit>(context)
-          .addItemInCart(item['quantity'], item['id']);
+      setState(() {
+  BlocProvider.of<UplodingDataCubit>(context)
+      .addItemInCart(item['quantity'], item['id']);
+});
     }
   }
 
@@ -187,16 +189,29 @@ class _ProductContainerState extends State<ProductContainer> {
     );
   }
 
-Widget _buildCounter(product) {
+ Widget _buildCounter(product) {
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
 
   return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
     builder: (context, state) {
       if (state is GetCartsV1) {
-        // Cast state.posts from List<dynamic> to List<Map<String, dynamic>>
-        cartItems = List<Map<String, dynamic>>.from(state.posts);
+        cartItems = state.posts
+            .map((item) => {
+                  'id': item.product.id,
+                  'name': item.product.name,
+                  'quantity': item.quantity ?? 0,
+                  'price': item.product.price,
+                  'image': item.product.image,
+                })
+            .toList();
       }
+
+      // Initialize the quantity directly from the cartItems
+      final item = cartItems.firstWhere(
+        (item) => item['id'] == product.id,
+        orElse: () => {'quantity': 0}, // Default value if not found
+      );
 
       return Container(
         height: height * 0.14,
@@ -205,16 +220,12 @@ Widget _buildCounter(product) {
           children: [
             SizedBox(width: width * 0.1),
             AddToCartCounterButton(
-              initNumber: cartItems.isNotEmpty
-                  ? cartItems.firstWhere(
-                      (item) => item['id'] == product.id,
-                      orElse: () => {'quantity': 0},
-                    )['quantity']
-                  : 0,
+              initNumber: item['quantity'], // Initialize quantity correctly
               minNumber: 0,
               maxNumber: 10,
               increaseCallback: () {
                 setState(() {
+                  // Increase logic
                   _CartEditing();
                 });
               },
@@ -222,21 +233,27 @@ Widget _buildCounter(product) {
                 setState(() {
                   final cartItem = cartItems.firstWhere(
                     (item) => item['id'] == product.id,
-                    orElse: () => {}, // Return an empty map if the product is not found
+                    orElse: () => {}, // Return empty map if not found
                   );
 
-                  if (cartItem.isNotEmpty && cartItem['quantity'] == 1) {
+                  if (cartItem['quantity'] == 0) {
+                    // Delete product if quantity is 1
                     BlocProvider.of<UplodingDataCubit>(context)
                         .deleteProduct(cartItem['id']);
+                         cartItems.removeWhere((item) => item['id'] == cartItem['id']);
+                            widget.onCartUpdate(cartItems); 
+                          _CartEditing();
+                  } else  {
+                    _CartEditing();
                   }
-
-                  _CartEditing();
                 });
               },
+              
               counterCallback: (int count) {
                 setState(() {
                   bool found = false;
 
+                  // Update quantity for the found item
                   for (var item in cartItems) {
                     if (item['id'] == product.id) {
                       item['quantity'] = count;
@@ -245,19 +262,21 @@ Widget _buildCounter(product) {
                     }
                   }
 
+                  // If item not found, add it to the cart
                   if (!found) {
                     cartItems.add({
                       'id': product.id,
                       'name': product.name,
                       'quantity': count,
                       'price': product.price,
-                      'image': product.image
+                      'image': product.image,
                     });
                   }
 
+                  // Sort cart and update state
                   sortCart();
 
-                  widget.onCartUpdate(cartItems);
+                  widget.onCartUpdate(cartItems); // Update cart in parent widget
 
                   print('Updated Cart: $cartItems');
                 });
