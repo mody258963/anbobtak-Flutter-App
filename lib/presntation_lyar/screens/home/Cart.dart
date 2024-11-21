@@ -86,31 +86,28 @@ class _CartScreenState extends State<CartScreen> {
                             try {
                               final productId = allcart.product.id;
 
-                              // Call the delete product method from the bloc
+                              // Delete the product from the backend using the Bloc
                               BlocProvider.of<UplodingDataCubit>(context)
                                   .deleteProduct(productId);
 
-                              // Remove the product from the cart (cartItems is updated)
-                              final updatedCart = List<
-                                      Map<String, dynamic>>.from(
-                                  cart.map((item) => item
-                                      .toJson()) // Correct method to convert Item to map
-                                  )
-                                ..removeWhere((item) =>
-                                    item['id'] ==
-                                    productId); // Remove item based on the ID
+                              // Update local cart
+                              cart.removeWhere(
+                                  (item) => item.product.id == productId);
 
-                              // Ensure the count for the deleted item resets to 0
-                              widget.onCartUpdate(
-                                  updatedCart); // Update cart in parent widget
+                              // Map the cart to JSON and ensure type is correct
+                              final updatedCart = cart
+                                  .map<Map<String, dynamic>>((item) =>
+                                      item.toJson() as Map<String, dynamic>)
+                                  .toList();
 
-                                   Navigator.pop(context);
-
+                              // Update parent widget
+                              widget.onCartUpdate(updatedCart);
 
                               print(
                                   'Updated Cart after deletion: $updatedCart');
                             } catch (e) {
-                              print('==========delete=======${e.toString()}');
+                              print(
+                                  'Error deleting cart item: ${e.toString()}');
                             }
                           });
                         },

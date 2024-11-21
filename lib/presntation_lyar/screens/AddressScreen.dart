@@ -6,6 +6,7 @@ import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/screens/Checkout.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key, this.lat, this.long});
@@ -204,6 +206,9 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
+             selectedAddressMap != null
+                ? false
+                : true,
             TextInputType.text,
             selectedAddressMap != null
                 ? selectedAddressMap!['building_number']
@@ -223,6 +228,9 @@ class _AddressScreenState extends State<AddressScreen> {
                     2,
                     0.01,
                     0.05,
+                     selectedAddressMap != null
+                ? false
+                : true,
                     TextInputType.text,
                     selectedAddressMap != null
                         ? selectedAddressMap!['apartment_number']
@@ -239,6 +247,9 @@ class _AddressScreenState extends State<AddressScreen> {
                     3,
                     0.05,
                     0.01,
+                     selectedAddressMap != null
+                ? false
+                : true,
                     TextInputType.number,
                     selectedAddressMap != null
                         ? selectedAddressMap!['floor']
@@ -257,6 +268,9 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
+             selectedAddressMap != null
+                ? false
+                : true,
             TextInputType.text,
             selectedAddressMap != null ? selectedAddressMap!['street'] : '',
             context),
@@ -270,6 +284,9 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
+             selectedAddressMap != null
+                ? false
+                : true,
             TextInputType.text,
             selectedAddressMap != null
                 ? selectedAddressMap!['additional_address']
@@ -287,6 +304,7 @@ class _AddressScreenState extends State<AddressScreen> {
             height: height * 0.07,
             width: width * 0.80,
             child: _widgets.AppButton(() {
+              try {
               BlocProvider.of<UplodingDataCubit>(context).addAddress(
                   buidingcontroller.text,
                   apartmentcontroller.text,
@@ -296,6 +314,17 @@ class _AddressScreenState extends State<AddressScreen> {
                   widget.long.toString(),
                   streetcontroller.text,
                   phone);
+                
+                 PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: CheckoutScreen(),
+                withNavBar: true, // OPTIONAL VALUE. True by default.
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
+                
+              } catch (e) {
+                
+              }
               print(phone);
             }, "Confirm")),
       ],
@@ -394,8 +423,8 @@ class _AddressScreenState extends State<AddressScreen> {
             child: Column(
               children: [
                 Container(
-                  height: 150,
-                  width: 360,
+                  height: 150.h,
+                  width: 320.w,
                   child: Stack(children: [
                     _buildMe(),
                     _buildAddress(),
@@ -413,8 +442,8 @@ class _AddressScreenState extends State<AddressScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    height: 80,
-                    width: 360,
+                    height: 70.h,
+                    width: 320.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: MyColors.white,
@@ -430,7 +459,7 @@ class _AddressScreenState extends State<AddressScreen> {
                     child: Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.sp),
                           child: Icon(Icons.location_pin),
                         ),
                         Expanded(

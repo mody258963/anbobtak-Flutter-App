@@ -76,6 +76,59 @@ class Widgets {
       ),
     );
   }
+  Widget buildCustomDialog(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Custom Dialog",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "This is a customized dialog. You can add any widgets you want here.",
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  child: Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Perform an action
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Action Confirmed!")),
+                    );
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text("Confirm"),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 
   Widget TextFieldinApp(
       TextEditingController controller,
@@ -86,6 +139,7 @@ class Widgets {
       int long,
       sizeR,
       sizeL,
+      enable,
       TextInputType type,
       String prefix,
       BuildContext context) {
@@ -109,6 +163,7 @@ class Widgets {
 
         decoration: InputDecoration(
           prefixText: prefix,
+          enabled: enable,
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 color: MyColors.Secondcolor), // Change the color when focused

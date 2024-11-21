@@ -81,6 +81,7 @@ class _ForgetpasswordState extends State<Forgetpassword> {
                     60,
                     0.05,
                     0.05,
+                    true,
                     TextInputType.emailAddress,
                     '',
                     context)),

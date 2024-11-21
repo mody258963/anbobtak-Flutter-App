@@ -242,7 +242,7 @@ class _ProductContainerState extends State<ProductContainer> {
                         .deleteProduct(cartItem['id']);
                          cartItems.removeWhere((item) => item['id'] == cartItem['id']);
                             widget.onCartUpdate(cartItems); 
-                          _CartEditing();
+                         _CartEditing();
                   } else  {
                     _CartEditing();
                   }

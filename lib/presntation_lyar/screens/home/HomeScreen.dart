@@ -162,7 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             for (var item in cartItems) {
                               BlocProvider.of<UplodingDataCubit>(context)
                                   .addItemInCart(item['quantity'], item['id']);
+                                  
                             }
+
                           }
                           _buttomSheetCart();
                         },
