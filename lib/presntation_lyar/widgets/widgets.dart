@@ -87,6 +87,7 @@ class Widgets {
       sizeR,
       sizeL,
       TextInputType type,
+      String prefix,
       BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -105,7 +106,9 @@ class Widgets {
         },
         controller: controller,
         keyboardType: type,
+
         decoration: InputDecoration(
+          prefixText: prefix,
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 color: MyColors.Secondcolor), // Change the color when focused

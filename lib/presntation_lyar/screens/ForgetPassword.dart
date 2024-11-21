@@ -82,6 +82,7 @@ class _ForgetpasswordState extends State<Forgetpassword> {
                     0.05,
                     0.05,
                     TextInputType.emailAddress,
+                    '',
                     context)),
             SizedBox(height: height * 0.01),
             // Instruction Text

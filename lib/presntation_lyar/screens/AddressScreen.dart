@@ -4,6 +4,8 @@ import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/extensions.dart';
+import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,26 +27,27 @@ class AddressScreen extends StatefulWidget {
 class _AddressScreenState extends State<AddressScreen> {
   final TextEditingController otpcontroller = TextEditingController();
   final TextEditingController buidingcontroller = TextEditingController();
-  final TextEditingController aptcontroller = TextEditingController();
+  final TextEditingController apartmentcontroller = TextEditingController();
   final TextEditingController floorcontroller = TextEditingController();
-  final TextEditingController Streetcontroller = TextEditingController();
+  final TextEditingController streetcontroller = TextEditingController();
   final TextEditingController Addcontroller = TextEditingController();
   final TextEditingController phonecontroller = TextEditingController();
   bool? isOffice = false;
 
   Widgets _widgets = Widgets();
   String phone = '';
- String? selectedAddressString;  // Store the address string (for display)
-Map<String, dynamic>? selectedAddressMap;  // Store the full map for internal use
-
+  String? selectedAddressString; // Store the address string (for display)
+  Map<String, dynamic>?
+      selectedAddressMap; // Store the full map for internal use
+  int? selectedAddressId; // Variable to store the selected address ID
   List<Map<String, dynamic>> addresses = [];
 
   @override
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
-    BlocProvider.of<GetMethodCubit>(context).GetMe();
     BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
+    BlocProvider.of<GetMethodCubit>(context).GetMe();
   }
 
   Widget _buildMe() {
@@ -70,41 +73,41 @@ Map<String, dynamic>? selectedAddressMap;  // Store the full map for internal us
     );
   }
 
- Widget _buildAddress() {
-  return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
-    builder: (context, state) {
-      if (state is GetAddres) {
-        final List<Datas> addressList = state.posts; // Ensure it’s a list
-print('State posts type: ${state.posts.runtimeType}');
-print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No data'}');
+  Widget _buildAddress() {
+    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+      builder: (context, state) {
+        if (state is GetAddres) {
+          final List<Datas> addressList = state.posts; // Ensure it’s a list
+          print('State posts type: ${state.posts.runtimeType}');
+          print(
+              'First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No data'}');
 
-        if (addressList.isNotEmpty) {
-          addresses.clear(); // Avoid duplicate entries
-          for (var item in addressList) {
-            if (mounted) {
-
-  addresses.add({
-    'building_number': item.buildingNumber ?? 'N/A',
-    'apartment_number': item.apartmentNumber ?? 'N/A',
-    'additional_address': item.additionalAddress ?? 'N/A',
-    'floor': item.floor ?? 'N/A',
-    'lat': item.lat?.toString() ?? '0',
-    'long': item.long?.toString() ?? '0',
-    'street': item.street ?? 'N/A',
-  });
-}
+          if (addressList.isNotEmpty) {
+            addresses.clear(); // Avoid duplicate entries
+            for (var item in addressList) {
+              if (mounted) {
+                addresses.add({
+                  'id': item.id,
+                  'building_number': item.buildingNumber ?? 'N/A',
+                  'apartment_number': item.apartmentNumber ?? 'N/A',
+                  'additional_address': item.additionalAddress ?? 'N/A',
+                  'floor': item.floor ?? 'N/A',
+                  'lat': item.lat?.toString() ?? '0',
+                  'long': item.long?.toString() ?? '0',
+                  'street': item.street ?? 'N/A',
+                });
+              }
+            }
+          } else {
+            print('No address data found');
           }
-        } else {
-          print('No address data found');
+
+          print('Processed addresses: $addresses');
         }
-
-        print('Processed addresses: $addresses');
-      }
-      return Container(); // Return a widget as required
-    },
-  );
-}
-
+        return Container(); // Return a widget as required
+      },
+    );
+  }
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -202,6 +205,9 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
             0.05,
             0.05,
             TextInputType.text,
+            selectedAddressMap != null
+                ? selectedAddressMap!['building_number']
+                : '',
             context),
         SizedBox(height: isOffice == true ? height * 0.01 : height * 0.001),
         if (isOffice == true)
@@ -209,7 +215,7 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
             children: [
               Expanded(
                 child: _widgets.TextFieldinApp(
-                    aptcontroller,
+                    apartmentcontroller,
                     'Apt. no.',
                     6,
                     'more detals',
@@ -218,6 +224,9 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
                     0.01,
                     0.05,
                     TextInputType.text,
+                    selectedAddressMap != null
+                        ? selectedAddressMap!['apartment_number']
+                        : '',
                     context),
               ),
               Expanded(
@@ -231,13 +240,26 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
                     0.05,
                     0.01,
                     TextInputType.number,
+                    selectedAddressMap != null
+                        ? selectedAddressMap!['floor']
+                        : '',
                     context),
               ),
             ],
           ),
         SizedBox(height: height * 0.01),
-        _widgets.TextFieldinApp(Streetcontroller, 'Street', 6, 'more detals',
-            'alot of detals', 65, 0.05, 0.05, TextInputType.text, context),
+        _widgets.TextFieldinApp(
+            streetcontroller,
+            'Street',
+            6,
+            'more detals',
+            'alot of detals',
+            65,
+            0.05,
+            0.05,
+            TextInputType.text,
+            selectedAddressMap != null ? selectedAddressMap!['street'] : '',
+            context),
         SizedBox(height: height * 0.01),
         _widgets.TextFieldinApp(
             Addcontroller,
@@ -249,6 +271,9 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
             0.05,
             0.05,
             TextInputType.text,
+            selectedAddressMap != null
+                ? selectedAddressMap!['additional_address']
+                : '',
             context),
         SizedBox(height: height * 0.01),
         Padding(
@@ -264,12 +289,12 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
             child: _widgets.AppButton(() {
               BlocProvider.of<UplodingDataCubit>(context).addAddress(
                   buidingcontroller.text,
-                  aptcontroller.text,
+                  apartmentcontroller.text,
                   Addcontroller.text,
                   floorcontroller.text,
                   widget.lat.toString(),
                   widget.long.toString(),
-                  Streetcontroller.text,
+                  streetcontroller.text,
                   phone);
               print(phone);
             }, "Confirm")),
@@ -308,36 +333,60 @@ print('First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No da
           title: Center(child: Text('Enter your address')),
           actions: [
             Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: DropdownButton<String>(
-  value: selectedAddressString,
-  onChanged: (String? newValue) {
-    setState(() {
-      selectedAddressString = newValue;
-      selectedAddressMap = addresses.firstWhere(
-        (address) => '${address['street']} ${address['floor']}' == newValue,
-        orElse: () => {},  // Return an empty map if not found
-      );
-    });
-    print('Selected Address: $selectedAddressMap');
-  },
-  hint: Text(
-    'Select Address',
-    style: TextStyle(color: Colors.black),
-  ),
-  items: addresses
-      .map<DropdownMenuItem<String>>((address) {
-    return DropdownMenuItem<String>(
-      value: '${address['street']} ${address['floor']}',  // Concatenate street and floor
-      child: Text(
-        '${address['street'] ?? 'Unknown Street'}, Floor: ${address['floor'] ?? 'N/A'}',
-      ),
-    );
-  }).toList(),
-  dropdownColor: MyColors.Secondcolor,
-  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-  underline: SizedBox(),
-),),
+              padding: const EdgeInsets.only(right: 10),
+              child: DropdownButton<String>(
+                value: selectedAddressString,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedAddressString = newValue;
+                    selectedAddressMap = addresses.firstWhere(
+                      (address) =>
+                          '${address['street']} ${address['floor']}' ==
+                          newValue,
+                      orElse: () => {}, // Return an empty map if not found
+                    );
+                    if (newValue == 'clear_selection') {
+                      selectedAddressString = null;
+                      selectedAddressMap = null;
+                    }
+                    if (selectedAddressMap != null &&
+                        selectedAddressMap!.isNotEmpty) {
+                      selectedAddressId =
+                          selectedAddressMap!['id']; // Extract the ID
+                      print('Selected Address ID: $selectedAddressId');
+
+                    }
+                    print('new value: $newValue');
+                  });
+                },
+                hint: Text(
+                  'Select Address',
+                  style: TextStyle(color: Colors.black),
+                ),
+                items: [
+                  // Add a "Clear Selection" option
+                  DropdownMenuItem<String>(
+                    value: 'clear_selection',
+                    child: Text(
+                      'Clear Selection',
+                      style: TextStyle(color: Colors.red), // Optional styling
+                    ),
+                  ),
+                  ...addresses.map<DropdownMenuItem<String>>((address) {
+                    return DropdownMenuItem<String>(
+                      value:
+                          '${address['street']} ${address['floor']}', // Concatenate street and floor
+                      child: Text(
+                        '${address['street'] ?? 'Unknown Street'}, Floor: ${address['floor'] ?? 'N/A'}',
+                      ),
+                    );
+                  }).toList(),
+                ],
+                dropdownColor: MyColors.Secondcolor,
+                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                underline: SizedBox(),
+              ),
+            ),
           ],
         ),
         body: SingleChildScrollView(

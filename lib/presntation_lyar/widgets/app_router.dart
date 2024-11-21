@@ -1,6 +1,7 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/screens/Checkout.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
 import 'package:anbobtak/presntation_lyar/screens/OTPScreen.dart';
@@ -70,6 +71,20 @@ class AppRouter {
             builder: (_) => BlocProvider<GetMethodCubit>.value(
                   value: getMethodCubit!,
                   child: MapScreen(),
+                ));
+                case checkout:
+                final int? id = settings.arguments as int?;
+
+                     MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+                    BlocProvider<UplodingDataCubit>.value(
+                        value: uplodingDataCubit!),
+                    BlocProvider<GetMethodCubitV2>.value(
+                        value: getMethodCubitV2!),
+                  ],
+                  child:CheckoutScreen(id:id)
                 ));
       case signup:
         return MaterialPageRoute(

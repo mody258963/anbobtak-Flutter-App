@@ -1,5 +1,7 @@
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/extensions.dart';
+import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/MyorderScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/ProfileScreen.dart';
@@ -43,14 +45,15 @@ class _NavigationBarsState extends State<NavigationBars> {
 
   PersistentTabController _controller = PersistentTabController();
   List<Widget> _screens() {
-     final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
-    // Your callback function logic here
-    print('Cart updated: $cartItems');
-  };
+    final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
+      // Your callback function logic here
+      print('Cart updated: $cartItems');
+    };
 
     return [
       HomeScreen(
-        name: widget.name, onCartUpdate: onCartUpdate,
+        name: widget.name,
+        onCartUpdate: onCartUpdate,
       ),
       MyOrderScreen(),
       ProfileScreen(),
@@ -61,7 +64,7 @@ class _NavigationBarsState extends State<NavigationBars> {
   Widget build(BuildContext context) {
     print('${widget.name}');
     return MaterialApp(
-            theme: ThemeData(fontFamily: 'Poppins'),
+      theme: ThemeData(fontFamily: 'Poppins'),
       home: Scaffold(
         body: PersistentTabView(
           screens: _screens(),
