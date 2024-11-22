@@ -6,7 +6,7 @@ import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/costanse/pages.dart';
-import 'package:anbobtak/presntation_lyar/screens/Checkout.dart';
+import 'package:anbobtak/presntation_lyar/screens/checkout/Checkout.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:flutter/cupertino.dart';
@@ -317,7 +317,7 @@ class _AddressScreenState extends State<AddressScreen> {
                 
                  PersistentNavBarNavigator.pushNewScreen(
                 context,
-                screen: CheckoutScreen(),
+                screen: CheckoutScreen(lat: widget.lat, long: widget.long),
                 withNavBar: true, // OPTIONAL VALUE. True by default.
                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );

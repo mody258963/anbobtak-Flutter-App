@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Widgets {
   Widget TextFiledLogin(
-      text, input, int short, String max, type , BuildContext context) {
+      text, input, int short, String max, type, BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -27,7 +27,7 @@ class Widgets {
           }
         },
         controller: input,
-        keyboardType: type ,
+        keyboardType: type,
         decoration: InputDecoration(
             hintText: text,
             border: InputBorder.none,
@@ -57,10 +57,9 @@ class Widgets {
         autoValidateMode: AutovalidateMode.disabled,
         selectorTextStyle: TextStyle(color: Colors.black),
         textFieldController: input,
-        countries: ['EG' ],
+        countries: ['EG'],
         textAlignVertical: TextAlignVertical.top,
         formatInput: true,
-        
         keyboardType: TextInputType.numberWithOptions(
           signed: true,
           decimal: true,
@@ -76,6 +75,7 @@ class Widgets {
       ),
     );
   }
+
   Widget buildCustomDialog(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -128,7 +128,6 @@ class Widgets {
       ),
     );
   }
-}
 
   Widget TextFieldinApp(
       TextEditingController controller,
@@ -160,7 +159,6 @@ class Widgets {
         },
         controller: controller,
         keyboardType: type,
-
         decoration: InputDecoration(
           prefixText: prefix,
           enabled: enable,
@@ -217,8 +215,11 @@ class Widgets {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(color: Colors.white,  fontFamily: 'Poppins',
-    fontWeight: FontWeight.bold,),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

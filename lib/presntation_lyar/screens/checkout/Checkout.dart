@@ -1,9 +1,13 @@
+import 'package:anbobtak/costanse/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final int? id; // Address ID passed from previous screen
-
-  CheckoutScreen({Key? key, this.id}) : super(key: key);
+  final double? lat;
+  final double? long;
+  CheckoutScreen({Key? key, this.id, this.lat, this.long}) : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -12,9 +16,29 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   String? paymentMethod = 'visa'; // Default payment method
 
+  Widget _buildGoogleMaps() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+          target: LatLng(widget.lat!, widget.long!),
+          zoom: 14.4746,
+        ),
+        myLocationEnabled: true,
+        myLocationButtonEnabled: false,
+        rotateGesturesEnabled: false,
+        scrollGesturesEnabled: false,
+        zoomControlsEnabled: false,
+        zoomGesturesEnabled: false,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Dummy data for address based on ID
+    ScreenUtil.init(context, designSize: const Size(360, 852));
     final addressDetails = {
       1: {
         'title': 'Masaken Sheraton - Fairmont ...',
@@ -30,8 +54,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         {'title': 'Unknown Address', 'details': 'No details available'};
 
     return Scaffold(
+      backgroundColor: MyColors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -47,7 +72,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             // Map Section
             Container(
-              height: 150,
+              height: 200.h,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: Colors.grey[200],
@@ -55,11 +80,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 children: [
                   Expanded(
-                    child: Image.asset(
-                      'assets/map_placeholder.png', // Replace with dynamic map
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
+                    child: _buildGoogleMaps(),
                   ),
                   ListTile(
                     title: Text(selectedAddress['title']!),
@@ -76,12 +97,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             SizedBox(height: 20),
             // Payment Method Section
-            Text('Pay with', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Pay with',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             Column(
               children: [
                 RadioListTile(
-                  value: 'visa',
+                  value: 'card',
                   groupValue: paymentMethod,
                   onChanged: (value) {
                     setState(() {
@@ -92,26 +114,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     children: [
                       Icon(Icons.credit_card, color: Colors.blue),
                       SizedBox(width: 10),
-                      Text('Visa xxxx-5007'),
+                      Text('Card'),
                     ],
                   ),
                 ),
-                RadioListTile(
-                  value: 'mastercard',
-                  groupValue: paymentMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      paymentMethod = value as String?;
-                    });
-                  },
-                  title: Row(
-                    children: [
-                      Icon(Icons.credit_card, color: Colors.red),
-                      SizedBox(width: 10),
-                      Text('MasterCard xxxx-6936'),
-                    ],
-                  ),
-                ),
+               
                 RadioListTile(
                   value: 'cash',
                   groupValue: paymentMethod,
@@ -132,7 +139,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             SizedBox(height: 20),
             // Payment Summary Section
-            Text('Payment summary', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Payment summary',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,8 +161,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total amount', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text('EGP 805.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Total amount',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('EGP 805.00',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
             Spacer(),
@@ -173,7 +185,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   // Logic to place order
                   print('Order placed with payment method: $paymentMethod');
                 },
-                child: Text('Place Order', style: TextStyle(fontSize: 18, color: Colors.white)),
+                child: Text('Place Order',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ),
           ],
