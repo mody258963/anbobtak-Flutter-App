@@ -1,5 +1,3 @@
-import 'package:anbobtak/web_servese/model/auth.dart';
-
 class MyOrder {
   MyOrder({
     required this.status,
@@ -8,38 +6,47 @@ class MyOrder {
     required this.pagination,
   });
 
-  final int? status;
+  final String? status;
   final bool? success;
-  final List<DataOrder> data;
+  final List<OrderData> data;
   final Pagination? pagination;
 
-  factory MyOrder.fromJson(Map<String, dynamic> json) {
+factory MyOrder.fromJson(Map<String, dynamic> json) {
+  print('Parsing MyOrder: $json');
+
+  final dataList = json["data"];
+  if (dataList == null || dataList is! List) {
+    print('No valid data found in JSON.');
     return MyOrder(
-      status: json["status"] as int?,
-      success: json["success"] as bool?,
-      data: json["data"] == null
-          ? []
-          : List<DataOrder>.from((json["data"] as List)
-              .map((x) => DataOrder.fromJson(x as Map<String, dynamic>))),
-      pagination: json["pagination"] == null
-          ? null
-          : Pagination.fromJson(json["pagination"] as Map<String, dynamic>),
+      status: json["status"],
+      success: json["success"],
+      data: [],
+      pagination: json["pagination"] == null ? null : Pagination.fromJson(json["pagination"]),
     );
   }
+
+  print('Data list in JSON: $dataList');
+  return MyOrder(
+    status: json["status"],
+    success: json["success"],
+    data: List<OrderData>.from(dataList.map((x) => OrderData.fromJson(x))),
+    pagination: json["pagination"] == null ? null : Pagination.fromJson(json["pagination"]),
+  );
+}
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "success": success,
-        "data": data.map((x) => x.toJson()).toList(),
+        "data": data.map((x) => x?.toJson()).toList(),
         "pagination": pagination?.toJson(),
       };
 }
 
-class DataOrder {
-  DataOrder({
+class OrderData {
+  OrderData({
     required this.id,
     required this.address,
-    required this.orderUser,
+    required this.user,
     required this.paymentMethod,
     required this.status,
     required this.itemsTotal,
@@ -53,12 +60,12 @@ class DataOrder {
     required this.remaining,
     required this.phone,
     required this.createdAt,
-    required this.itemOrders,
+    required this.items,
   });
 
   final int? id;
-  final AddressOrder? address;
-  final User? orderUser;
+  final OrderAddress? address;
+  final OrderUser? user;
   final String? paymentMethod;
   final String? status;
   final int? itemsTotal;
@@ -72,41 +79,49 @@ class DataOrder {
   final int? remaining;
   final String? phone;
   final DateTime? createdAt;
-  final List<ItemOrder> itemOrders;
+  final List<OrderItem> items;
 
-  factory DataOrder.fromJson(Map<String, dynamic> json) {
-    return DataOrder(
-      id: json["id"] as int?,
-      address: json["address"] == null
-          ? null
-          : AddressOrder.fromJson(json["address"] as Map<String, dynamic>),
-      orderUser: json["order_user"] == null
-          ? null
-          : User.fromJson(json["order_user"] as Map<String, dynamic>),
-      paymentMethod: json["payment_method"] as String? ?? "",
-      status: json["status"] as String? ?? "Unknown",
-      itemsTotal: json["items_total"] as int? ?? 0,
-      fees: json["fees"] as int? ?? 0,
-      tax: json["tax"] as int? ?? 0,
-      carryingService: json["carrying_service"] as int? ?? 0,
-      deliveryService: json["delivery_service"] as int? ?? 0,
-      discount: json["discount"] as int? ?? 0,
-      total: json["total"] as int? ?? 0,
-      paidBySystemWallet: json["paid_by_system_wallet"] as int? ?? 0,
-      remaining: json["remaining"] as int? ?? 0,
-      phone: json["phone"] as String? ?? "",
-      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-      itemOrders: json["item_orders"] == null
-          ? []
-          : List<ItemOrder>.from((json["item_orders"] as List)
-              .map((x) => ItemOrder.fromJson(x as Map<String, dynamic>))),
-    );
-  }
+factory OrderData.fromJson(Map<String, dynamic> json) {
+  print('Parsing OrderData: $json');
+
+  return OrderData(
+    id: json["id"] is int ? json["id"] : int.tryParse(json["id"]?.toString() ?? ''),
+    address: json["address"] == null ? null : OrderAddress.fromJson(json["address"]),
+    user: json["user"] == null ? null : OrderUser.fromJson(json["user"]),
+    paymentMethod: json["payment_method"]?.toString(),
+    status: json["status"]?.toString(),
+    itemsTotal: json["items_total"] is int
+        ? json["items_total"]
+        : int.tryParse(json["items_total"]?.toString() ?? ''),
+    fees: json["fees"] is int ? json["fees"] : int.tryParse(json["fees"]?.toString() ?? ''),
+    tax: json["tax"] is int ? json["tax"] : int.tryParse(json["tax"]?.toString() ?? ''),
+    carryingService: json["carrying_service"] is int
+        ? json["carrying_service"]
+        : int.tryParse(json["carrying_service"]?.toString() ?? ''),
+    deliveryService: json["delivery_service"] is int
+        ? json["delivery_service"]
+        : int.tryParse(json["delivery_service"]?.toString() ?? ''),
+    discount: json["discount"] is int ? json["discount"] : int.tryParse(json["discount"]?.toString() ?? ''),
+    total: json["total"] is int ? json["total"] : int.tryParse(json["total"]?.toString() ?? ''),
+    paidBySystemWallet: json["paid_by_system_wallet"] is int
+        ? json["paid_by_system_wallet"]
+        : int.tryParse(json["paid_by_system_wallet"]?.toString() ?? ''),
+    remaining: json["remaining"] is int
+        ? json["remaining"]
+        : int.tryParse(json["remaining"]?.toString() ?? ''),
+    phone: json["phone"]?.toString(),
+    createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+    items: json["items"] == null
+        ? []
+        : List<OrderItem>.from(json["items"].map((x) => OrderItem.fromJson(x))),
+  );
+}
+
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "address": address?.toJson(),
-        "order_user": orderUser?.toJson(),
+        "user": user?.toJson(),
         "payment_method": paymentMethod,
         "status": status,
         "items_total": itemsTotal,
@@ -120,12 +135,12 @@ class DataOrder {
         "remaining": remaining,
         "phone": phone,
         "created_at": createdAt?.toIso8601String(),
-        "item_orders": itemOrders.map((x) => x.toJson()).toList(),
+        "items": items.map((x) => x?.toJson()).toList(),
       };
 }
 
-class AddressOrder {
-  AddressOrder({
+class OrderAddress {
+  OrderAddress({
     required this.id,
     required this.street,
     required this.buildingNumber,
@@ -147,17 +162,21 @@ class AddressOrder {
   final String? long;
   final bool? status;
 
-  factory AddressOrder.fromJson(Map<String, dynamic> json) {
-    return AddressOrder(
-      id: json["id"] as int?,
-      street: json["street"] as String?,
-      buildingNumber: json["building_number"] as String?,
-      apartmentNumber: json["apartment_number"] as String?,
-      additionalAddress: json["additional_address"] as String?,
-      floor: json["floor"] as String?,
-      lat: json["lat"] as String?,
-      long: json["long"] as String?,
-      status: json["status"] as bool?,
+  factory OrderAddress.fromJson(Map<String, dynamic> json) {
+    return OrderAddress(
+      id: json["id"] is int
+          ? json["id"]
+          : int.tryParse(json["id"]?.toString() ?? ''),
+      street: json["street"]?.toString(),
+      buildingNumber: json["building_number"]?.toString(),
+      apartmentNumber: json["apartment_number"]?.toString(),
+      additionalAddress: json["additional_address"]?.toString(),
+      floor: json["floor"]?.toString(),
+      lat: json["lat"]?.toString(),
+      long: json["long"]?.toString(),
+      status: json["status"] is bool
+          ? json["status"]
+          : (json["status"]?.toString().toLowerCase() == 'true'),
     );
   }
 
@@ -174,8 +193,8 @@ class AddressOrder {
       };
 }
 
-class ItemOrder {
-  ItemOrder({
+class OrderItem {
+  OrderItem({
     required this.id,
     required this.quantity,
     required this.product,
@@ -185,13 +204,12 @@ class ItemOrder {
   final int? quantity;
   final Product? product;
 
-  factory ItemOrder.fromJson(Map<String, dynamic> json) {
-    return ItemOrder(
-      id: json["id"] as int?,
-      quantity: json["quantity"] as int?,
-      product: json["product"] == null
-          ? null
-          : Product.fromJson(json["product"] as Map<String, dynamic>),
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      id: json["id"],
+      quantity: json["quantity"],
+      product:
+          json["product"] == null ? null : Product.fromJson(json["product"]),
     );
   }
 
@@ -219,11 +237,15 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json["id"] as int?,
-      name: json["name"] as String?,
-      description: json["description"] as String?,
-      price: json["price"] as int?,
-      image: json["image"] as String?,
+      id: json["id"] is int
+          ? json["id"]
+          : int.tryParse(json["id"]?.toString() ?? ''),
+      name: json["name"]?.toString(),
+      description: json["description"]?.toString(),
+      price: json["price"] is int
+          ? json["price"]
+          : int.tryParse(json["price"]?.toString() ?? ''),
+      image: json["image"]?.toString(),
     );
   }
 
@@ -233,6 +255,48 @@ class Product {
         "description": description,
         "price": price,
         "image": image,
+      };
+}
+
+class OrderUser {
+  OrderUser({
+    required this.id,
+    required this.name,
+    required this.isVerified,
+    required this.email,
+    required this.phone,
+    required this.role,
+  });
+
+  final int? id;
+  final String? name;
+  final int? isVerified;
+  final String? email;
+  final String? phone;
+  final String? role;
+
+  factory OrderUser.fromJson(Map<String, dynamic> json) {
+    return OrderUser(
+      id: json["id"] is int
+          ? json["id"]
+          : int.tryParse(json["id"]?.toString() ?? ''),
+      name: json["name"]?.toString(),
+      isVerified: json["is_verified"] is int
+          ? json["is_verified"]
+          : int.tryParse(json["is_verified"]?.toString() ?? ''),
+      email: json["email"]?.toString(),
+      phone: json["phone"]?.toString(),
+      role: json["role"]?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "is_verified": isVerified,
+        "email": email,
+        "phone": phone,
+        "role": role,
       };
 }
 
@@ -255,14 +319,12 @@ class Pagination {
 
   factory Pagination.fromJson(Map<String, dynamic> json) {
     return Pagination(
-      count: json["count"] as int?,
-      total: json["total"] as int?,
-      perPage: json["perPage"] as int?,
-      currentPage: json["currentPage"] as int?,
-      totalPages: json["totalPages"] as int?,
-      links: json["links"] == null
-          ? null
-          : Links.fromJson(json["links"] as Map<String, dynamic>),
+      count: json["count"],
+      total: json["total"],
+      perPage: json["perPage"],
+      currentPage: json["currentPage"],
+      totalPages: json["totalPages"],
+      links: json["links"] == null ? null : Links.fromJson(json["links"]),
     );
   }
 
@@ -281,10 +343,8 @@ class Links {
   final Map<String, dynamic> json;
 
   factory Links.fromJson(Map<String, dynamic> json) {
-    return Links(
-      json: json,
-    );
+    return Links(json: json);
   }
 
-  Map<String, dynamic> toJson() => json;
+  Map<String, dynamic> toJson() => {};
 }

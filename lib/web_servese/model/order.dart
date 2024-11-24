@@ -29,7 +29,7 @@ class Data {
     Data({
         required this.id,
         required this.address,
-        required this.user,
+        required this.orderUser,
         required this.paymentMethod,
         required this.status,
         required this.itemsTotal,
@@ -43,14 +43,14 @@ class Data {
         required this.remaining,
         required this.phone,
         required this.createdAt,
-        required this.items,
+        required this.orderitems,
         required this.paymentToken,
         required this.paymentUrl,
     });
 
     final int? id;
     final Address? address;
-    final User? user;
+    final OrderUser? orderUser;
     final String? paymentMethod;
     final String? status;
     final int? itemsTotal;
@@ -64,7 +64,7 @@ class Data {
     final int? remaining;
     final String? phone;
     final DateTime? createdAt;
-    final List<Item> items;
+    final List<OrderItem> orderitems;
     final String? paymentToken;
     final String? paymentUrl;
 
@@ -72,7 +72,7 @@ class Data {
         return Data(
             id: json["id"],
             address: json["address"] == null ? null : Address.fromJson(json["address"]),
-            user: json["user"] == null ? null : User.fromJson(json["user"]),
+            orderUser: json["user"] == null ? null : OrderUser.fromJson(json["user"]),
             paymentMethod: json["payment_method"],
             status: json["status"],
             itemsTotal: json["items_total"],
@@ -86,7 +86,7 @@ class Data {
             remaining: json["remaining"],
             phone: json["phone"],
             createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            items: json["items"] == null ? [] : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
+            orderitems: json["items"] == null ? [] : List<OrderItem>.from(json["items"]!.map((x) => OrderItem.fromJson(x))),
             paymentToken: json["payment_token"],
             paymentUrl: json["payment_url"],
         );
@@ -95,7 +95,7 @@ class Data {
     Map<String, dynamic> toJson() => {
         "id": id,
         "address": address?.toJson(),
-        "user": user?.toJson(),
+        "user": orderUser?.toJson(),
         "payment_method": paymentMethod,
         "status": status,
         "items_total": itemsTotal,
@@ -109,7 +109,7 @@ class Data {
         "remaining": remaining,
         "phone": phone,
         "created_at": createdAt?.toIso8601String(),
-        "items": items.map((x) => x?.toJson()).toList(),
+        "items": orderitems.map((x) => x?.toJson()).toList(),
         "payment_token": paymentToken,
         "payment_url": paymentUrl,
     };
@@ -167,8 +167,8 @@ class Address {
 
 }
 
-class Item {
-    Item({
+class OrderItem {
+    OrderItem({
         required this.id,
         required this.quantity,
         required this.product,
@@ -178,8 +178,8 @@ class Item {
     final int? quantity;
     final Product? product;
 
-    factory Item.fromJson(Map<String, dynamic> json){ 
-        return Item(
+    factory OrderItem.fromJson(Map<String, dynamic> json){ 
+        return OrderItem(
             id: json["id"],
             quantity: json["quantity"],
             product: json["product"] == null ? null : Product.fromJson(json["product"]),
@@ -229,8 +229,8 @@ class Product {
 
 }
 
-class User {
-    User({
+class OrderUser {
+    OrderUser({
         required this.id,
         required this.name,
         required this.isVerified,
@@ -246,8 +246,8 @@ class User {
     final String? phone;
     final String? role;
 
-    factory User.fromJson(Map<String, dynamic> json){ 
-        return User(
+    factory OrderUser.fromJson(Map<String, dynamic> json){ 
+        return OrderUser(
             id: json["id"],
             name: json["name"],
             isVerified: json["is_verified"],

@@ -10,7 +10,6 @@ import 'package:anbobtak/web_servese/model/me.dart';
 import 'package:anbobtak/web_servese/model/myOrder.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
-import 'package:anbobtak/web_servese/model/username.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/google.dart';

@@ -30,30 +30,46 @@ Widget _buildOrder() {
   return BlocBuilder<GetMethodCubit, GetMethodState>(
     builder: (context, state) {
       if (state is GetOrders) {
-        final orderList = state.order; // Assuming this is of type MyOrder
+        final orderList = state.order;
+        print('Order list received: $state');
 
-        if (orderList != null) {
+        if (orderList != null && orderList.isNotEmpty) {
+          print('First order: ${orderList.first}');
+          print('First order data: ${orderList.first.data}');
+
           orderDetals.clear(); // Clear previous data
 
-          if (mounted) {
-            for (var item in orderList.first.data) {
+          if (orderList.first.data.isNotEmpty) {
+            final firstOrder = orderList.first.data.first;
+
+            print('First order details: $firstOrder');
+            print('First order ID: ${firstOrder.id}');
+            print('First order createdAt: ${firstOrder.createdAt}');
+            print('First order total: ${firstOrder.total}');
+            print('First order address: ${firstOrder.address}');
+            print('First order items: ${firstOrder.items}');
+
+            if (mounted) {
               orderDetals.add({
-                'id': item.id,
-                'created_at': item.createdAt?.toIso8601String() ?? 'N/A',
-                'total': item.total ?? 0,
-                'items_total': item.itemsTotal ?? 0,
-                'status': item.status ?? 'N/A',
-                'lat': item.address?.lat ?? '0',
-                'long': item.address?.long ?? '0',
-                'carrying_service': item.carryingService ?? 0,
-                'tax': item.tax ?? 0,
-                'fees': item.fees ?? 0,
-                'discount': item.discount ?? 0,
+                'id': firstOrder.id ?? 0,
+                'created_at': firstOrder.createdAt?.toIso8601String() ?? 'N/A',
+                'total': firstOrder.total ?? 0,
+                'item_total': firstOrder.itemsTotal ?? 0,
+                'status': firstOrder.status ?? 'N/A',
+                'lat': firstOrder.address?.lat ?? 'N/A',
+                'long': firstOrder.address?.long ?? 'N/A',
+                'carrying_service': firstOrder.carryingService ?? 0,
+                'tax': firstOrder.tax ?? 0,
+                'fees': firstOrder.fees ?? 0,
+                'discount': firstOrder.discount ?? 0,
               });
+              print('Order details added: $orderDetals');
             }
+          } else {
+            print('Order data is empty.');
           }
         } else {
-          print('No valid address data found');
+          print('Order list is empty or null.');
         }
 
         print('Processed orderDetals: $orderDetals');
@@ -63,6 +79,7 @@ Widget _buildOrder() {
     },
   );
 }
+
 
 
   Widget ContanerOrder() {
@@ -160,6 +177,7 @@ Widget _buildOrder() {
         backgroundColor: MyColors.white,body: Center(
           child: Column(
             children: [       
+              _buildOrder(),
               Container(height: height * 0.24,child: ContanerOrder())
             ],
           ),
