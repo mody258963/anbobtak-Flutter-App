@@ -83,6 +83,18 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
+  // Future<void> createOrder( productId) async {
+  //   try {
+  //     List<Carts> Items = await myRepo.createOrder('v1/cart/remove-item', {
+  //       'product_id': productId,
+  //       '_method': 'delete'
+  //     });
+  //     print('====CArt Items=====$Items');
+  //     emit(ItemUploaded(Items: Items));
+  //   } catch (e) {
+  //     emit(ErrorOccurred(errorMsg: e.toString()));
+  //   }
+  // }
 
   Future<void> deleteProduct( productId) async {
     try {

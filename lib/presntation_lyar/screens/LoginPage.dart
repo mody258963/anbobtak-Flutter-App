@@ -83,8 +83,8 @@ class _SignUpState extends State<SignUp> {
           if (Navigator.canPop(context)) {
             Navigator.of(context, rootNavigator: true).pop();
           }
-          Navigator.of(context, rootNavigator: true).pushReplacementNamed(nav,
-              arguments: state.name);
+          Navigator.of(context, rootNavigator: true)
+              .pushReplacementNamed(nav, arguments: state.name);
         }
       },
       child: Container(),
@@ -98,98 +98,101 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: MyColors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _widgets.Logo(context),
-              _buildloginAuth(),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    FadeInUp(
-                        duration: Duration(milliseconds: 1700),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: Color.fromRGBO(196, 135, 198, .3)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.lightBlue,
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10),
-                                )
-                              ]),
-                          child: Column(
-                            children: <Widget>[
-                              _widgets.TextFiledLogin('Phone', emailcontroller,
-                                  10, 'Enter Correct Email',TextInputType.phone ,  context),
-                              _widgets.TextFiledLogin(
-                                  'Password',
-                                  passwordcontroller,
-                                  8,
-                                  'Short Password',TextInputType.visiblePassword , 
-                                  context),
-                            ],
-                          ),
-                        )),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 1900),
-                        child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, forgot);
-                                },
-                                child: Text(
-                                  'Forgot Password ?',
-                                  style: TextStyle(color: Colors.grey),
-                                )))),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 1900),
-                        child: _widgets.AppButton(() {
-                          context.read<EmailAuthCubit>().loginUser(
-                              emailcontroller.text, passwordcontroller.text);
-                        }, 'Sign In')),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 2100),
-                        child:
-                            _widgets.ThiredParty(FontAwesomeIcons.google, () {  
-                          context.read<EmailAuthCubit>().googleSignIn();
-                        }, 'Google')),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 2100),
-                        child: _widgets.ThiredParty(
-                            FontAwesomeIcons.facebook, () {}, 'Facebook')),
-                    FadeInUp(
-                        duration: Duration(milliseconds: 2000),
-                        child: Center(
-                            child: TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, otp);
-                                },
-                                child: Text(
-                                  "Create Account ?",
-                                  style: TextStyle(color: Colors.grey),
-                                )))),
-                  ],
-                ),
-              )
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: MyColors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _widgets.Logo(context),
+            _buildloginAuth(),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  FadeInUp(
+                      duration: Duration(milliseconds: 1700),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            border: Border.all(
+                                color: Color.fromRGBO(196, 135, 198, .3)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.lightBlue,
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                              )
+                            ]),
+                        child: Column(
+                          children: <Widget>[
+                            _widgets.TextFiledLogin(
+                                'Phone',
+                                emailcontroller,
+                                10,
+                                'Enter Correct Email',
+                                TextInputType.phone,
+                                context),
+                            _widgets.TextFiledLogin(
+                                'Password',
+                                passwordcontroller,
+                                8,
+                                'Short Password',
+                                TextInputType.visiblePassword,
+                                context),
+                          ],
+                        ),
+                      )),
+                  FadeInUp(
+                      duration: Duration(milliseconds: 1900),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, forgot);
+                              },
+                              child: Text(
+                                'Forgot Password ?',
+                                style: TextStyle(color: Colors.grey),
+                              )))),
+                  FadeInUp(
+                      duration: Duration(milliseconds: 1900),
+                      child: _widgets.AppButton(() {
+                        context.read<EmailAuthCubit>().loginUser(
+                            emailcontroller.text, passwordcontroller.text);
+                      }, 'Sign In')),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  FadeInUp(
+                      duration: Duration(milliseconds: 2100),
+                      child: _widgets.ThiredParty(FontAwesomeIcons.google, () {
+                        context.read<EmailAuthCubit>().googleSignIn();
+                      }, 'Google')),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  FadeInUp(
+                      duration: Duration(milliseconds: 2100),
+                      child: _widgets.ThiredParty(
+                          FontAwesomeIcons.facebook, () {}, 'Facebook')),
+                  FadeInUp(
+                      duration: Duration(milliseconds: 2000),
+                      child: Center(
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, otp);
+                              },
+                              child: Text(
+                                "Create Account ?",
+                                style: TextStyle(color: Colors.grey),
+                              )))),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

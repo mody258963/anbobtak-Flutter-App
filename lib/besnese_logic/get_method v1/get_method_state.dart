@@ -33,7 +33,13 @@ class GetCartsV1 extends GetMethodStateV1 {
 
 
 }
+class GetPriceV1 extends GetMethodStateV1 {
+ final Carts posts;
 
+ GetPriceV1({required this.posts});
+
+
+}
 
 
 class Fail extends GetMethodStateV1{

@@ -39,9 +39,8 @@ class _AddressScreenState extends State<AddressScreen> {
   Widgets _widgets = Widgets();
   String phone = '';
   String? selectedAddressString; // Store the address string (for display)
-  Map<String, dynamic>?
-      selectedAddressMap; // Store the full map for internal use
-  int? selectedAddressId; // Variable to store the selected address ID
+  Map<String, dynamic>? selectedAddressMap;
+  int? selectedAddressId;
   List<Map<String, dynamic>> addresses = [];
 
   @override
@@ -206,9 +205,7 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
-             selectedAddressMap != null
-                ? false
-                : true,
+            selectedAddressMap != null ? false : true,
             TextInputType.text,
             selectedAddressMap != null
                 ? selectedAddressMap!['building_number']
@@ -228,9 +225,7 @@ class _AddressScreenState extends State<AddressScreen> {
                     2,
                     0.01,
                     0.05,
-                     selectedAddressMap != null
-                ? false
-                : true,
+                    selectedAddressMap != null ? false : true,
                     TextInputType.text,
                     selectedAddressMap != null
                         ? selectedAddressMap!['apartment_number']
@@ -247,9 +242,7 @@ class _AddressScreenState extends State<AddressScreen> {
                     3,
                     0.05,
                     0.01,
-                     selectedAddressMap != null
-                ? false
-                : true,
+                    selectedAddressMap != null ? false : true,
                     TextInputType.number,
                     selectedAddressMap != null
                         ? selectedAddressMap!['floor']
@@ -268,9 +261,7 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
-             selectedAddressMap != null
-                ? false
-                : true,
+            selectedAddressMap != null ? false : true,
             TextInputType.text,
             selectedAddressMap != null ? selectedAddressMap!['street'] : '',
             context),
@@ -284,9 +275,7 @@ class _AddressScreenState extends State<AddressScreen> {
             65,
             0.05,
             0.05,
-             selectedAddressMap != null
-                ? false
-                : true,
+            selectedAddressMap != null ? false : true,
             TextInputType.text,
             selectedAddressMap != null
                 ? selectedAddressMap!['additional_address']
@@ -305,25 +294,31 @@ class _AddressScreenState extends State<AddressScreen> {
             width: width * 0.80,
             child: _widgets.AppButton(() {
               try {
-              BlocProvider.of<UplodingDataCubit>(context).addAddress(
-                  buidingcontroller.text,
-                  apartmentcontroller.text,
-                  Addcontroller.text,
-                  floorcontroller.text,
-                  widget.lat.toString(),
-                  widget.long.toString(),
-                  streetcontroller.text,
-                  phone);
-                
-                 PersistentNavBarNavigator.pushNewScreen(
-                context,
-                screen: CheckoutScreen(lat: widget.lat, long: widget.long),
-                withNavBar: true, // OPTIONAL VALUE. True by default.
-                pageTransitionAnimation: PageTransitionAnimation.cupertino,
-              );
-                
+                BlocProvider.of<UplodingDataCubit>(context).addAddress(
+                    buidingcontroller.text,
+                    apartmentcontroller.text,
+                    Addcontroller.text,
+                    floorcontroller.text,
+                    widget.lat.toString(),
+                    widget.long.toString(),
+                    streetcontroller.text,
+                    phone);
+
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: CheckoutScreen(
+                    lat: widget.lat,
+                    long: widget.long,
+                    selectedAddressId: selectedAddressId,
+                    street: selectedAddressMap != null ? selectedAddressMap!['street'] : streetcontroller.text,
+                    building: selectedAddressMap != null ? selectedAddressMap!['building_number'] : apartmentcontroller.text,
+
+                  ),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
               } catch (e) {
-                
+                _widgets.buildCustomDialog(context);
               }
               print(phone);
             }, "Confirm")),
@@ -383,7 +378,6 @@ class _AddressScreenState extends State<AddressScreen> {
                       selectedAddressId =
                           selectedAddressMap!['id']; // Extract the ID
                       print('Selected Address ID: $selectedAddressId');
-
                     }
                     print('new value: $newValue');
                   });

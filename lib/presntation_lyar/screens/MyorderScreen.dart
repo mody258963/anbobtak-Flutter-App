@@ -1,6 +1,10 @@
+import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/OrderDetails.dart';
+import 'package:anbobtak/web_servese/model/myOrder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/widgets.dart';
 
@@ -13,11 +17,59 @@ class MyOrderScreen extends StatefulWidget {
 
 class _MyOrderScreenState extends State<MyOrderScreen> {
 Widgets _widgets = Widgets();
+  List<Map<String, dynamic>> orderDetals = [];
+
+   @override
+  void initState() {
+    super.initState();
+    // Fetch regions' polygons data from the database
+    BlocProvider.of<GetMethodCubit>(context).GetOrder();
+  }
+
+Widget _buildOrder() {
+  return BlocBuilder<GetMethodCubit, GetMethodState>(
+    builder: (context, state) {
+      if (state is GetOrders) {
+        final orderList = state.order; // Assuming this is of type MyOrder
+
+        if (orderList != null) {
+          orderDetals.clear(); // Clear previous data
+
+          if (mounted) {
+            for (var item in orderList.first.data) {
+              orderDetals.add({
+                'id': item.id,
+                'created_at': item.createdAt?.toIso8601String() ?? 'N/A',
+                'total': item.total ?? 0,
+                'items_total': item.itemsTotal ?? 0,
+                'status': item.status ?? 'N/A',
+                'lat': item.address?.lat ?? '0',
+                'long': item.address?.long ?? '0',
+                'carrying_service': item.carryingService ?? 0,
+                'tax': item.tax ?? 0,
+                'fees': item.fees ?? 0,
+                'discount': item.discount ?? 0,
+              });
+            }
+          }
+        } else {
+          print('No valid address data found');
+        }
+
+        print('Processed orderDetals: $orderDetals');
+      }
+
+      return Container(); // Replace with your desired widget
+    },
+  );
+}
+
 
   Widget ContanerOrder() {
   double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
    return Card(
+    shadowColor: Colors.black,
     color: Colors.white,
       margin: EdgeInsets.all(10),
       child: Padding(
@@ -100,9 +152,7 @@ Widgets _widgets = Widgets();
   Widget build(BuildContext context) {
       double width = MediaQuery.of(context).size.width;
   double height = MediaQuery.of(context).size.height;
-    return MaterialApp(
-      
-      home: Scaffold(
+    return  Scaffold(
         appBar: AppBar(
           backgroundColor: MyColors.white,
           title: Text('Order'),
@@ -113,7 +163,6 @@ Widgets _widgets = Widgets();
               Container(height: height * 0.24,child: ContanerOrder())
             ],
           ),
-        ),),
-    );
+        ),);
   }
 }

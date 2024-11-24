@@ -4,6 +4,7 @@ import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/me.dart';
+import 'package:anbobtak/web_servese/model/myOrder.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
@@ -64,6 +65,18 @@ class GetMethodCubit extends Cubit<GetMethodState> {
     } catch (e) {
       emit(Fail(e.toString()));
       print('========cubits/ me=======${e.toString()}');
+    }
+  }
+
+    Future<FutureOr<void>> GetOrder() async {
+    try {
+      emit(LodingState());
+      List<MyOrder> posts = await myRepo.GetOrder('v1/orders');
+      emit(GetOrders(order: posts));
+      print("======me======$posts");
+    } catch (e) {
+      emit(Fail(e.toString()));
+      print('========cubits/ order=======${e.toString()}');
     }
   }
 }

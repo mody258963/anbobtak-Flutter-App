@@ -7,6 +7,7 @@ import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/foget.dart';
 import 'package:anbobtak/web_servese/model/google.dart';
 import 'package:anbobtak/web_servese/model/me.dart';
+import 'package:anbobtak/web_servese/model/myOrder.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:anbobtak/web_servese/model/username.dart';
@@ -61,6 +62,16 @@ class MyRepo {
     }
   }
 
+    Future<List<MyOrder>> GetOrder(String end) async {
+    final names = await nameWebService.get(end);
+    final userList = names.map((names) => MyOrder.fromJson(names)).toList();
+    print("=====Region====#$userList");
+    return userList..shuffle();
+  }
+
+
+  
+
   Future<List<Item>> GetCart(String end) async {
     final prefs = await SharedPreferences.getInstance();
     final response = await nameWebService.getTypeMap(end);
@@ -77,6 +88,21 @@ class MyRepo {
     // Optional: Save the first cart's ID in shared preferences if needed
 
     return cartItems..shuffle(); // Shuffles the items list
+  }
+
+  Future<Carts> GetPrice(String end) async {
+    final prefs = await SharedPreferences.getInstance();
+    final response = await nameWebService.getTypeMap(end);
+
+    print("=====Raw Response====#${response.toString()}");
+    // Parse the response assuming it's a Map<String, dynamic> from the JSON structure
+    final Carts price = Carts.fromJson(response);
+
+    print("=====price====#${price.total}");
+
+    // Optional: Save the first cart's ID in shared preferences if needed
+
+    return price; // Shuffles the items list
   }
 
   Future<List<Datas>> GetAddress(String end) async {
@@ -109,8 +135,16 @@ class MyRepo {
       end,
       data,
     );
-        final userList = names.map((names) => Carts.fromJson(names)).toList();
+    final userList = names.map((names) => Carts.fromJson(names)).toList();
     print("=====Carts====#${userList..shuffle()}");
+    return userList..shuffle();
+  }
+
+
+  Future<List<Address>> createOrder(String end, Object data) async {
+    final names = await nameWebService.post(end, data);
+    final userList = names.map((names) => Address.fromJson(names)).toList();
+    print("=====Address====#${userList..shuffle()}");
     return userList..shuffle();
   }
 

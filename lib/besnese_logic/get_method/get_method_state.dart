@@ -1,6 +1,7 @@
 
 import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/me.dart';
+import 'package:anbobtak/web_servese/model/myOrder.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:flutter/widgets.dart';
@@ -30,6 +31,12 @@ class CatogoryState extends GetMethodState {
   CatogoryState({required this.posts});
 
 
+}
+
+
+class GetOrders extends GetMethodState{
+  final List<MyOrder>  order;
+  GetOrders({required this.order});
 }
 
 

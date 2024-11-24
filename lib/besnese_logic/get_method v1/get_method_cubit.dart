@@ -29,6 +29,16 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
       print('========cubits/ carts=======${e.toString()}');
     }
   }
+      Future<FutureOr<void>> GetPrice() async {   // to do : divide the cubits  
+    try {
+      emit(LodingState());
+      Carts posts = await myRepo.GetPrice('v1/cart/');
+      emit(GetPriceV1(posts: posts));
+      print("======Carts======$posts");
+    } catch (e) {
+      print('========cubits/ carts=======${e.toString()}');
+    }
+  }
   //  Future<FutureOr<void>> GetAddressAndLastAdress() async {
 
       Future<FutureOr<void>> GetAddress() async {   // to do : divide the cubits  

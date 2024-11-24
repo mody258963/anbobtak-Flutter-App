@@ -48,8 +48,8 @@ class Carts {
 }
 
 
-class Data {
-  Data({
+class DataCart {
+  DataCart({
     required this.id,
     required this.items,
     required this.tax,
@@ -67,8 +67,8 @@ class Data {
   final int? carryingService;
   final int? total;
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
+  factory DataCart.fromJson(Map<String, dynamic> json) {
+    return DataCart(
       id: json["id"] ?? 0,
       items: json["items"] != null
           ? List<Item>.from(json["items"].map((x) => Item.fromJson(x)))
@@ -93,7 +93,7 @@ class Data {
 
   @override
   String toString() {
-    return "Data(id: $id, items: $items, tax: $tax, fees: $fees, deliveryService: $deliveryService, carryingService: $carryingService, total: $total)";
+    return "DataCart(id: $id, items: $items, tax: $tax, fees: $fees, deliveryService: $deliveryService, carryingService: $carryingService, total: $total)";
   }
 }
 

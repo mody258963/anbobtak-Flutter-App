@@ -1,5 +1,12 @@
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart'
+    as cart;
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -7,7 +14,19 @@ class CheckoutScreen extends StatefulWidget {
   final int? id; // Address ID passed from previous screen
   final double? lat;
   final double? long;
-  CheckoutScreen({Key? key, this.id, this.lat, this.long}) : super(key: key);
+  int? selectedAddressId;
+  final String? street;
+  final String? building;
+
+  CheckoutScreen(
+      {Key? key,
+      this.id,
+      this.lat,
+      this.long,
+      this.selectedAddressId,
+      this.street,
+      this.building})
+      : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -15,6 +34,41 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   String? paymentMethod = 'visa'; // Default payment method
+  int? fees;
+  int? delivery;
+  int? carry;
+  int? tax;
+  int? total;
+
+  void initState() {
+    super.initState();
+    // Fetch regions' polygons data from the database
+    BlocProvider.of<GetMethodCubitV2>(context).GetPrice();
+  }
+
+  Widget _buildPriceList() {
+    return BlocBuilder<cart.GetMethodCubitV2, GetMethodStateV1>(
+      builder: (context, state) {
+        if (state is GetPriceV1) {
+          final price = state.posts;
+          WidgetsBinding.instance.addPersistentFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                carry = price.carryingService!;
+                delivery = price.deliveryService!;
+                fees = price.fees!;
+                tax = price.tax!;
+                total = price.total!;
+                print('========price===========$price');
+              });
+            }
+          });
+        }
+        return Container();
+      },
+      // Include a child widget (for example, a list view)
+    );
+  }
 
   Widget _buildGoogleMaps() {
     return ClipRRect(
@@ -36,23 +90,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    // Dummy data for address based on ID
     ScreenUtil.init(context, designSize: const Size(360, 852));
-    final addressDetails = {
-      1: {
-        'title': 'Masaken Sheraton - Fairmont ...',
-        'details': 'Building 2, tenth floor\nMob: 1104336893'
-      },
-      2: {
-        'title': 'New Cairo - Fifth Settlement',
-        'details': 'Villa 4, Ground floor\nMob: 1234567890'
-      },
-    };
-
-    final selectedAddress = addressDetails[widget.id] ??
-        {'title': 'Unknown Address', 'details': 'No details available'};
-
     return Scaffold(
       backgroundColor: MyColors.white,
       appBar: AppBar(
@@ -66,16 +106,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding:  EdgeInsets.only(left: 16.sp , right: 16.sp,top: 6.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildPriceList(),
             // Map Section
             Container(
-              height: 200.h,
+              height: 180.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.grey[200],
+                border: Border.all(
+                  color: Colors.black26, // Black border color
+                  width: 1, // Border width
+                ),
+                borderRadius:
+                    BorderRadius.circular(12), // Rounded corners
               ),
               child: Column(
                 children: [
@@ -83,97 +128,155 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: _buildGoogleMaps(),
                   ),
                   ListTile(
-                    title: Text(selectedAddress['title']!),
-                    subtitle: Text(selectedAddress['details']!),
+                    title: Text(widget.street!),
+                    subtitle: Text(widget.building!),
                     trailing: TextButton(
                       onPressed: () {
-                        // Logic to change address
+                        BlocProvider.of<GetMethodCubitV2>(context)
+                            .GetAddress();
+                        BlocProvider.of<GetMethodCubit>(context)
+                            .GetMe();
+                        context.pop();
                       },
-                      child: Text('Change'),
+                      child: Text('Change', style: TextStyle(color: MyColors.Secondcolor)),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 14),
             // Payment Method Section
             Text('Pay with',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+                style: TextStyle(
+                    fontSize: 18.sp, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10.h),
             Column(
               children: [
-                RadioListTile(
-                  value: 'card',
-                  groupValue: paymentMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      paymentMethod = value as String?;
-                    });
-                  },
-                  title: Row(
-                    children: [
-                      Icon(Icons.credit_card, color: Colors.blue),
-                      SizedBox(width: 10),
-                      Text('Card'),
-                    ],
+                Container(
+                  height: 56.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black26, // Black border color
+                      width: 1.w, // Border width
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: RadioListTile(
+                    selectedTileColor: MyColors.Secondcolor,
+                    activeColor: MyColors.Secondcolor,
+                    value: 'card',
+                    groupValue: paymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentMethod = value as String?;
+                      });
+                    },
+                    title: Row(
+                      children: [
+                        Icon(Icons.credit_card,
+                            color: Colors.blue), // Credit card icon
+                        SizedBox(
+                            width: 10.w), // Space between icon and text
+                        Text('Card'),
+                      ],
+                    ),
                   ),
                 ),
-               
-                RadioListTile(
-                  value: 'cash',
-                  groupValue: paymentMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      paymentMethod = value as String?;
-                    });
-                  },
-                  title: Row(
-                    children: [
-                      Icon(Icons.attach_money, color: Colors.green),
-                      SizedBox(width: 10),
-                      Text('Cash'),
-                    ],
+                SizedBox(height: 14.h),
+                Container(
+                  height: 56.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black26, // Black border color
+                      width: 1.w, // Border width
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: RadioListTile(
+                    activeColor: MyColors.Secondcolor,
+                    value: 'cash',
+                    groupValue: paymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentMethod = value as String?;
+                      });
+                    },
+                    title: Row(
+                      children: [
+                        Icon(Icons.attach_money,
+                            color: Colors.green), // Money icon
+                        SizedBox(
+                            width: 10.w), // Space between icon and text
+                        Text('Cash'),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 14.h),
             // Payment Summary Section
             Text('Payment summary',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+                style: TextStyle(
+                    fontSize: 18.sp, fontWeight: FontWeight.bold)),
+            SizedBox(height: 9.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Subtotal', style: TextStyle(fontSize: 16)),
-                Text('EGP 735.00', style: TextStyle(fontSize: 16)),
+                Text('Delivery Fees', style: TextStyle(fontSize: 16.sp)),
+                Text(delivery.toString() ?? '',
+                    style: TextStyle(fontSize: 16.sp)),
               ],
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 5.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Delivery', style: TextStyle(fontSize: 16)),
-                Text('EGP 70.00', style: TextStyle(fontSize: 16)),
+                Text('Carrying Service',
+                    style: TextStyle(fontSize: 16.sp)),
+                Text(carry.toString() ?? '',
+                    style: TextStyle(fontSize: 16.sp)),
               ],
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 5.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Fees', style: TextStyle(fontSize: 16.sp)),
+                Text(fees.toString() ?? '',
+                    style: TextStyle(fontSize: 16.sp)),
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Tax', style: TextStyle(fontSize: 16.sp)),
+                Text(tax.toString() ?? '',
+                    style: TextStyle(fontSize: 16.sp)),
+              ],
+            ),
+            SizedBox(height: 5.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total amount',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text('EGP 805.00',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                Text(total.toString() ?? '',
+                    style: TextStyle(
+                        fontSize: 18.sp, fontWeight: FontWeight.bold)),
               ],
             ),
-            Spacer(),
+            SizedBox(height: 14.h),
             // Place Order Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 50.h,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -182,11 +285,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // Logic to place order
-                  print('Order placed with payment method: $paymentMethod');
+      
+                  
                 },
                 child: Text('Place Order',
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                    style:
+                        TextStyle(fontSize: 18.sp, color: Colors.white)),
               ),
             ),
           ],
