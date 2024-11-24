@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/auth.dart';
@@ -61,11 +62,26 @@ class MyRepo {
     }
   }
 
-    Future<List<MyOrder>> GetOrder(String end) async {
-    final names = await nameWebService.get(end);
-    final userList = names.map((names) => MyOrder.fromJson(names)).toList();
-    print("=====Region====#$userList");
-    return userList..shuffle();
+
+
+ 
+  Future<List<OrderData>> GetOrder(String end) async {
+    // Fetch the response from the web service
+    final response = await nameWebService.getTypeMap(end);
+
+    print("=====Raw Response  Order==== #$response");
+
+    // Ensure the response is a valid Map and directly parse it
+ 
+      // Parse the response using the Me model
+      final MyOrder order = MyOrder.fromJson(response);
+
+        final List<OrderData> Orderdata = order.data ;
+      // Log the details of the "me" object for debugging
+      print("===== Order ==== Name: ${order.data}, Email: ${order.data}");
+
+      return Orderdata..shuffle();
+   
   }
 
 

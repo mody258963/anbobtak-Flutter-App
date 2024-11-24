@@ -31,16 +31,16 @@ Widget _buildOrder() {
     builder: (context, state) {
       if (state is GetOrders) {
         final orderList = state.order;
-        print('Order list received: $state');
+        print('Order list received: ${state.order}');
 
-        if (orderList != null && orderList.isNotEmpty) {
-          print('First order: ${orderList.first}');
-          print('First order data: ${orderList.first.data}');
+        if (orderList != null ) {
+          print('First order: ${orderList}');
 
-          orderDetals.clear(); // Clear previous data
+          // Clear previous data
+          orderDetals.clear();
 
-          if (orderList.first.data.isNotEmpty) {
-            final firstOrder = orderList.first.data.first;
+
+            final firstOrder = orderList.first;
 
             print('First order details: $firstOrder');
             print('First order ID: ${firstOrder.id}');
@@ -63,23 +63,37 @@ Widget _buildOrder() {
                 'fees': firstOrder.fees ?? 0,
                 'discount': firstOrder.discount ?? 0,
               });
+
               print('Order details added: $orderDetals');
             }
           } else {
             print('Order data is empty.');
           }
-        } else {
-          print('Order list is empty or null.');
-        }
+   
 
         print('Processed orderDetals: $orderDetals');
+      } else {
+        print('State is not GetOrders: $state');
       }
 
-      return Container(); // Replace with your desired widget
+      // Display the processed order details or fallback UI
+      return orderDetals.isNotEmpty
+          ? ListView.builder(
+              itemCount: orderDetals.length,
+              itemBuilder: (context, index) {
+                final order = orderDetals[index];
+                return ListTile(
+                  title: Text('Order ID: ${order['id']}'),
+                  subtitle: Text('Total: ${order['total']}'),
+                );
+              },
+            )
+          : Center(
+              child: Text('No orders available.'),
+            );
     },
   );
 }
-
 
 
   Widget ContanerOrder() {
