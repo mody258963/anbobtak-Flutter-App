@@ -3,10 +3,13 @@ import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/OrderDetails.dart';
 import 'package:anbobtak/web_servese/model/myOrder.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../widgets/widgets.dart';
+import 'package:intl/intl.dart';
 
 class MyOrderScreen extends StatefulWidget {
   const MyOrderScreen({super.key});
@@ -16,92 +19,66 @@ class MyOrderScreen extends StatefulWidget {
 }
 
 class _MyOrderScreenState extends State<MyOrderScreen> {
-Widgets _widgets = Widgets();
+  Widgets _widgets = Widgets();
   List<Map<String, dynamic>> orderDetals = [];
 
-   @override
+  @override
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
     BlocProvider.of<GetMethodCubit>(context).GetOrder();
   }
 
-Widget _buildOrder() {
-  return BlocBuilder<GetMethodCubit, GetMethodState>(
-    builder: (context, state) {
-      if (state is GetOrders) {
-        final orderList = state.order;
-        print('Order list received: ${state.order}');
+  Widget _buildOrder() {
+    return BlocBuilder<GetMethodCubit, GetMethodState>(
+      builder: (context, state) {
+        if (state is GetOrders) {
+          final orderList = List.from(state.order)
+            ..sort((a, b) => a.id.compareTo(b.id));
 
-        if (orderList != null ) {
-          print('First order: ${orderList}');
-
-          // Clear previous data
-          orderDetals.clear();
-
-
-            final firstOrder = orderList.first;
-
-            print('First order details: $firstOrder');
-            print('First order ID: ${firstOrder.id}');
-            print('First order createdAt: ${firstOrder.createdAt}');
-            print('First order total: ${firstOrder.total}');
-            print('First order address: ${firstOrder.address}');
-            print('First order items: ${firstOrder.items}');
-
-            if (mounted) {
-              orderDetals.add({
-                'id': firstOrder.id ?? 0,
-                'created_at': firstOrder.createdAt?.toIso8601String() ?? 'N/A',
-                'total': firstOrder.total ?? 0,
-                'item_total': firstOrder.itemsTotal ?? 0,
-                'status': firstOrder.status ?? 'N/A',
-                'lat': firstOrder.address?.lat ?? 'N/A',
-                'long': firstOrder.address?.long ?? 'N/A',
-                'carrying_service': firstOrder.carryingService ?? 0,
-                'tax': firstOrder.tax ?? 0,
-                'fees': firstOrder.fees ?? 0,
-                'discount': firstOrder.discount ?? 0,
-              });
-
-              print('Order details added: $orderDetals');
-            }
-          } else {
-            print('Order data is empty.');
-          }
-   
-
-        print('Processed orderDetals: $orderDetals');
-      } else {
-        print('State is not GetOrders: $state');
-      }
-
-      // Display the processed order details or fallback UI
-      return orderDetals.isNotEmpty
-          ? ListView.builder(
-              itemCount: orderDetals.length,
+          return RefreshIndicator(
+            color: MyColors.Secondcolor,
+            onRefresh: () async {
+              // Trigger your cubit or API call to refresh the orders
+              await context.read<GetMethodCubit>().GetOrder();
+            },
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: orderList.length,
+              physics:
+                  AlwaysScrollableScrollPhysics(), // Ensures the list is scrollable even if items are few
               itemBuilder: (context, index) {
-                final order = orderDetals[index];
-                return ListTile(
-                  title: Text('Order ID: ${order['id']}'),
-                  subtitle: Text('Total: ${order['total']}'),
-                );
+                final order = orderList[index];
+                print(order.id);
+                return _ContanerOrder(order);
               },
-            )
-          : Center(
-              child: Text('No orders available.'),
-            );
-    },
-  );
+            ),
+          );
+        } else {
+          return Center(
+            child: Text('No orders available.'),
+          );
+        }
+      },
+    );
+  }
+
+
+String formatDateTime(DateTime? dateTime) {
+  if (dateTime == null) return "N/A"; // Handle null case
+
+  // Example: Format to "2024-11-23 01:04"
+  return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
 }
 
 
-  Widget ContanerOrder() {
-  double width = MediaQuery.of(context).size.width;
-  double height = MediaQuery.of(context).size.height;
-   return Card(
-    shadowColor: Colors.black,
-    color: Colors.white,
+  Widget _ContanerOrder(order) {
+  String formattedDateTime = formatDateTime(order.createdAt);// e.g., "2024-11-23T01:04:34.000000Z"
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Card(
+      shadowColor: Colors.black,
+      color: Colors.white,
       margin: EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -110,34 +87,35 @@ Widget _buildOrder() {
           children: [
             Row(
               children: [
-                Text('Jun 01 . 2:20am', style: TextStyle(fontSize: 16)),
+                Text(formattedDateTime, style: TextStyle(fontSize: 16)),
                 Spacer(),
-               Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        'Deliver',
-        style: TextStyle(
-          color: Colors.grey[700],
-          fontSize: 14,
-        ),
-      ),
-    ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    order.status,
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 10),
             Row(
               children: [
-      
                 SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Order ID: 12', style: TextStyle(fontSize: 16)),
-                    Text('EGP 12.1', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('Order ID: ${order.id}', style: TextStyle(fontSize: 16)),
+                    Text('EGP ${order.total}',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
@@ -148,29 +126,35 @@ Widget _buildOrder() {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetails()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OrderDetails(order:order)));
                   },
-                  child: Text('View details',style: TextStyle(color: MyColors.Secondcolor),),
+                  child: Text(
+                    'View details',
+                    style: TextStyle(color: MyColors.Secondcolor),
+                  ),
                 ),
-           OutlinedButton(
-      onPressed: () {
-        // Add your onPressed code here!
-      },
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.blue),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 9),
-      ),
-      child: Text(
-        'Report',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-        ),
-      ),
-    ),
+                OutlinedButton(
+                  onPressed: () {
+                    // Add your onPressed code here!
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.blue),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 9),
+                  ),
+                  child: Text(
+                    'Report',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -181,20 +165,14 @@ Widget _buildOrder() {
 
   @override
   Widget build(BuildContext context) {
-      double width = MediaQuery.of(context).size.width;
-  double height = MediaQuery.of(context).size.height;
-    return  Scaffold(
-        appBar: AppBar(
-          backgroundColor: MyColors.white,
-          title: Text('Order'),
-        ),
-        backgroundColor: MyColors.white,body: Center(
-          child: Column(
-            children: [       
-              _buildOrder(),
-              Container(height: height * 0.24,child: ContanerOrder())
-            ],
-          ),
-        ),);
+    ScreenUtil.init(context, designSize: const Size(360, 852));
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: MyColors.white,
+        title: Text('Order'),
+      ),
+      backgroundColor: MyColors.white,
+      body: _buildOrder(),
+    );
   }
 }

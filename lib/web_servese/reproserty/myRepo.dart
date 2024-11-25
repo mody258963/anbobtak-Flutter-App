@@ -64,25 +64,26 @@ class MyRepo {
 
 
 
- 
-  Future<List<OrderData>> GetOrder(String end) async {
-    // Fetch the response from the web service
-    final response = await nameWebService.getTypeMap(end);
+Future<List<OrderData>> GetOrder(String end) async {
+  // Fetch the response from the web service
+  final response = await nameWebService.getTypeMap(end);
 
-    print("=====Raw Response  Order==== #$response");
+  print("=====Raw Response Order==== #$response");
 
-    // Ensure the response is a valid Map and directly parse it
- 
-      // Parse the response using the Me model
-      final MyOrder order = MyOrder.fromJson(response);
+  // Check if the response is a List
+  if (response is List) {
+    // Parse each item in the list into an OrderData object
+    final List<OrderData> orderDataList = response.map((orderJson) {
+      return OrderData.fromJson(orderJson);
+    }).toList();
 
-        final List<OrderData> Orderdata = order.data ;
-      // Log the details of the "me" object for debugging
-      print("===== Order ==== Name: ${order.data}, Email: ${order.data}");
-
-      return Orderdata..shuffle();
-   
+    print("=====Parsed Order Data==== $orderDataList");
+    return orderDataList..shuffle();
+  } else {
+    print("Unexpected response format: $response");
+    return [];
   }
+}
 
 
   

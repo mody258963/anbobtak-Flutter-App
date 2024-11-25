@@ -172,8 +172,8 @@ class OrderAddress {
       apartmentNumber: json["apartment_number"]?.toString(),
       additionalAddress: json["additional_address"]?.toString(),
       floor: json["floor"]?.toString(),
-      lat: json["lat"]?.toString(),
-      long: json["long"]?.toString(),
+      lat: json["lat"],
+      long: json["long"],
       status: json["status"] is bool
           ? json["status"]
           : (json["status"]?.toString().toLowerCase() == 'true'),

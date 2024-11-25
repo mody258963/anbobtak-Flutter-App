@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 class OrderDetails extends StatefulWidget {
-  const OrderDetails({super.key});
+  final dynamic order;
+  const OrderDetails({super.key, this.order});
 
   @override
   State<OrderDetails> createState() => _OrderDetailsState();
@@ -86,6 +88,9 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget _buildGoogleMaps() {
+double? latitude = double.tryParse(widget.order.address.lat ?? '');
+double? longitude = double.tryParse(widget.order.address.long ?? '');
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: Container(
@@ -93,7 +98,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         child: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: LatLng(31.7778542, 35.2342953),
+            target: LatLng(latitude!,longitude!),
             zoom: 14.4746,
           ),
           myLocationEnabled: true,
@@ -107,17 +112,57 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
+String formatDateTime(DateTime? dateTime) {
+  if (dateTime == null) return "N/A"; // Handle null case
+
+  // Example: Format to "2024-11-23 01:04"
+  return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+}
+
+
   @override
   Widget build(BuildContext context) {
+      String formattedDateTime = formatDateTime(widget.order.createdAt);// e.g., "2024-11-23T01:04:34.000000Z"
     ScreenUtil.init(context, designSize: const Size(360, 852));
+
+    double progressValue = 0.0;
+
+switch (widget.order.status) {
+  case "Pending":
+    progressValue = 0.125; // 12.5% of the progress bar
+    break;
+  case "Placed":
+    progressValue = 0.25; // 25% of the progress bar
+    break;
+  case "Working On":
+    progressValue = 0.375; // 37.5% of the progress bar
+    break;
+  case "Cancelled":
+    progressValue = 0.0; // Default position for Cancelled
+    break;
+  case "Delivering":
+    progressValue = 0.5; // 50% of the progress bar
+    break;
+  case "Failed":
+    progressValue = 0.0; // Default position for Failed
+    break;
+  case "Delivered":
+    progressValue = 0.75; // 100% of the progress bar
+    break;
+  case "Completed":
+    progressValue = 1.0; // 75% of the progress bar
+    break;
+  default:
+    progressValue = 0.0; // Default position for unknown statuses
+}
+
     return Scaffold(
       backgroundColor: MyColors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            context.pushNamedAndRemoveUntil(
-                nav, (Route<dynamic> route) => false);
+            context.pop();
           },
         ),
         backgroundColor: MyColors.white,
@@ -133,7 +178,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Jun 01 . 2:20am',
+                    formattedDateTime,
                     style: TextStyle(fontSize: 16),
                   ),
                   Container(
@@ -143,7 +188,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                       borderRadius: BorderRadius.circular(10.sp),
                     ),
                     child: Text(
-                      'Delivered',
+                      '${widget.order.status}',
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 16.sp,
@@ -202,33 +247,36 @@ class _OrderDetailsState extends State<OrderDetails> {
                 ),
               ),
               SizedBox(height: 20),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    height: 15.h, // Height of the progress bar
-                    color: Colors.grey[300],
-                    width: 400.w, // Adjust the width as needed
-                  ),
-                  Container(
-                    height: 15.h, // Height of the filled progress bar
-                    width: 300.w *
-                        progressValue, // Adjust the width based on progress
-                    color: Colors.red, // Progress bar color
-                  ),
-                  Positioned(
-                    left:
-                        290.sp * progressValue - 30, // Adjust based on progress
-                    top: -20.sp, // Adjust the vertical position
-                    child: Image.asset(
-                      'assets/gas.png', // Replace with your image URL
-                      width: 60.w,
-                      height: 60.h,
-                    ),
-                  ),
-                  // Image overlay positioned above the progress bar
-                ],
-              ),
+              
+            Stack(
+  clipBehavior: Clip.none,
+  children: [
+    // Background progress bar
+    Container(
+      height: 15.h, // Height of the progress bar
+      color: Colors.grey[300],
+      width: 400.w, // Full width of the progress bar
+    ),
+    
+    // Filled progress bar
+    Container(
+      height: 15.h, // Height of the filled progress bar
+      width: 400.w * progressValue, // Adjust the width based on progress
+      color: Colors.red, // Progress bar color
+    ),
+    
+    // Image overlay (indicator)
+    Positioned(
+      left: (400.w * progressValue) - 30.w, // Adjust the position based on progress
+      top: -20.h, // Adjust the vertical position
+      child: Image.asset(
+        'assets/gas.png', // Replace with your image URL
+        width: 60.w,
+        height: 60.h,
+      ),
+    ),
+  ],
+),
               SizedBox(height: 20.h),
               _Prices(),
               SizedBox(height: 20.h),
