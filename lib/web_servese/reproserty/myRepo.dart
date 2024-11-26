@@ -9,6 +9,7 @@ import 'package:anbobtak/web_servese/model/foget.dart';
 import 'package:anbobtak/web_servese/model/google.dart';
 import 'package:anbobtak/web_servese/model/me.dart';
 import 'package:anbobtak/web_servese/model/myOrder.dart';
+import 'package:anbobtak/web_servese/model/order.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,6 +76,27 @@ Future<List<OrderData>> GetOrder(String end) async {
     // Parse each item in the list into an OrderData object
     final List<OrderData> orderDataList = response.map((orderJson) {
       return OrderData.fromJson(orderJson);
+    }).toList();
+
+    print("=====Parsed Order Data==== $orderDataList");
+    return orderDataList..shuffle();
+  } else {
+    print("Unexpected response format: $response");
+    return [];
+  }
+}
+
+Future<List<PAYData>> OrderMake(String end, Object data) async {
+  // Fetch the response from the web service
+  final response = await nameWebService.PostTypeMap(end,data);
+
+  print("=====Raw Response Paaaaay order==== #$response");
+
+  // Check if the response is a List
+  if (response is List) {
+    // Parse each item in the list into an OrderData object
+    final List<PAYData> orderDataList = response.map((orderJson) {
+      return PAYData.fromJson(orderJson);
     }).toList();
 
     print("=====Parsed Order Data==== $orderDataList");

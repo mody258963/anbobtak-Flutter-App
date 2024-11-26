@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
+import 'package:anbobtak/web_servese/model/order.dart';
 import 'package:anbobtak/web_servese/model/product.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:dio/dio.dart';
@@ -61,27 +62,42 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-  Future<void> addAddress( building, apt, addAddress, floor, lat, long,  street, phone) async {
-    final prefs = await SharedPreferences.getInstance();
-    try {
-      List<Address> address = await myRepo.addAddress('v1/address', {
-    'building_number': building,
-    'apartment_number': apt,
-    'additional_address': addAddress,
-    'floor': floor,
-    'lat': lat,
-    'long': long,
-    'street': street,
-    'phone': phone
-      });
-      print('====address====$address');
+Future<void> addAddress(
+  String building,
+  String apt,
+  String addAddress,
+  String floor,
+  String lat,
+  String long,
+  String street,
+  String phone,
+) async {
+  try {
+    // Call the repository method to add an address
+    final response = await myRepo.addAddress('v1/address', {
+      'building_number': building,
+      'apartment_number': apt,
+      'additional_address': addAddress,
+      'floor': floor,
+      'lat': lat,
+      'long': long,
+      'street': street,
+      'phone': phone,
+    });
 
-      emit(AddressLatUploaded(address: address));
-    } catch (e) {
-      print('====adress====${e.toString()}');
-      emit(ErrorOccurred(errorMsg: e.toString()));
+    // Assuming `response` contains a list of addresses or a single address with `id`
+    if (response.isNotEmpty) {
+      final addressId = response.first.data.first.id; // Get the ID of the created address
+      emit(AddressLatUploaded(address: addressId)); // Emit the state with the address ID
+    } else {
+      emit(ErrorOccurred(errorMsg: "Failed to create address."));
     }
+  } catch (e) {
+    print('Error adding address: ${e.toString()}');
+    emit(ErrorOccurred(errorMsg: e.toString()));
   }
+}
+
 
   // Future<void> createOrder( productId) async {
   //   try {
@@ -108,4 +124,31 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
+
+Future<void> OrderMake(addressId, type) async {
+  try {
+    // Make the API request
+    List<PAYData> order = await myRepo.OrderMake('v1/orders/store', {
+      'address_id': addressId,
+      'payment_method': type,
+    });
+
+    // Assuming `order` contains the parsed response
+    if (order.isNotEmpty) {
+      // Access the `payment_url` from the first order item (adjust if needed)
+      final paymentUrl = order.first.paymentUrl; // Adjust path as per response structure
+
+      if (paymentUrl != null) {
+        emit(PayOrder(order: order, paymentUrl: paymentUrl));
+      } else {
+        emit(ErrorOccurred(errorMsg: 'Payment URL not found in the response.'));
+      }
+    } else {
+      emit(ErrorOccurred(errorMsg: 'Order data is empty.'));
+    }
+  } catch (e) {
+    emit(ErrorOccurred(errorMsg: e.toString()));
+  }
+}
+
 }

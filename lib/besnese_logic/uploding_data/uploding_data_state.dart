@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anbobtak/web_servese/model/address.dart';
 import 'package:anbobtak/web_servese/model/cart.dart';
 import 'package:anbobtak/web_servese/model/item.dart';
+import 'package:anbobtak/web_servese/model/order.dart';
 
 sealed class UplodingDataState {}
 
@@ -23,8 +24,19 @@ class ItemUploaded extends UplodingDataState {
   ItemUploaded({required this.Items});
 
 }
+
+class PayOrder extends UplodingDataState {
+ final List<PAYData>  order;
+ 
+ final String paymentUrl;
+
+  PayOrder({required this.order, required this.paymentUrl});
+
+}
+
+
 class AddressLatUploaded extends UplodingDataState {
- final List<Address>  address;
+ final int? address;
 
   AddressLatUploaded({required this.address});
 

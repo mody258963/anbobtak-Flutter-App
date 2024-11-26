@@ -1,6 +1,7 @@
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,14 +18,7 @@ class OrderDetails extends StatefulWidget {
 }
 
 class _OrderDetailsState extends State<OrderDetails> {
-  final List<Map<String, String>> items = [
-    {'label': 'Subtotal', 'amount': 'EGP 735.00'},
-    {'label': 'Delivery', 'amount': 'EGP 70.00'},
-    {'label': 'Total amount', 'amount': 'EGP 805.00'},
-    // Add more items here
-    {'label': 'Discount', 'amount': 'EGP -50.00'},
-    {'label': 'Tax', 'amount': 'EGP 50.00'},
-  ];
+  Widgets _widgets = Widgets();
   double progressValue = 0.7;
 
   Widget _Prices() {
@@ -44,43 +38,18 @@ class _OrderDetailsState extends State<OrderDetails> {
             ),
           ],
         ),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: items.map((item) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    item['label']!,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: item['label'] == 'Total amount'
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: items.map((item) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    item['amount']!,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: item['label'] == 'Total amount'
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+            _widgets.PriceRow('Tax', widget.order.tax.toString()),
+            _widgets.PriceRow('Fees', widget.order.fees.toString()),
+            _widgets.PriceRow(
+                'Carrying Service', widget.order.carryingService.toString()),
+            _widgets.PriceRow(
+                'Delivery Service', widget.order.deliveryService.toString()),
+            _widgets.PriceRow('Total', widget.order.total.toString()),
+            _widgets.PriceRow(
+                'Discount', '${widget.order.discount.toString()}')
           ],
         ),
       ),
@@ -88,8 +57,8 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget _buildGoogleMaps() {
-double? latitude = double.tryParse(widget.order.address.lat ?? '');
-double? longitude = double.tryParse(widget.order.address.long ?? '');
+    double? latitude = double.tryParse(widget.order.address.lat ?? '');
+    double? longitude = double.tryParse(widget.order.address.long ?? '');
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
@@ -98,7 +67,7 @@ double? longitude = double.tryParse(widget.order.address.long ?? '');
         child: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: CameraPosition(
-            target: LatLng(latitude!,longitude!),
+            target: LatLng(latitude!, longitude!),
             zoom: 14.4746,
           ),
           myLocationEnabled: true,
@@ -112,49 +81,49 @@ double? longitude = double.tryParse(widget.order.address.long ?? '');
     );
   }
 
-String formatDateTime(DateTime? dateTime) {
-  if (dateTime == null) return "N/A"; // Handle null case
+  String formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return "N/A"; // Handle null case
 
-  // Example: Format to "2024-11-23 01:04"
-  return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
-}
-
+    // Example: Format to "2024-11-23 01:04"
+    return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
-      String formattedDateTime = formatDateTime(widget.order.createdAt);// e.g., "2024-11-23T01:04:34.000000Z"
+    String formattedDateTime = formatDateTime(
+        widget.order.createdAt); // e.g., "2024-11-23T01:04:34.000000Z"
     ScreenUtil.init(context, designSize: const Size(360, 852));
 
     double progressValue = 0.0;
 
-switch (widget.order.status) {
-  case "Pending":
-    progressValue = 0.125; // 12.5% of the progress bar
-    break;
-  case "Placed":
-    progressValue = 0.25; // 25% of the progress bar
-    break;
-  case "Working On":
-    progressValue = 0.375; // 37.5% of the progress bar
-    break;
-  case "Cancelled":
-    progressValue = 0.0; // Default position for Cancelled
-    break;
-  case "Delivering":
-    progressValue = 0.5; // 50% of the progress bar
-    break;
-  case "Failed":
-    progressValue = 0.0; // Default position for Failed
-    break;
-  case "Delivered":
-    progressValue = 0.75; // 100% of the progress bar
-    break;
-  case "Completed":
-    progressValue = 1.0; // 75% of the progress bar
-    break;
-  default:
-    progressValue = 0.0; // Default position for unknown statuses
-}
+    switch (widget.order.status) {
+      case "Pending":
+        progressValue = 0.125; // 12.5% of the progress bar
+        break;
+      case "Placed":
+        progressValue = 0.25; // 25% of the progress bar
+        break;
+      case "Working On":
+        progressValue = 0.375; // 37.5% of the progress bar
+        break;
+      case "Cancelled":
+        progressValue = 0.0; // Default position for Cancelled
+        break;
+      case "Delivering":
+        progressValue = 0.5; // 50% of the progress bar
+        break;
+      case "Failed":
+        progressValue = 0.0; // Default position for Failed
+        break;
+      case "Delivered":
+        progressValue = 0.75; // 100% of the progress bar
+        break;
+      case "Completed":
+        progressValue = 1.0; // 75% of the progress bar
+        break;
+      default:
+        progressValue = 0.0; // Default position for unknown statuses
+    }
 
     return Scaffold(
       backgroundColor: MyColors.white,
@@ -247,36 +216,37 @@ switch (widget.order.status) {
                 ),
               ),
               SizedBox(height: 20),
-              
-            Stack(
-  clipBehavior: Clip.none,
-  children: [
-    // Background progress bar
-    Container(
-      height: 15.h, // Height of the progress bar
-      color: Colors.grey[300],
-      width: 400.w, // Full width of the progress bar
-    ),
-    
-    // Filled progress bar
-    Container(
-      height: 15.h, // Height of the filled progress bar
-      width: 400.w * progressValue, // Adjust the width based on progress
-      color: Colors.red, // Progress bar color
-    ),
-    
-    // Image overlay (indicator)
-    Positioned(
-      left: (400.w * progressValue) - 30.w, // Adjust the position based on progress
-      top: -20.h, // Adjust the vertical position
-      child: Image.asset(
-        'assets/gas.png', // Replace with your image URL
-        width: 60.w,
-        height: 60.h,
-      ),
-    ),
-  ],
-),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Background progress bar
+                  Container(
+                    height: 15.h, // Height of the progress bar
+                    color: Colors.grey[300],
+                    width: 400.w, // Full width of the progress bar
+                  ),
+
+                  // Filled progress bar
+                  Container(
+                    height: 15.h, // Height of the filled progress bar
+                    width: 400.w *
+                        progressValue, // Adjust the width based on progress
+                    color: Colors.red, // Progress bar color
+                  ),
+
+                  // Image overlay (indicator)
+                  Positioned(
+                    left: (400.w * progressValue) -
+                        30.w, // Adjust the position based on progress
+                    top: -20.h, // Adjust the vertical position
+                    child: Image.asset(
+                      'assets/gas.png', // Replace with your image URL
+                      width: 60.w,
+                      height: 60.h,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: 20.h),
               _Prices(),
               SizedBox(height: 20.h),

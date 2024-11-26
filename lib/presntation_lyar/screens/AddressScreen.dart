@@ -3,6 +3,7 @@ import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/costanse/pages.dart';
@@ -292,36 +293,61 @@ class _AddressScreenState extends State<AddressScreen> {
         Container(
             height: height * 0.07,
             width: width * 0.80,
-            child: _widgets.AppButton(() {
-              try {
-                BlocProvider.of<UplodingDataCubit>(context).addAddress(
-                    buidingcontroller.text,
-                    apartmentcontroller.text,
-                    Addcontroller.text,
-                    floorcontroller.text,
-                    widget.lat.toString(),
-                    widget.long.toString(),
-                    streetcontroller.text,
-                    phone);
+            child: _widgets.AppButton(() async {
+  if (selectedAddressMap != null) {
+    // Use the selected address from the dropdown
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: CheckoutScreen(
+        id: selectedAddressMap!['id'], // Use selected address ID
+        lat: widget.lat,
+        long: widget.long,
+        selectedAddressId: selectedAddressId,
+        street: selectedAddressMap!['street'],
+        building: selectedAddressMap!['building_number'],
+      ),
+      withNavBar: true,
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+  } else {
+    // Trigger the addAddress function for a new address
+    await BlocProvider.of<UplodingDataCubit>(context).addAddress(
+      buidingcontroller.text,
+      apartmentcontroller.text,
+      Addcontroller.text,
+      floorcontroller.text,
+      widget.lat.toString(),
+      widget.long.toString(),
+      streetcontroller.text,
+      phone,
+    );
 
-                PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: CheckoutScreen(
-                    lat: widget.lat,
-                    long: widget.long,
-                    selectedAddressId: selectedAddressId,
-                    street: selectedAddressMap != null ? selectedAddressMap!['street'] : streetcontroller.text,
-                    building: selectedAddressMap != null ? selectedAddressMap!['building_number'] : apartmentcontroller.text,
+    // Listen to the emitted state
+    final state = context.read<UplodingDataCubit>().state;
 
-                  ),
-                  withNavBar: true, // OPTIONAL VALUE. True by default.
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
-              } catch (e) {
-                _widgets.buildCustomDialog(context);
-              }
-              print(phone);
-            }, "Confirm")),
+    if (state is AddressLatUploaded) {
+      // Navigate to CheckoutScreen with the new address ID
+      PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: CheckoutScreen(
+          id: state.address, // Use the newly created address ID
+          lat: widget.lat,
+          long: widget.long,
+          selectedAddressId: state.address,
+          street: streetcontroller.text,
+          building: buidingcontroller.text,
+        ),
+        withNavBar: true,
+        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+      );
+    } else if (state is ErrorOccurred) {
+      // Show an error if address creation fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.errorMsg)),
+      );
+    }
+  }
+}, "Confirm"),),
       ],
     );
   }

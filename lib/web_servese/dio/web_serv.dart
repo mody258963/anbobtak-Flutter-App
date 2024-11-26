@@ -84,6 +84,42 @@ Future<dynamic> getTypeMap(String end) async {
   }
 }
 
+Future<dynamic> PostTypeMap(String end, Object data) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+
+    print(prefs.getString('token'));
+    Map<String, dynamic> headers = {
+      'Authorization': 'Bearer ${prefs.getString('token')}', // Assuming token is prefixed with 'Bearer '
+      'Content-Type': 'application/json', // Adjust content type as needed
+    };
+
+      // Perform POST request with headers
+      final response = await dio.post(
+        baseUrl + end,
+        data: data,
+        options: Options(
+          headers: headers,
+        ),
+      );
+
+    // You can now return response.data directly, whether it's a List or a Map
+    return response.data['data'];
+  } on DioException catch (e) {
+    if (e.response != null) {
+      // If there's a response from the server
+      print('Error response: ${e.response?.data}');
+      print('Status code: ${e.response?.statusCode}');
+      // Handle the error based on the response status
+    } else {
+      // If there’s no response (like connection issues)
+      print('Error: ${e.message}');
+    }
+    return [];
+  }
+}
+
+
   Future<List<dynamic>> googleIn(String end) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();

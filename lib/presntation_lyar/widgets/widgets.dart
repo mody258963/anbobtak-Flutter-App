@@ -2,6 +2,7 @@ import 'package:anbobtak/costanse/colors.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -33,6 +34,16 @@ class Widgets {
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.grey.shade700)),
       ),
+    );
+  }
+
+  Widget PriceRow(text, number) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(text, style: TextStyle(fontSize: 16.sp)),
+        Text(number, style: TextStyle(fontSize: 16.sp)),
+      ],
     );
   }
 

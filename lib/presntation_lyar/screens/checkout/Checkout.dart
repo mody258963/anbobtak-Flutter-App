@@ -3,8 +3,11 @@ import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart'
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
+import 'package:anbobtak/presntation_lyar/screens/checkout/Paymob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +36,7 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  String? paymentMethod = 'visa'; // Default payment method
+  String? paymentMethod = 'card'; // Default payment method
   int? fees;
   int? delivery;
   int? carry;
@@ -106,7 +109,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         centerTitle: true,
       ),
       body: Padding(
-        padding:  EdgeInsets.only(left: 16.sp , right: 16.sp,top: 6.sp),
+        padding: EdgeInsets.only(left: 16.sp, right: 16.sp, top: 6.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -119,8 +122,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   color: Colors.black26, // Black border color
                   width: 1, // Border width
                 ),
-                borderRadius:
-                    BorderRadius.circular(12), // Rounded corners
+                borderRadius: BorderRadius.circular(12), // Rounded corners
               ),
               child: Column(
                 children: [
@@ -132,13 +134,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     subtitle: Text(widget.building!),
                     trailing: TextButton(
                       onPressed: () {
-                        BlocProvider.of<GetMethodCubitV2>(context)
-                            .GetAddress();
-                        BlocProvider.of<GetMethodCubit>(context)
-                            .GetMe();
+                        BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
+                        BlocProvider.of<GetMethodCubit>(context).GetMe();
                         context.pop();
                       },
-                      child: Text('Change', style: TextStyle(color: MyColors.Secondcolor)),
+                      child: Text('Change',
+                          style: TextStyle(color: MyColors.Secondcolor)),
                     ),
                   ),
                 ],
@@ -147,8 +148,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SizedBox(height: 14),
             // Payment Method Section
             Text('Pay with',
-                style: TextStyle(
-                    fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
             SizedBox(height: 10.h),
             Column(
               children: [
@@ -160,8 +160,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       color: Colors.black26, // Black border color
                       width: 1.w, // Border width
                     ),
-                    borderRadius:
-                        BorderRadius.circular(12), // Rounded corners
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
                   ),
                   child: RadioListTile(
                     selectedTileColor: MyColors.Secondcolor,
@@ -177,8 +176,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         Icon(Icons.credit_card,
                             color: Colors.blue), // Credit card icon
-                        SizedBox(
-                            width: 10.w), // Space between icon and text
+                        SizedBox(width: 10.w), // Space between icon and text
                         Text('Card'),
                       ],
                     ),
@@ -193,12 +191,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       color: Colors.black26, // Black border color
                       width: 1.w, // Border width
                     ),
-                    borderRadius:
-                        BorderRadius.circular(12), // Rounded corners
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
                   ),
                   child: RadioListTile(
                     activeColor: MyColors.Secondcolor,
-                    value: 'cash',
+                    value: 'cash_on_delivery',
                     groupValue: paymentMethod,
                     onChanged: (value) {
                       setState(() {
@@ -209,8 +206,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         Icon(Icons.attach_money,
                             color: Colors.green), // Money icon
-                        SizedBox(
-                            width: 10.w), // Space between icon and text
+                        SizedBox(width: 10.w), // Space between icon and text
                         Text('Cash'),
                       ],
                     ),
@@ -221,8 +217,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SizedBox(height: 14.h),
             // Payment Summary Section
             Text('Payment summary',
-                style: TextStyle(
-                    fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
             SizedBox(height: 9.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,10 +231,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Carrying Service',
-                    style: TextStyle(fontSize: 16.sp)),
-                Text(carry.toString() ?? '',
-                    style: TextStyle(fontSize: 16.sp)),
+                Text('Carrying Service', style: TextStyle(fontSize: 16.sp)),
+                Text(carry.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
               ],
             ),
             SizedBox(height: 5.h),
@@ -247,8 +240,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Fees', style: TextStyle(fontSize: 16.sp)),
-                Text(fees.toString() ?? '',
-                    style: TextStyle(fontSize: 16.sp)),
+                Text(fees.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
               ],
             ),
             SizedBox(height: 5.h),
@@ -256,8 +248,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Tax', style: TextStyle(fontSize: 16.sp)),
-                Text(tax.toString() ?? '',
-                    style: TextStyle(fontSize: 16.sp)),
+                Text(tax.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
               ],
             ),
             SizedBox(height: 5.h),
@@ -284,13 +275,48 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {
-      
-                  
+                onPressed: () async {
+                  print('==========adreess id========${widget.id}');
+                  // Trigger the OrderMake function
+                  await context
+                      .read<UplodingDataCubit>()
+                      .OrderMake(widget.id, paymentMethod);
+
+                  // Listen for the emitted state
+                  final state = context.read<UplodingDataCubit>().state;
+
+                  if (state is PayOrder) {
+                    // Handle based on payment method
+                    if (paymentMethod == 'visa' && state.paymentUrl != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PaymobWebView(iframeUrl: state.paymentUrl),
+                        ),
+                      );
+                    } else if (paymentMethod == 'cash_on_delivery') {
+                      // Handle cash on delivery
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                'Order placed successfully with Cash on Delivery!')),
+                      );
+                    } else {
+                      // Handle the case where paymentUrl is missing for visa
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Payment URL not available.')),
+                      );
+                    }
+                  } else if (state is ErrorOccurred) {
+                    // Handle error state
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.errorMsg)),
+                    );
+                  }
                 },
                 child: Text('Place Order',
-                    style:
-                        TextStyle(fontSize: 18.sp, color: Colors.white)),
+                    style: TextStyle(fontSize: 18.sp, color: Colors.white)),
               ),
             ),
           ],

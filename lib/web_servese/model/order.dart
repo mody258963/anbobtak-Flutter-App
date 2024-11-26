@@ -7,13 +7,13 @@ class Order {
 
     final int? status;
     final bool? success;
-    final Data? data;
+    final PAYData? data;
 
     factory Order.fromJson(Map<String, dynamic> json){ 
         return Order(
             status: json["status"],
             success: json["success"],
-            data: json["data"] == null ? null : Data.fromJson(json["data"]),
+            data: json["data"] == null ? null : PAYData.fromJson(json["data"]),
         );
     }
 
@@ -25,11 +25,11 @@ class Order {
 
 }
 
-class Data {
-    Data({
+class PAYData {
+    PAYData({
         required this.id,
         required this.address,
-        required this.orderUser,
+        required this.user,
         required this.paymentMethod,
         required this.status,
         required this.itemsTotal,
@@ -43,14 +43,14 @@ class Data {
         required this.remaining,
         required this.phone,
         required this.createdAt,
-        required this.orderitems,
+        required this.items,
         required this.paymentToken,
         required this.paymentUrl,
     });
 
     final int? id;
-    final Address? address;
-    final OrderUser? orderUser;
+    final PAYAddress? address;
+    final User? user;
     final String? paymentMethod;
     final String? status;
     final int? itemsTotal;
@@ -64,15 +64,15 @@ class Data {
     final int? remaining;
     final String? phone;
     final DateTime? createdAt;
-    final List<OrderItem> orderitems;
+    final List<PAYItem> items;
     final String? paymentToken;
     final String? paymentUrl;
 
-    factory Data.fromJson(Map<String, dynamic> json){ 
-        return Data(
+    factory PAYData.fromJson(Map<String, dynamic> json){ 
+        return PAYData(
             id: json["id"],
-            address: json["address"] == null ? null : Address.fromJson(json["address"]),
-            orderUser: json["user"] == null ? null : OrderUser.fromJson(json["user"]),
+            address: json["address"] == null ? null : PAYAddress.fromJson(json["address"]),
+            user: json["user"] == null ? null : User.fromJson(json["user"]),
             paymentMethod: json["payment_method"],
             status: json["status"],
             itemsTotal: json["items_total"],
@@ -86,7 +86,7 @@ class Data {
             remaining: json["remaining"],
             phone: json["phone"],
             createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-            orderitems: json["items"] == null ? [] : List<OrderItem>.from(json["items"]!.map((x) => OrderItem.fromJson(x))),
+            items: json["items"] == null ? [] : List<PAYItem>.from(json["items"]!.map((x) => PAYItem.fromJson(x))),
             paymentToken: json["payment_token"],
             paymentUrl: json["payment_url"],
         );
@@ -95,7 +95,7 @@ class Data {
     Map<String, dynamic> toJson() => {
         "id": id,
         "address": address?.toJson(),
-        "user": orderUser?.toJson(),
+        "user": user?.toJson(),
         "payment_method": paymentMethod,
         "status": status,
         "items_total": itemsTotal,
@@ -109,15 +109,15 @@ class Data {
         "remaining": remaining,
         "phone": phone,
         "created_at": createdAt?.toIso8601String(),
-        "items": orderitems.map((x) => x?.toJson()).toList(),
+        "items": items.map((x) => x?.toJson()).toList(),
         "payment_token": paymentToken,
         "payment_url": paymentUrl,
     };
 
 }
 
-class Address {
-    Address({
+class PAYAddress {
+    PAYAddress({
         required this.id,
         required this.street,
         required this.buildingNumber,
@@ -139,8 +139,8 @@ class Address {
     final String? long;
     final bool? status;
 
-    factory Address.fromJson(Map<String, dynamic> json){ 
-        return Address(
+    factory PAYAddress.fromJson(Map<String, dynamic> json){ 
+        return PAYAddress(
             id: json["id"],
             street: json["street"],
             buildingNumber: json["building_number"],
@@ -167,8 +167,8 @@ class Address {
 
 }
 
-class OrderItem {
-    OrderItem({
+class PAYItem {
+    PAYItem({
         required this.id,
         required this.quantity,
         required this.product,
@@ -178,8 +178,8 @@ class OrderItem {
     final int? quantity;
     final Product? product;
 
-    factory OrderItem.fromJson(Map<String, dynamic> json){ 
-        return OrderItem(
+    factory PAYItem.fromJson(Map<String, dynamic> json){ 
+        return PAYItem(
             id: json["id"],
             quantity: json["quantity"],
             product: json["product"] == null ? null : Product.fromJson(json["product"]),
@@ -229,8 +229,8 @@ class Product {
 
 }
 
-class OrderUser {
-    OrderUser({
+class User {
+    User({
         required this.id,
         required this.name,
         required this.isVerified,
@@ -246,8 +246,8 @@ class OrderUser {
     final String? phone;
     final String? role;
 
-    factory OrderUser.fromJson(Map<String, dynamic> json){ 
-        return OrderUser(
+    factory User.fromJson(Map<String, dynamic> json){ 
+        return User(
             id: json["id"],
             name: json["name"],
             isVerified: json["is_verified"],
