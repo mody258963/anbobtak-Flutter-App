@@ -7,11 +7,14 @@ import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
+import 'package:anbobtak/presntation_lyar/screens/MyorderScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/checkout/Paymob.dart';
+import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final int? id; // Address ID passed from previous screen
@@ -42,6 +45,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int? carry;
   int? tax;
   int? total;
+  Widgets _widgets = Widgets();
 
   void initState() {
     super.initState();
@@ -54,22 +58,74 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       builder: (context, state) {
         if (state is GetPriceV1) {
           final price = state.posts;
-          WidgetsBinding.instance.addPersistentFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                carry = price.carryingService!;
-                delivery = price.deliveryService!;
-                fees = price.fees!;
-                tax = price.tax!;
-                total = price.total!;
-                print('========price===========$price');
-              });
-            }
-          });
+
+          if (mounted) {
+            carry = price.carryingService ?? 0;
+            delivery = price.deliveryService ?? 0;
+            fees = price.fees ?? 0;
+            tax = price.tax ?? 0;
+            total = price.total ?? 0;
+          }
+          print('========Updated Price=========${price.toString()}');
+
+          return _buildPriceDetails();
         }
-        return Container();
+        // else if (state is GetMethodLoadingV1) {
+        //   return const Center(
+        //     child: CircularProgressIndicator(),
+        //   );
+        // } else if (state is GetMethodErrorV1) {
+        //   return Center(
+        //     child: Text(
+        //       'Failed to load prices. Please try again.',
+        //       style: TextStyle(color: Colors.red, fontSize: 16),
+        //     ),
+        //   );
+        // }
+        return const SizedBox(); // Placeholder when no relevant state is active
       },
-      // Include a child widget (for example, a list view)
+    );
+  }
+
+  Widget buildPriceRow({
+    required String label,
+    num? value,
+    bool isBold = false,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        Text(
+          value != null
+              ? '${value!.toStringAsFixed(2)} EGP'
+              : 'N/A', // Handle null value
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildPriceRow(label: "Carrying Service:", value: carry ?? 0),
+        buildPriceRow(label: "Delivery Service:", value: delivery ?? 0),
+        buildPriceRow(label: "Fees:", value: fees ?? 0),
+        buildPriceRow(label: "Tax:", value: tax ?? 0),
+        Divider(color: Colors.grey),
+        buildPriceRow(label: "Total:", value: total ?? 0, isBold: true),
+      ],
     );
   }
 
@@ -92,6 +148,77 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+Widget _paymentButton() {
+  return BlocListener<UplodingDataCubit, UplodingDataState>(
+    listener: (context, state) {
+      if (state is PayOrder) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymobWebView(iframeUrl: state.paymentUrl),
+          ),
+        );
+      } else if (state is CashOnDelivery) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Order placed successfully with Cash on Delivery!'),
+          ),
+        );
+      } else if (state is OrderAlreadyCreated) {
+      showDialog(
+          context: context,
+          builder: (context) => _widgets.buildCustomDialog(
+            context,
+            state.errorMsg,
+            'Order Made Before',
+          ),
+        );
+
+        PersistentNavBarNavigator.pushNewScreen(
+          context,
+          screen: MyOrderScreen(),
+          withNavBar: true,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+        );
+      } else if (state is ErrorOccurred) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMsg),
+          ),
+        );
+      }
+    },
+    child:   SizedBox(
+        width: double.infinity,
+        height: 50.h,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: () async {
+            print('==========address id========${widget.id}');
+            print('==========payment method========$paymentMethod');
+
+            // Trigger the OrderMake function
+            await context
+                .read<UplodingDataCubit>()
+                .OrderMake(widget.id, paymentMethod);
+          },
+          child: Text(
+            'Place Order',
+            style: TextStyle(fontSize: 18.sp, color: Colors.white),
+          ),
+        ),
+      ),
+
+  );
+}
+
+ 
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -113,7 +240,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPriceList(),
             // Map Section
             Container(
               height: 180.h,
@@ -195,7 +321,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   child: RadioListTile(
                     activeColor: MyColors.Secondcolor,
-                    value: 'cash_on_delivery',
+                    value: 'cash_On_delivery',
                     groupValue: paymentMethod,
                     onChanged: (value) {
                       setState(() {
@@ -219,106 +345,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Text('Payment summary',
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
             SizedBox(height: 9.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Delivery Fees', style: TextStyle(fontSize: 16.sp)),
-                Text(delivery.toString() ?? '',
-                    style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            SizedBox(height: 5.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Carrying Service', style: TextStyle(fontSize: 16.sp)),
-                Text(carry.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            SizedBox(height: 5.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Fees', style: TextStyle(fontSize: 16.sp)),
-                Text(fees.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            SizedBox(height: 5.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Tax', style: TextStyle(fontSize: 16.sp)),
-                Text(tax.toString() ?? '', style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            SizedBox(height: 5.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Total amount',
-                    style: TextStyle(
-                        fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                Text(total.toString() ?? '',
-                    style: TextStyle(
-                        fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            SizedBox(height: 14.h),
+
             // Place Order Button
-            SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () async {
-                  print('==========adreess id========${widget.id}');
-                  // Trigger the OrderMake function
-                  await context
-                      .read<UplodingDataCubit>()
-                      .OrderMake(widget.id, paymentMethod);
-
-                  // Listen for the emitted state
-                  final state = context.read<UplodingDataCubit>().state;
-
-                  if (state is PayOrder) {
-                    // Handle based on payment method
-                    if (paymentMethod == 'visa' && state.paymentUrl != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PaymobWebView(iframeUrl: state.paymentUrl),
-                        ),
-                      );
-                    } else if (paymentMethod == 'cash_on_delivery') {
-                      // Handle cash on delivery
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                'Order placed successfully with Cash on Delivery!')),
-                      );
-                    } else {
-                      // Handle the case where paymentUrl is missing for visa
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Payment URL not available.')),
-                      );
-                    }
-                  } else if (state is ErrorOccurred) {
-                    // Handle error state
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.errorMsg)),
-                    );
-                  }
-                },
-                child: Text('Place Order',
-                    style: TextStyle(fontSize: 18.sp, color: Colors.white)),
-              ),
-            ),
+            _buildPriceList(),
+            SizedBox(height: 50.h),
+            _paymentButton(),
           ],
         ),
       ),

@@ -26,6 +26,14 @@ class _NavigationBarsState extends State<NavigationBars> {
   List<PersistentBottomNavBarItem> _navBarItems() {
     return [
       PersistentBottomNavBarItem(
+        onPressed: (p0) {
+           // Fetch products using the GetProduct method
+    BlocProvider.of<GetMethodCubit>(context).GetProduct();
+
+    Navigator.of(context).pushNamed(
+      homescreen,
+    );
+        },
         icon: Icon(Icons.home),
         activeColorPrimary: MyColors.Secondcolor,
         inactiveColorPrimary: Colors.grey,

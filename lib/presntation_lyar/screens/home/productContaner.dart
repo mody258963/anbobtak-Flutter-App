@@ -24,6 +24,11 @@ class _ProductContainerState extends State<ProductContainer> {
   List<Map<String, dynamic>> cartItems = [];
   double totalPrice = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<GetMethodCubit>(context).GetProduct();
+  }
   void _CartEditing() {
     for (var item in cartItems) {
       setState(() {

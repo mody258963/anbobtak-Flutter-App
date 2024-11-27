@@ -87,7 +87,7 @@ class Widgets {
     );
   }
 
-  Widget buildCustomDialog(BuildContext context) {
+  Widget buildCustomDialog(BuildContext context, subtitle, title) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
@@ -98,7 +98,7 @@ class Widgets {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Custom Dialog",
+              title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -106,22 +106,14 @@ class Widgets {
             ),
             SizedBox(height: 10),
             Text(
-              "This is a customized dialog. You can add any widgets you want here.",
+             subtitle,
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: Text("Cancel"),
-                ),
+          
                 ElevatedButton(
                   onPressed: () {
                     // Perform an action
@@ -130,7 +122,7 @@ class Widgets {
                     );
                     Navigator.of(context).pop(); // Close the dialog
                   },
-                  child: Text("Confirm"),
+                  child: Text("OK"),
                 ),
               ],
             )

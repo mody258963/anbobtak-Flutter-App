@@ -85,27 +85,31 @@ Future<List<OrderData>> GetOrder(String end) async {
     return [];
   }
 }
-
-Future<List<PAYData>> OrderMake(String end, Object data) async {
-  // Fetch the response from the web service
-  final response = await nameWebService.PostTypeMap(end,data);
+Future<PAYData?> OrderMake(String end, Object data) async {
+  final response = await nameWebService.PostTypeMap(end, data);
 
   print("=====Raw Response Paaaaay order==== #$response");
 
-  // Check if the response is a List
-  if (response is List) {
-    // Parse each item in the list into an OrderData object
-    final List<PAYData> orderDataList = response.map((orderJson) {
-      return PAYData.fromJson(orderJson);
-    }).toList();
+  if (response is Map<String, dynamic> && response['error'] == 'order_already_created') {
+    throw Exception('OrderAlreadyCreated');
+  }
 
-    print("=====Parsed Order Data==== $orderDataList");
-    return orderDataList..shuffle();
+  if (response is Map<String, dynamic>) {
+    try {
+      final PAYData orderData = PAYData.fromJson(response);
+      print("=====Parsed Order Data==== $orderData");
+      return orderData;
+    } catch (e) {
+      print("Error parsing response: ${e.toString()}");
+      return null;
+    }
   } else {
     print("Unexpected response format: $response");
-    return [];
+    return null;
   }
 }
+
+
 
 
   

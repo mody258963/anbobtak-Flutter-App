@@ -26,12 +26,23 @@ class ItemUploaded extends UplodingDataState {
 }
 
 class PayOrder extends UplodingDataState {
- final List<PAYData>  order;
+ final PAYData  order;
  
  final String paymentUrl;
 
   PayOrder({required this.order, required this.paymentUrl});
 
+}
+
+class CashOnDelivery extends UplodingDataState {
+  final PAYData order;
+
+  CashOnDelivery({required this.order});
+}
+
+class OrderAlreadyCreated extends UplodingDataState {
+  final String errorMsg;
+  OrderAlreadyCreated({required this.errorMsg});
 }
 
 

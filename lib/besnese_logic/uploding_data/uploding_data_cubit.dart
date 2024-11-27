@@ -62,42 +62,43 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
     }
   }
 
-Future<void> addAddress(
-  String building,
-  String apt,
-  String addAddress,
-  String floor,
-  String lat,
-  String long,
-  String street,
-  String phone,
-) async {
-  try {
-    // Call the repository method to add an address
-    final response = await myRepo.addAddress('v1/address', {
-      'building_number': building,
-      'apartment_number': apt,
-      'additional_address': addAddress,
-      'floor': floor,
-      'lat': lat,
-      'long': long,
-      'street': street,
-      'phone': phone,
-    });
+  Future<void> addAddress(
+    String building,
+    String apt,
+    String addAddress,
+    String floor,
+    String lat,
+    String long,
+    String street,
+    String phone,
+  ) async {
+    try {
+      // Call the repository method to add an address
+      final response = await myRepo.addAddress('v1/address', {
+        'building_number': building,
+        'apartment_number': apt,
+        'additional_address': addAddress,
+        'floor': floor,
+        'lat': lat,
+        'long': long,
+        'street': street,
+        'phone': phone,
+      });
 
-    // Assuming `response` contains a list of addresses or a single address with `id`
-    if (response.isNotEmpty) {
-      final addressId = response.first.data.first.id; // Get the ID of the created address
-      emit(AddressLatUploaded(address: addressId)); // Emit the state with the address ID
-    } else {
-      emit(ErrorOccurred(errorMsg: "Failed to create address."));
+      // Assuming `response` contains a list of addresses or a single address with `id`
+      if (response.isNotEmpty) {
+        final addressId =
+            response.first.data.first.id; // Get the ID of the created address
+        emit(AddressLatUploaded(
+            address: addressId)); // Emit the state with the address ID
+      } else {
+        emit(ErrorOccurred(errorMsg: "Failed to create address."));
+      }
+    } catch (e) {
+      print('Error adding address: ${e.toString()}');
+      emit(ErrorOccurred(errorMsg: e.toString()));
     }
-  } catch (e) {
-    print('Error adding address: ${e.toString()}');
-    emit(ErrorOccurred(errorMsg: e.toString()));
   }
-}
-
 
   // Future<void> createOrder( productId) async {
   //   try {
@@ -112,43 +113,48 @@ Future<void> addAddress(
   //   }
   // }
 
-  Future<void> deleteProduct( productId) async {
+  Future<void> deleteProduct(productId) async {
     try {
-      List<Carts> Items = await myRepo.deleteProduct('v1/cart/remove-item', {
-        'product_id': productId,
-        '_method': 'delete'
-      });
+      List<Carts> Items = await myRepo.deleteProduct('v1/cart/remove-item',
+          {'product_id': productId, '_method': 'delete'});
       print('====CArt Items=====$Items');
       emit(ItemUploaded(Items: Items));
     } catch (e) {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
-
 Future<void> OrderMake(addressId, type) async {
   try {
-    // Make the API request
-    List<PAYData> order = await myRepo.OrderMake('v1/orders/store', {
+    print('OrderMake triggered with type: $type');
+
+    PAYData? order = await myRepo.OrderMake('v1/orders/store', {
       'address_id': addressId,
       'payment_method': type,
     });
 
-    // Assuming `order` contains the parsed response
-    if (order.isNotEmpty) {
-      // Access the `payment_url` from the first order item (adjust if needed)
-      final paymentUrl = order.first.paymentUrl; // Adjust path as per response structure
+    if (order != null) {
+      print('Parsed Order: $order');
+      print('Payment Method: ${order.paymentMethod}');
+      print('Payment URL: ${order.paymentUrl}');
 
-      if (paymentUrl != null) {
-        emit(PayOrder(order: order, paymentUrl: paymentUrl));
+      if (type == 'cash_On_delivery') {
+        emit(CashOnDelivery(order: order));
+      } else if (order.paymentUrl != null) {
+        emit(PayOrder(order: order, paymentUrl: order.paymentUrl!));
       } else {
-        emit(ErrorOccurred(errorMsg: 'Payment URL not found in the response.'));
+        emit(ErrorOccurred(errorMsg: 'Payment URL not found.'));
       }
-    } else {
-      emit(ErrorOccurred(errorMsg: 'Order data is empty.'));
     }
   } catch (e) {
-    emit(ErrorOccurred(errorMsg: e.toString()));
+    if (e.toString() == 'Exception: OrderAlreadyCreated') {
+      emit(OrderAlreadyCreated(errorMsg: 'Order already created.'));
+    } else {
+      emit(ErrorOccurred(errorMsg: e.toString()));
+    }
   }
 }
+
+
+
 
 }
