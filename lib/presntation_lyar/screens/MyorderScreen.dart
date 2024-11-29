@@ -1,5 +1,4 @@
-import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
-import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/orderLiisting/order_cubit_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/presntation_lyar/screens/OrderDetails.dart';
 import 'package:anbobtak/web_servese/model/myOrder.dart';
@@ -26,11 +25,11 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
-    BlocProvider.of<GetMethodCubit>(context).GetOrder();
+    BlocProvider.of<OrderCubitCubit>(context).GetOrder();
   }
 
   Widget _buildOrder() {
-    return BlocBuilder<GetMethodCubit, GetMethodState>(
+    return BlocBuilder<OrderCubitCubit, OrderCubitState>(
       builder: (context, state) {
         if (state is GetOrders) {
           final orderList = List.from(state.order)
@@ -40,7 +39,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
             color: MyColors.Secondcolor,
             onRefresh: () async {
               // Trigger your cubit or API call to refresh the orders
-              await context.read<GetMethodCubit>().GetOrder();
+              await context.read<OrderCubitCubit>().GetOrder();
             },
             child: ListView.builder(
               scrollDirection: Axis.vertical,

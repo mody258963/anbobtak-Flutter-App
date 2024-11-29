@@ -20,6 +20,9 @@ class GetMethodCubit extends Cubit<GetMethodState> {
   Future<FutureOr<void>> GetProduct() async {
     try {
       emit(LodingState());
+
+      await Future.delayed(Duration(seconds: 3));
+
       List<Datum> products = await myRepo.getProduct('v1/products/');
 
       print('Products fetched: $products');
@@ -68,15 +71,5 @@ class GetMethodCubit extends Cubit<GetMethodState> {
     }
   }
 
-    Future<FutureOr<void>> GetOrder() async {
-    try {
-      emit(LodingState());
-      List<OrderData> posts = await myRepo.GetOrder('v1/orders');
-      emit(GetOrders(order: posts));
-      print("======me======$posts");
-    } catch (e) {
-      emit(Fail(e.toString()));
-      print('========cubits/ order=======${e.toString()}');
-    }
-  }
+
 }

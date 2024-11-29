@@ -29,7 +29,7 @@ class _SecondOTPState extends State<SecondOTP> {
       },
       listener: (context, EmailAuthState state) {
         if (state is SendCodeLoding) {
-          _widgets.buildCircularProgressIndicatorDialog(context);
+          return _widgets.buildCircularProgressIndicatorDialogV1(context);
         }
         if (state is Loginfails) {
           showDialog(
@@ -38,7 +38,8 @@ class _SecondOTPState extends State<SecondOTP> {
               title: Text(state.message!),
             ),
           );
-        }    if (state is CodeSend) {
+        }
+        if (state is CodeSend) {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -95,18 +96,20 @@ class _SecondOTPState extends State<SecondOTP> {
                           child: Center(
                             child: Column(
                               children: [
-                                  _widgets.TextFiledLogin(
-                                      'OTP Code',
-                                      OPTcontroller,
-                                      6,
-                                      'Enter 6 digits in the What\'sApp SMS ', TextInputType.number, 
-                                      context),
+                                _widgets.TextFiledLogin(
+                                    'OTP Code',
+                                    OPTcontroller,
+                                    6,
+                                    'Enter 6 digits in the What\'sApp SMS ',
+                                    TextInputType.number,
+                                    context),
                                 if (_isverfiy)
                                   _widgets.TextFiledLogin(
                                       'Password',
                                       passwordcontroller,
                                       8,
-                                      'Please enter more than 8 characters',TextInputType.number ,
+                                      'Please enter more than 8 characters',
+                                      TextInputType.number,
                                       context),
                               ],
                             ),
@@ -122,14 +125,11 @@ class _SecondOTPState extends State<SecondOTP> {
                         duration: Duration(milliseconds: 1900),
                         child: _widgets.AppButton(() {
                           setState(() {});
-        
-                
-                            print('=============seconf');
-                            context.read<EmailAuthCubit>().verificationCode(
-                                phonecontroller.text,OPTcontroller.text);    
 
-                   
-                        }, 'Sign Up' )),
+                          print('=============seconf');
+                          context.read<EmailAuthCubit>().verificationCode(
+                              phonecontroller.text, OPTcontroller.text);
+                        }, 'Sign Up')),
                     SizedBox(
                       height: 30,
                     ),

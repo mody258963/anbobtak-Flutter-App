@@ -106,14 +106,13 @@ class Widgets {
             ),
             SizedBox(height: 10),
             Text(
-             subtitle,
+              subtitle,
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-          
                 ElevatedButton(
                   onPressed: () {
                     // Perform an action
@@ -298,33 +297,13 @@ class Widgets {
 
   // ======================================= Loading Screen Widget
 
-  Widget buildCircularProgressIndicatorDialog(BuildContext context) {
-    return SizedBox(
-      width: double.infinity, // Takes the full width
-      height: MediaQuery.of(context).size.height * 0.70,
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  void _showCircularProgressIndicatorDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.white.withOpacity(0),
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        // Call the Widget-building function here.
-        return buildCircularProgressIndicatorDialog(context);
-      },
-    );
-  }
-
   void buildCircularProgressIndicatorDialogV1(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Center(
-          child: CircularProgressIndicator(color: Colors.black),
+          child: CircularGifIndicator(size: 100.0),
         );
       },
     );
@@ -390,3 +369,40 @@ class CurvedClipper extends CustomClipper<Path> {
   }
 }
 //_----------------------------------------------------
+
+class CircularGifIndicator extends StatelessWidget {
+  final double size;
+
+  const CircularGifIndicator({
+    Key? key,
+    this.size = 150,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Circular GIF indicator
+        Padding(
+          padding: EdgeInsets.only(top: 180.h),
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors
+                  .transparent, // Ensure the circle itself has no background
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/gas2.gif',
+                fit: BoxFit.cover, // Ensure the GIF fits within the circle
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

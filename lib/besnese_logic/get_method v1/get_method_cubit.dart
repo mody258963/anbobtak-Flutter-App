@@ -21,7 +21,8 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
   
     Future<FutureOr<void>> GetCart() async {   // to do : divide the cubits  
     try {
-      emit(LodingState());
+      emit(LodingStateV1());
+        await Future.delayed(Duration(seconds: 3));
       List<Item> posts = await myRepo.GetCart('v1/cart/');
       emit(GetCartsV1(posts: posts));
       print("======Carts======$posts");
@@ -31,7 +32,7 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
   }
       Future<FutureOr<void>> GetPrice() async {   // to do : divide the cubits  
     try {
-      emit(LodingState());
+      emit(LodingStateV1());
       Carts posts = await myRepo.GetPrice('v1/cart/');
       emit(GetPriceV1(posts: posts));
       print("======Carts======$posts");
@@ -43,7 +44,7 @@ class GetMethodCubitV2 extends Cubit<GetMethodStateV1> {
 
       Future<FutureOr<void>> GetAddress() async {   // to do : divide the cubits  
     try {
-      emit(LodingState());
+      emit(LodingStateV1());
       List<Datas> posts = await myRepo.GetAddress('v1/address/');
       emit(GetAddres(posts: posts));
       

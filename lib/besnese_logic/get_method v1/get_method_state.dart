@@ -14,7 +14,7 @@ sealed class GetMethodStateV1 {}
 
 class GetMethodInitialV1 extends GetMethodStateV1 {}
 
-class LodingState extends GetMethodStateV1{}
+class LodingStateV1 extends GetMethodStateV1{}
 
 
 

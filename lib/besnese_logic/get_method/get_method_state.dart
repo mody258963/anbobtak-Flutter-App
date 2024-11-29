@@ -34,10 +34,7 @@ class CatogoryState extends GetMethodState {
 }
 
 
-class GetOrders extends GetMethodState{
-  final List<OrderData>  order;
-  GetOrders({required this.order});
-}
+
 
 
 class GetProducts extends GetMethodState {

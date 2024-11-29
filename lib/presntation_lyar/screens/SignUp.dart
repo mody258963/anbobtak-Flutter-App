@@ -103,7 +103,7 @@ class _OTPScreenState extends State<OTPScreen> {
       },
       listener: (context, EmailAuthState state) {
         if (state is SendCodeLoding) {
-          _widgets.buildCircularProgressIndicatorDialog(context);
+          _widgets.buildCircularProgressIndicatorDialogV1(context);
         }
         if (state is Loginfails) {
           showDialog(

@@ -1,5 +1,6 @@
 import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
+import 'package:anbobtak/besnese_logic/orderLiisting/order_cubit_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
 import 'package:anbobtak/presntation_lyar/screens/checkout/Checkout.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
@@ -21,6 +22,7 @@ class AppRouter {
   UplodingDataCubit? uplodingDataCubit;
   GetMethodCubit? getMethodCubit;
   GetMethodCubitV2? getMethodCubitV2;
+  OrderCubitCubit? orderCubitCubit;
   EmailAuthCubit? emailAuthCubit;
   AppRouter() {
     MyRepo myRepoInstance = MyRepo(NameWebServise());
@@ -32,6 +34,8 @@ class AppRouter {
         myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
     getMethodCubitV2 = GetMethodCubitV2(
         myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
+            orderCubitCubit = OrderCubitCubit(
+        myRepoInstance,  emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
   }
 
   Route? generateRoute(RouteSettings settings) {
@@ -72,20 +76,17 @@ class AppRouter {
                   value: getMethodCubit!,
                   child: MapScreen(),
                 ));
-                case checkout:
-                final int? id = settings.arguments as int?;
+      case checkout:
+        final int? id = settings.arguments as int?;
 
-                     MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
-                    BlocProvider<UplodingDataCubit>.value(
-                        value: uplodingDataCubit!),
-                    BlocProvider<GetMethodCubitV2>.value(
-                        value: getMethodCubitV2!),
-                  ],
-                  child:CheckoutScreen(id:id)
-                ));
+        MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(providers: [
+                  BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+                  BlocProvider<UplodingDataCubit>.value(
+                      value: uplodingDataCubit!),
+                  BlocProvider<GetMethodCubitV2>.value(
+                      value: getMethodCubitV2!),
+                ], child: CheckoutScreen(id: id)));
       case signup:
         return MaterialPageRoute(
             builder: (_) => BlocProvider<EmailAuthCubit>.value(
@@ -112,6 +113,7 @@ class AppRouter {
               BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
               BlocProvider<GetMethodCubitV2>.value(value: getMethodCubitV2!),
               BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!),
+              BlocProvider<OrderCubitCubit>.value(value: orderCubitCubit!),
             ],
             child: NavigationBars(name: name),
           ),

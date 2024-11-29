@@ -5,10 +5,13 @@ import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/main.dart';
+import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductContainer extends StatefulWidget {
   final Function(List<Map<String, dynamic>>)
@@ -23,18 +26,20 @@ class ProductContainer extends StatefulWidget {
 class _ProductContainerState extends State<ProductContainer> {
   List<Map<String, dynamic>> cartItems = [];
   double totalPrice = 0;
+  Widgets _widgets = Widgets();
 
   @override
   void initState() {
     super.initState();
     BlocProvider.of<GetMethodCubit>(context).GetProduct();
   }
+
   void _CartEditing() {
     for (var item in cartItems) {
       setState(() {
-  BlocProvider.of<UplodingDataCubit>(context)
-      .addItemInCart(item['quantity'], item['id']);
-});
+        BlocProvider.of<UplodingDataCubit>(context)
+            .addItemInCart(item['quantity'], item['id']);
+      });
     }
   }
 
@@ -67,7 +72,9 @@ class _ProductContainerState extends State<ProductContainer> {
 
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
-        if (state is GetProducts) {
+        if (state is LodingState) {
+          return Center(child: CircularGifIndicator());
+        } else if (state is GetProducts) {
           // Sort both products and cart lists by ID
           final items = _sortProducts(state.posts);
 
@@ -194,108 +201,110 @@ class _ProductContainerState extends State<ProductContainer> {
     );
   }
 
- Widget _buildCounter(product) {
-  double width = MediaQuery.of(context).size.width;
-  double height = MediaQuery.of(context).size.height;
+  Widget _buildCounter(product) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
 
-  return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
-    builder: (context, state) {
-      if (state is GetCartsV1) {
-        cartItems = state.posts
-            .map((item) => {
-                  'id': item.product.id,
-                  'name': item.product.name,
-                  'quantity': item.quantity ?? 0,
-                  'price': item.product.price,
-                  'image': item.product.image,
-                })
-            .toList();
-      }
+    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+      builder: (context, state) {
+        if (state is GetCartsV1) {
+          cartItems = state.posts
+              .map((item) => {
+                    'id': item.product.id,
+                    'name': item.product.name,
+                    'quantity': item.quantity ?? 0,
+                    'price': item.product.price,
+                    'image': item.product.image,
+                  })
+              .toList();
+        }
 
-      // Initialize the quantity directly from the cartItems
-      final item = cartItems.firstWhere(
-        (item) => item['id'] == product.id,
-        orElse: () => {'quantity': 0}, // Default value if not found
-      );
+        // Initialize the quantity directly from the cartItems
+        final item = cartItems.firstWhere(
+          (item) => item['id'] == product.id,
+          orElse: () => {'quantity': 0}, // Default value if not found
+        );
 
-      return Container(
-        height: height * 0.14,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: width * 0.1),
-            AddToCartCounterButton(
-              initNumber: item['quantity'], // Initialize quantity correctly
-              minNumber: 0,
-              maxNumber: 10,
-              increaseCallback: () {
-                setState(() {
-                  // Increase logic
-                  _CartEditing();
-                });
-              },
-              decreaseCallback: () {
-                setState(() {
-                  final cartItem = cartItems.firstWhere(
-                    (item) => item['id'] == product.id,
-                    orElse: () => {}, // Return empty map if not found
-                  );
-
-                  if (cartItem['quantity'] == 0) {
-                    // Delete product if quantity is 1
-                    BlocProvider.of<UplodingDataCubit>(context)
-                        .deleteProduct(cartItem['id']);
-                         cartItems.removeWhere((item) => item['id'] == cartItem['id']);
-                            widget.onCartUpdate(cartItems); 
-                         _CartEditing();
-                  } else  {
+        return Container(
+          height: height * 0.14,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: width * 0.1),
+              AddToCartCounterButton(
+                initNumber: item['quantity'], // Initialize quantity correctly
+                minNumber: 0,
+                maxNumber: 10,
+                increaseCallback: () {
+                  setState(() {
+                    // Increase logic
                     _CartEditing();
-                  }
-                });
-              },
-              
-              counterCallback: (int count) {
-                setState(() {
-                  bool found = false;
+                  });
+                },
+                decreaseCallback: () {
+                  setState(() {
+                    final cartItem = cartItems.firstWhere(
+                      (item) => item['id'] == product.id,
+                      orElse: () => {}, // Return empty map if not found
+                    );
 
-                  // Update quantity for the found item
-                  for (var item in cartItems) {
-                    if (item['id'] == product.id) {
-                      item['quantity'] = count;
-                      found = true;
-                      break;
+                    if (cartItem['quantity'] == 0) {
+                      // Delete product if quantity is 1
+                      BlocProvider.of<UplodingDataCubit>(context)
+                          .deleteProduct(cartItem['id']);
+                      cartItems
+                          .removeWhere((item) => item['id'] == cartItem['id']);
+                      widget.onCartUpdate(cartItems);
+                      _CartEditing();
+                    } else {
+                      _CartEditing();
                     }
-                  }
+                  });
+                },
 
-                  // If item not found, add it to the cart
-                  if (!found) {
-                    cartItems.add({
-                      'id': product.id,
-                      'name': product.name,
-                      'quantity': count,
-                      'price': product.price,
-                      'image': product.image,
-                    });
-                  }
+                counterCallback: (int count) {
+                  setState(() {
+                    bool found = false;
 
-                  // Sort cart and update state
-                  sortCart();
+                    // Update quantity for the found item
+                    for (var item in cartItems) {
+                      if (item['id'] == product.id) {
+                        item['quantity'] = count;
+                        found = true;
+                        break;
+                      }
+                    }
 
-                  widget.onCartUpdate(cartItems); // Update cart in parent widget
+                    // If item not found, add it to the cart
+                    if (!found) {
+                      cartItems.add({
+                        'id': product.id,
+                        'name': product.name,
+                        'quantity': count,
+                        'price': product.price,
+                        'image': product.image,
+                      });
+                    }
 
-                  print('Updated Cart: $cartItems');
-                });
-              },
-              backgroundColor: Colors.white,
-              buttonFillColor: MyColors.Secondcolor,
-              buttonIconColor: Colors.white,
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
+                    // Sort cart and update state
+                    sortCart();
+
+                    widget.onCartUpdate(
+                        cartItems); // Update cart in parent widget
+
+                    print('Updated Cart: $cartItems');
+                  });
+                },
+                backgroundColor: Colors.white,
+                buttonFillColor: MyColors.Secondcolor,
+                buttonIconColor: Colors.white,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

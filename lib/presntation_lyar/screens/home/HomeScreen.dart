@@ -72,7 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCartsList() {
     return BlocListener<cart.GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
-        if (state is GetCartsV1) {
+        if (state is LodingStateV1) {
+          CircularGifIndicator();
+          print('last==================');
+        } else if (state is GetCartsV1) {
           int totalQuantity = 0; // Variable to hold the total quantity
           setState(() {
             cartItems = state.posts
@@ -162,9 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             for (var item in cartItems) {
                               BlocProvider.of<UplodingDataCubit>(context)
                                   .addItemInCart(item['quantity'], item['id']);
-                                  
                             }
-
                           }
                           _buttomSheetCart();
                         },
