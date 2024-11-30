@@ -40,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<GetMethodCubit>(context).GetProduct();
     BlocProvider.of<cart.GetMethodCubitV2>(context).GetCart();
     _loadData();
   }
@@ -72,10 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCartsList() {
     return BlocListener<cart.GetMethodCubitV2, GetMethodStateV1>(
       listener: (context, state) {
-        if (state is LodingStateV1) {
-          CircularGifIndicator();
-          print('last==================');
-        } else if (state is GetCartsV1) {
+        if (state is GetCartsV1) {
           int totalQuantity = 0; // Variable to hold the total quantity
           setState(() {
             cartItems = state.posts
@@ -129,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Poppins'),
       home: Scaffold(
+        
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(3.0),
@@ -143,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 }
                 _buttomSheetCart();
-              }, "Pay")),
+              }, "Pay", enabled: true)),
         ),
         backgroundColor: MyColors.white,
         body: Column(

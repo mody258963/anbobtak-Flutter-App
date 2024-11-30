@@ -51,6 +51,7 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
 
   Future<void> addItemInCart(quantity, productId) async {
     try {
+      emit(Loading());
       List<Carts> Items = await myRepo.addItemCart('v1/cart/add-item', {
         'product_id': productId,
         'quantity': quantity,
@@ -123,38 +124,35 @@ class UplodingDataCubit extends Cubit<UplodingDataState> {
       emit(ErrorOccurred(errorMsg: e.toString()));
     }
   }
-Future<void> OrderMake(addressId, type) async {
-  try {
-    print('OrderMake triggered with type: $type');
 
-    PAYData? order = await myRepo.OrderMake('v1/orders/store', {
-      'address_id': addressId,
-      'payment_method': type,
-    });
+  Future<void> OrderMake(addressId, type) async {
+    try {
+      print('OrderMake triggered with type: $type');
 
-    if (order != null) {
-      print('Parsed Order: $order');
-      print('Payment Method: ${order.paymentMethod}');
-      print('Payment URL: ${order.paymentUrl}');
+      PAYData? order = await myRepo.OrderMake('v1/orders/store', {
+        'address_id': addressId,
+        'payment_method': type,
+      });
 
-      if (type == 'cash_On_delivery') {
-        emit(CashOnDelivery(order: order));
-      } else if (order.paymentUrl != null) {
-        emit(PayOrder(order: order, paymentUrl: order.paymentUrl!));
+      if (order != null) {
+        print('Parsed Order: $order');
+        print('Payment Method: ${order.paymentMethod}');
+        print('Payment URL: ${order.paymentUrl}');
+
+        if (type == 'cash_On_delivery') {
+          emit(CashOnDelivery(order: order));
+        } else if (order.paymentUrl != null) {
+          emit(PayOrder(order: order, paymentUrl: order.paymentUrl!));
+        } else {
+          emit(ErrorOccurred(errorMsg: 'Payment URL not found.'));
+        }
+      }
+    } catch (e) {
+      if (e.toString() == 'Exception: OrderAlreadyCreated') {
+        emit(OrderAlreadyCreated(errorMsg: 'Order already created.'));
       } else {
-        emit(ErrorOccurred(errorMsg: 'Payment URL not found.'));
+        emit(ErrorOccurred(errorMsg: e.toString()));
       }
     }
-  } catch (e) {
-    if (e.toString() == 'Exception: OrderAlreadyCreated') {
-      emit(OrderAlreadyCreated(errorMsg: 'Order already created.'));
-    } else {
-      emit(ErrorOccurred(errorMsg: e.toString()));
-    }
   }
-}
-
-
-
-
 }

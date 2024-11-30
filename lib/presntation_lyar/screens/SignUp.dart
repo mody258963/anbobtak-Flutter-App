@@ -103,7 +103,7 @@ class _OTPScreenState extends State<OTPScreen> {
       },
       listener: (context, EmailAuthState state) {
         if (state is SendCodeLoding) {
-          _widgets.buildCircularProgressIndicatorDialogV1(context);
+    
         }
         if (state is Loginfails) {
           showDialog(
@@ -238,7 +238,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                 passwordcontroller.text,
                                 cpasswordcontroller.text);
                           }
-                        }, _isverfiy ? 'Sign Up' : 'Verfiy ')),
+                        }, _isverfiy ? 'Sign Up' : 'Verfiy ', enabled: true)),
                     SizedBox(
                       height: 10.h,
                     ),

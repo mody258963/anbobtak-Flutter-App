@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
 import 'package:anbobtak/costanse/colors.dart';
+import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
@@ -28,11 +29,11 @@ class _MapScreenState extends State<MapScreen> {
   Widgets _widgets = Widgets();
 
   bool isInSelectedArea = true;
+  bool isLoading = true; // State to track loading status
 
   @override
   void initState() {
     super.initState();
-    // Fetch regions' polygons data from the database
     BlocProvider.of<GetMethodCubit>(context).GetRegions();
   }
 
@@ -45,19 +46,17 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void checkUpdataLocation(LatLng pointLatLng) {
-    // Convert the LatLng points of the polygons to map_tool.LatLng
     List<map_tool.LatLng> convertedPolygonPoints = _polygons.expand((polygon) {
       return polygon.points.map((point) {
         return map_tool.LatLng(point.latitude, point.longitude);
       });
     }).toList();
 
-    // Now check if the point is inside any of the polygons
     setState(() {
       isInSelectedArea = map_tool.PolygonUtil.containsLocation(
         map_tool.LatLng(pointLatLng.latitude, pointLatLng.longitude),
         convertedPolygonPoints,
-        false, // Use 'false' for non-inclusive boundaries (optional)
+        false,
       );
       print('==========================================$isInSelectedArea');
     });
@@ -95,6 +94,7 @@ class _MapScreenState extends State<MapScreen> {
 
     setState(() {
       _polygons = polygons;
+      isLoading = false; // Set loading to false after regions are loaded
     });
   }
 
@@ -114,10 +114,9 @@ class _MapScreenState extends State<MapScreen> {
       myLocationEnabled: true,
       onCameraMove: (CameraPosition position) {
         setState(() {
-          _currentMapPosition =
-              position.target; 
-             latitude =  _currentMapPosition.latitude;
-             longitude = _currentMapPosition.longitude;
+          _currentMapPosition = position.target;
+          latitude = _currentMapPosition.latitude;
+          longitude = _currentMapPosition.longitude;
         });
       },
     );
@@ -131,63 +130,134 @@ class _MapScreenState extends State<MapScreen> {
         if (state is GetRegion) {
           print("Regions fetched successfully.");
           _loadPolygonsFromDatabase(state.regions);
+          isLoading = false;
         } else if (state is Fail) {
-          AlertDialog(
-            title: Text("${state.message}"),
+          setState(() {
+            isLoading = false; // Stop loading on error
+          });
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("${state.message}"),
+            ),
           );
-          print("Failed to fetch regions: ${state.message}");
         }
       },
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+        backgroundColor: MyColors.white,
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterDocked,
         floatingActionButton: Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding:  EdgeInsets.only(right: 55),
+            padding: EdgeInsets.only(right: 55),
             child: Container(
-                height: 60.h, width: 280.w, child: _widgets.AppButton(() {
-                   PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: AddressScreen(lat:  latitude,long: longitude,),
-                  withNavBar: true, // OPTIONAL VALUE. True by default.
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
-
-                }, 'Confirm')),
+                height: 60.h,
+                width: 280.w,
+                child: isLoading // Show CircularProgressIndicator if loading
+                    ? null
+                    : _widgets.AppButton(() {
+                        if (isInSelectedArea) {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: AddressScreen(
+                              lat: latitude,
+                              long: longitude,
+                            ),
+                            withNavBar: true,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.cupertino,
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Enter Your Details',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                content: TextField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Type something...',
+                                    hintText: 'Enter text here',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close dialog
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      String userInput = 'last';
+                                      if (userInput.isNotEmpty) {
+                                        // Perform actions with the userInput
+                                        print('User Input: $userInput');
+                                      }
+                                      Navigator.of(context)
+                                          .pop(); // Close dialog
+                                    },
+                                    child: Text(
+                                      'Submit',
+                                      style: TextStyle(
+                                          color: MyColors.Secondcolor),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      }, 'Confirm', enabled: true)),
           ),
         ),
         appBar: AppBar(
           title: const Text("Set Delivery Location"),
           backgroundColor: MyColors.white,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
+            icon: Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
             onPressed: () {
-                  BlocProvider.of<GetMethodCubit>(context).GetProduct();
-              Navigator.of(context).pop();
-
+              if (!isLoading)
+                BlocProvider.of<GetMethodCubit>(context).GetProduct();
+               
+              context.pop();
             },
           ),
           actions: [
             Padding(
-              padding:  EdgeInsets.all(8.sp),
-              child: Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
+              padding: EdgeInsets.all(8.sp),
+              child:
+                  Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
             ),
           ],
         ),
-        body: Stack(
-          children: [
-                 _buildGoogleMaps(),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 37),
-                child: Icon(Icons.location_pin,
-                    size: 50.0,
-                    color:
-                        isInSelectedArea ? MyColors.Secondcolor : Colors.red),
+        body: isLoading // Show CircularProgressIndicator if loading
+            ? Center(child: CircularGifIndicator())
+            : Stack(
+                children: [
+                  _buildGoogleMaps(),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 37),
+                      child: Icon(Icons.location_pin,
+                          size: 50.0,
+                          color: isInSelectedArea
+                              ? MyColors.Secondcolor
+                              : Colors.red),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

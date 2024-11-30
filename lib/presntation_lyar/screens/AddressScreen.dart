@@ -36,7 +36,7 @@ class _AddressScreenState extends State<AddressScreen> {
   final TextEditingController Addcontroller = TextEditingController();
   final TextEditingController phonecontroller = TextEditingController();
   bool? isOffice = false;
-
+  bool isLoading = false;
   Widgets _widgets = Widgets();
   String phone = '';
   String? selectedAddressString; // Store the address string (for display)
@@ -48,8 +48,28 @@ class _AddressScreenState extends State<AddressScreen> {
   void initState() {
     super.initState();
     // Fetch regions' polygons data from the database
-    BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
-    BlocProvider.of<GetMethodCubit>(context).GetMe();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    if (!mounted) return; // Check if the widget is still mounted
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
+      await BlocProvider.of<GetMethodCubit>(context).GetMe();
+    } catch (error) {
+      print('Error fetching data: $error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   Widget _buildMe() {
@@ -78,14 +98,12 @@ class _AddressScreenState extends State<AddressScreen> {
   Widget _buildAddress() {
     return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
       builder: (context, state) {
-        if (state is GetAddres) {
-          final List<Datas> addressList = state.posts; // Ensure it’s a list
-          print('State posts type: ${state.posts.runtimeType}');
-          print(
-              'First address item: ${state.posts.isNotEmpty ? state.posts.first : 'No data'}');
-
+        if (state is LodingStateV1) {
+          isLoading = true;
+        } else if (state is GetAddres) {
+          final List<Datas> addressList = state.posts;
           if (addressList.isNotEmpty) {
-            addresses.clear(); // Avoid duplicate entries
+            addresses.clear(); // Avoid duplicates
             for (var item in addressList) {
               if (mounted) {
                 addresses.add({
@@ -103,10 +121,9 @@ class _AddressScreenState extends State<AddressScreen> {
           } else {
             print('No address data found');
           }
-
-          print('Processed addresses: $addresses');
+          isLoading = false;
         }
-        return Container(); // Return a widget as required
+        return Container();
       },
     );
   }
@@ -184,7 +201,7 @@ class _AddressScreenState extends State<AddressScreen> {
             child: Container(
               width: 100.w,
               height: 50.h,
-              child: _widgets.AppButton(() {}, 'Verify'),
+              child: _widgets.AppButton(() {}, 'Verify', enabled: true),
             ),
           )
       ],
@@ -291,63 +308,64 @@ class _AddressScreenState extends State<AddressScreen> {
         ),
         SizedBox(height: height * 0.015),
         Container(
-            height: height * 0.07,
-            width: width * 0.80,
-            child: _widgets.AppButton(() async {
-  if (selectedAddressMap != null) {
-    // Use the selected address from the dropdown
-    PersistentNavBarNavigator.pushNewScreen(
-      context,
-      screen: CheckoutScreen(
-        id: selectedAddressMap!['id'], // Use selected address ID
-        lat: widget.lat,
-        long: widget.long,
-        selectedAddressId: selectedAddressId,
-        street: selectedAddressMap!['street'],
-        building: selectedAddressMap!['building_number'],
-      ),
-      withNavBar: true,
-      pageTransitionAnimation: PageTransitionAnimation.cupertino,
-    );
-  } else {
-    // Trigger the addAddress function for a new address
-    await BlocProvider.of<UplodingDataCubit>(context).addAddress(
-      buidingcontroller.text,
-      apartmentcontroller.text,
-      Addcontroller.text,
-      floorcontroller.text,
-      widget.lat.toString(),
-      widget.long.toString(),
-      streetcontroller.text,
-      phone,
-    );
+          height: height * 0.07,
+          width: width * 0.80,
+          child: _widgets.AppButton(() async {
+            if (selectedAddressMap != null) {
+              // Use the selected address from the dropdown
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: CheckoutScreen(
+                  id: selectedAddressMap!['id'], // Use selected address ID
+                  lat: widget.lat,
+                  long: widget.long,
+                  selectedAddressId: selectedAddressId,
+                  street: selectedAddressMap!['street'],
+                  building: selectedAddressMap!['building_number'],
+                ),
+                withNavBar: true,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
+            } else {
+              // Trigger the addAddress function for a new address
+              await BlocProvider.of<UplodingDataCubit>(context).addAddress(
+                buidingcontroller.text,
+                apartmentcontroller.text,
+                Addcontroller.text,
+                floorcontroller.text,
+                widget.lat.toString(),
+                widget.long.toString(),
+                streetcontroller.text,
+                phone,
+              );
 
-    // Listen to the emitted state
-    final state = context.read<UplodingDataCubit>().state;
+              // Listen to the emitted state
+              final state = context.read<UplodingDataCubit>().state;
 
-    if (state is AddressLatUploaded) {
-      // Navigate to CheckoutScreen with the new address ID
-      PersistentNavBarNavigator.pushNewScreen(
-        context,
-        screen: CheckoutScreen(
-          id: state.address, // Use the newly created address ID
-          lat: widget.lat,
-          long: widget.long,
-          selectedAddressId: state.address,
-          street: streetcontroller.text,
-          building: buidingcontroller.text,
+              if (state is AddressLatUploaded) {
+                // Navigate to CheckoutScreen with the new address ID
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: CheckoutScreen(
+                    id: state.address, // Use the newly created address ID
+                    lat: widget.lat,
+                    long: widget.long,
+                    selectedAddressId: state.address,
+                    street: streetcontroller.text,
+                    building: buidingcontroller.text,
+                  ),
+                  withNavBar: true,
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              } else if (state is ErrorOccurred) {
+                // Show an error if address creation fails
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.errorMsg)),
+                );
+              }
+            }
+          }, "Confirm", enabled: true),
         ),
-        withNavBar: true,
-        pageTransitionAnimation: PageTransitionAnimation.cupertino,
-      );
-    } else if (state is ErrorOccurred) {
-      // Show an error if address creation fails
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.errorMsg)),
-      );
-    }
-  }
-}, "Confirm"),),
       ],
     );
   }
@@ -376,130 +394,163 @@ class _AddressScreenState extends State<AddressScreen> {
     ScreenUtil.init(context, designSize: const Size(360, 852));
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: Scaffold(
-        backgroundColor: MyColors.white,
-        appBar: AppBar(
+      home: WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
           backgroundColor: MyColors.white,
-          title: Center(child: Text('Enter your address')),
-          actions: [
-            Padding(
+          appBar: AppBar(
+            leading: IconButton(
+              icon:
+                  const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
+              onPressed: () {
+                if (!isLoading)
+                  BlocProvider.of<GetMethodCubit>(context).GetRegions();
+                if (!isLoading) context.pop();
+              },
+            ),
+            backgroundColor: MyColors.white,
+            title: Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: DropdownButton<String>(
-                value: selectedAddressString,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedAddressString = newValue;
-                    selectedAddressMap = addresses.firstWhere(
-                      (address) =>
-                          '${address['street']} ${address['floor']}' ==
-                          newValue,
-                      orElse: () => {}, // Return an empty map if not found
-                    );
-                    if (newValue == 'clear_selection') {
-                      selectedAddressString = null;
-                      selectedAddressMap = null;
-                    }
-                    if (selectedAddressMap != null &&
-                        selectedAddressMap!.isNotEmpty) {
-                      selectedAddressId =
-                          selectedAddressMap!['id']; // Extract the ID
-                      print('Selected Address ID: $selectedAddressId');
-                    }
-                    print('new value: $newValue');
-                  });
-                },
-                hint: Text(
-                  'Select Address',
-                  style: TextStyle(color: Colors.black),
-                ),
-                items: [
-                  // Add a "Clear Selection" option
-                  DropdownMenuItem<String>(
-                    value: 'clear_selection',
-                    child: Text(
-                      'Clear Selection',
-                      style: TextStyle(color: Colors.red), // Optional styling
-                    ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Enter your address',
+                    style: TextStyle(fontSize: 15.sp),
                   ),
-                  ...addresses.map<DropdownMenuItem<String>>((address) {
-                    return DropdownMenuItem<String>(
-                      value:
-                          '${address['street']} ${address['floor']}', // Concatenate street and floor
-                      child: Text(
-                        '${address['street'] ?? 'Unknown Street'}, Floor: ${address['floor'] ?? 'N/A'}',
-                      ),
-                    );
-                  }).toList(),
                 ],
-                dropdownColor: MyColors.Secondcolor,
-                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                underline: SizedBox(),
               ),
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  height: 150.h,
-                  width: 320.w,
-                  child: Stack(children: [
-                    _buildMe(),
-                    _buildAddress(),
-                    _buildGoogleMaps(),
-                    Center(
-                      // This creates the fixed pin in the center of the map view
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Icon(Icons.location_pin,
-                            size: 40.0, color: MyColors.Secondcolor),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: DropdownButton<String>(
+                  value: selectedAddressString,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'clear_selection') {
+                        selectedAddressString = null;
+                        selectedAddressMap = null;
+                        isLoading = false;
+                      } else {
+                        selectedAddressString = newValue;
+                        selectedAddressMap = addresses.firstWhere(
+                          (address) =>
+                              '${address['street']} ${address['floor']}' ==
+                              newValue,
+                          orElse: () => {}, // Return empty map if not found
+                        );
+                        if (selectedAddressMap != null &&
+                            selectedAddressMap!.isNotEmpty) {
+                          selectedAddressId = selectedAddressMap!['id'];
+                          print('Selected Address ID: $selectedAddressId');
+                        }
+                      }
+                      print('New value: $newValue');
+                    });
+                  },
+                  hint: Text(
+                    'Select Address',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  items: [
+                    // Clear Selection Option
+                    DropdownMenuItem<String>(
+                      value: 'clear_selection',
+                      child: Text(
+                        'Clear Selection',
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
-                  ]),
+                    // Address Options
+                    ...addresses.map<DropdownMenuItem<String>>((address) {
+                      return DropdownMenuItem<String>(
+                        value: '${address['street']} ${address['floor']}',
+                        child: Text(
+                          '${address['street'] ?? 'Unknown Street'}, Floor: ${address['floor'] ?? 'N/A'}',
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                  dropdownColor: Colors.white,
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                  underline: SizedBox(),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 70.h,
-                    width: 320.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: MyColors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                          offset: Offset(0, 1), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: Row(
+              ),
+            ],
+          ),
+          body: isLoading // Show CircularProgressIndicator if loading
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: MyColors.Secondcolor,
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Center(
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.sp),
-                          child: Icon(Icons.location_pin),
+                        Container(
+                          height: 150.h,
+                          width: 320.w,
+                          child: Stack(children: [
+                            _buildMe(),
+                            _buildAddress(),
+                            _buildGoogleMaps(),
+                            Center(
+                              // This creates the fixed pin in the center of the map view
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 30),
+                                child: Icon(Icons.location_pin,
+                                    size: 40.0, color: MyColors.Secondcolor),
+                              ),
+                            ),
+                          ]),
                         ),
-                        Expanded(
-                          // Allows the text to wrap within available space
-                          child: Text(
-                            '${widget.lat} , ${widget.long}',
-                            overflow: TextOverflow
-                                .ellipsis, // Add ellipsis if text is too long
-                            style: TextStyle(fontSize: 14),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 70.h,
+                            width: 320.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: MyColors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: Offset(
+                                      0, 1), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.sp),
+                                  child: Icon(Icons.location_pin),
+                                ),
+                                Expanded(
+                                  // Allows the text to wrap within available space
+                                  child: Text(
+                                    '${widget.lat} , ${widget.long}',
+                                    overflow: TextOverflow
+                                        .ellipsis, // Add ellipsis if text is too long
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+                        _twoButton(),
+                        _TextField(),
                       ],
                     ),
                   ),
                 ),
-                _twoButton(),
-                _TextField(),
-              ],
-            ),
-          ),
         ),
       ),
     );

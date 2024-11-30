@@ -46,6 +46,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int? tax;
   int? total;
   Widgets _widgets = Widgets();
+  bool isLoading = false;
 
   void initState() {
     super.initState();
@@ -57,6 +58,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return BlocBuilder<cart.GetMethodCubitV2, GetMethodStateV1>(
       builder: (context, state) {
         if (state is GetPriceV1) {
+          isLoading = true;
           final price = state.posts;
 
           if (mounted) {
@@ -148,47 +150,47 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-Widget _paymentButton() {
-  return BlocListener<UplodingDataCubit, UplodingDataState>(
-    listener: (context, state) {
-      if (state is PayOrder) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PaymobWebView(iframeUrl: state.paymentUrl),
-          ),
-        );
-      } else if (state is CashOnDelivery) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Order placed successfully with Cash on Delivery!'),
-          ),
-        );
-      } else if (state is OrderAlreadyCreated) {
-      showDialog(
-          context: context,
-          builder: (context) => _widgets.buildCustomDialog(
+  Widget _paymentButton() {
+    return BlocListener<UplodingDataCubit, UplodingDataState>(
+      listener: (context, state) {
+        if (state is PayOrder) {
+          Navigator.push(
             context,
-            state.errorMsg,
-            'Order Made Before',
-          ),
-        );
+            MaterialPageRoute(
+              builder: (context) => PaymobWebView(iframeUrl: state.paymentUrl),
+            ),
+          );
+        } else if (state is CashOnDelivery) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Order placed successfully with Cash on Delivery!'),
+            ),
+          );
+        } else if (state is OrderAlreadyCreated) {
+          showDialog(
+            context: context,
+            builder: (context) => _widgets.buildCustomDialog(
+              context,
+              state.errorMsg,
+              'Order Made Before',
+            ),
+          );
 
-        PersistentNavBarNavigator.pushNewScreen(
-          context,
-          screen: MyOrderScreen(),
-          withNavBar: true,
-          pageTransitionAnimation: PageTransitionAnimation.cupertino,
-        );
-      } else if (state is ErrorOccurred) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.errorMsg),
-          ),
-        );
-      }
-    },
-    child:   SizedBox(
+          PersistentNavBarNavigator.pushNewScreen(
+            context,
+            screen: MyOrderScreen(),
+            withNavBar: true,
+            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+          );
+        } else if (state is ErrorOccurred) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMsg),
+            ),
+          );
+        }
+      },
+      child: SizedBox(
         width: double.infinity,
         height: 50.h,
         child: ElevatedButton(
@@ -213,11 +215,8 @@ Widget _paymentButton() {
           ),
         ),
       ),
-
-  );
-}
-
- 
+    );
+  }
 
   @override
   @override
@@ -230,7 +229,12 @@ Widget _paymentButton() {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context), // Navigate back
+          onPressed: () {
+            if (isLoading)
+                  BlocProvider.of<GetMethodCubitV2>(context).GetAddress();
+               BlocProvider.of<GetMethodCubit>(context).GetMe();
+            if (isLoading) context.pop();
+          }, // Navigate back
         ),
         title: Text('Checkout', style: TextStyle(color: Colors.black)),
         centerTitle: true,

@@ -22,7 +22,7 @@ class _ForgetpasswordState extends State<Forgetpassword> {
       },
       listener: (context, EmailAuthState state) {
         if (state is LoginLoading) {
-          _widgets.buildCircularProgressIndicatorDialogV1(context);
+
         } else if (state is Loginfails) {
           Navigator.of(context, rootNavigator: true).pop();
           // if (Navigator.canPop(context)) {
@@ -100,7 +100,7 @@ class _ForgetpasswordState extends State<Forgetpassword> {
                   context
                       .read<EmailAuthCubit>()
                       .forgetpassword(emailcontroller.text);
-                }, 'Send Email')),
+                }, 'Send Email', enabled: true)),
             SizedBox(height: 20),
             // Go to Sign In Page Text
             GestureDetector(

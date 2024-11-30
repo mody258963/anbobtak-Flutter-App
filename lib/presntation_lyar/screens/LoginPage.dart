@@ -61,9 +61,7 @@ class _SignUpState extends State<SignUp> {
         return previous != current;
       },
       listener: (context, EmailAuthState state) async {
-        if (state is LoginLoading) {
-          _widgets.buildCircularProgressIndicatorDialogV1(context);
-        } else if (state is Loginfails) {
+       if (state is Loginfails) {
           Navigator.of(context, rootNavigator: true).pop();
           // if (Navigator.canPop(context)) {
           //   Navigator.of(context, rootNavigator: true).pop();
@@ -162,7 +160,7 @@ class _SignUpState extends State<SignUp> {
                       child: _widgets.AppButton(() {
                         context.read<EmailAuthCubit>().loginUser(
                             emailcontroller.text, passwordcontroller.text);
-                      }, 'Sign In')),
+                      }, 'Sign In', enabled: true)),
                   SizedBox(
                     height: 30,
                   ),

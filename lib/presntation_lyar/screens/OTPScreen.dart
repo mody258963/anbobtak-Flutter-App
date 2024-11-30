@@ -28,9 +28,7 @@ class _SecondOTPState extends State<SecondOTP> {
         return previous != current;
       },
       listener: (context, EmailAuthState state) {
-        if (state is SendCodeLoding) {
-          return _widgets.buildCircularProgressIndicatorDialogV1(context);
-        }
+    
         if (state is Loginfails) {
           showDialog(
             context: context,
@@ -129,7 +127,7 @@ class _SecondOTPState extends State<SecondOTP> {
                           print('=============seconf');
                           context.read<EmailAuthCubit>().verificationCode(
                               phonecontroller.text, OPTcontroller.text);
-                        }, 'Sign Up')),
+                        }, 'Sign Up', enabled: true)),
                     SizedBox(
                       height: 30,
                     ),

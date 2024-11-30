@@ -73,7 +73,9 @@ class _ProductContainerState extends State<ProductContainer> {
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
         if (state is LodingState) {
-          return Center(child: CircularGifIndicator());
+          return Center(
+            child: CircularGifIndicator(),
+          );
         } else if (state is GetProducts) {
           // Sort both products and cart lists by ID
           final items = _sortProducts(state.posts);
@@ -108,9 +110,7 @@ class _ProductContainerState extends State<ProductContainer> {
         }
 
         // If state is not `GetCartsandProducts`, return an empty container
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return Container();
       },
     );
   }

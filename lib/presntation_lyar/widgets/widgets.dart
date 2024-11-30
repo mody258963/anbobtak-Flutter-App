@@ -206,9 +206,10 @@ class Widgets {
     );
   }
 
-  Widget AppButton(OnPressed, text) {
+  Widget AppButton(OnPressed, text, {required bool enabled}) {
     return MaterialButton(
-      onPressed: OnPressed,
+      
+       onPressed: OnPressed,
       color: MyColors.Secondcolor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -216,6 +217,7 @@ class Widgets {
       height: 50,
       child: Center(
         child: Text(
+          
           text,
           style: TextStyle(
             color: Colors.white,
@@ -302,9 +304,7 @@ class Widgets {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return Center(
-          child: CircularGifIndicator(size: 100.0),
-        );
+        return CircularGifIndicator();
       },
     );
   }
@@ -371,38 +371,14 @@ class CurvedClipper extends CustomClipper<Path> {
 //_----------------------------------------------------
 
 class CircularGifIndicator extends StatelessWidget {
-  final double size;
+// Changed to `double` for consistency
 
   const CircularGifIndicator({
-    Key? key,
-    this.size = 150,
+    Key? key,// Default value for `top`
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Circular GIF indicator
-        Padding(
-          padding: EdgeInsets.only(top: 180.h),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors
-                  .transparent, // Ensure the circle itself has no background
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/gas2.gif',
-                fit: BoxFit.cover, // Ensure the GIF fits within the circle
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+    return CircularProgressIndicator(color: MyColors.Secondcolor,);
   }
 }
