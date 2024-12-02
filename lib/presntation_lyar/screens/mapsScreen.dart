@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
+import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_state.dart';
+import 'package:anbobtak/besnese_logic/uploding_data/uploding_data_cubit.dart';
 import 'package:anbobtak/costanse/colors.dart';
 import 'package:anbobtak/costanse/extensions.dart';
 import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
+import 'package:anbobtak/presntation_lyar/widgets/app_router.dart';
 import 'package:anbobtak/presntation_lyar/widgets/widgets.dart';
 import 'package:anbobtak/web_servese/model/regions.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +31,7 @@ class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   Set<Polygon> _polygons = {};
   Widgets _widgets = Widgets();
+    AppRouter _appRouter = AppRouter();
 
   bool isInSelectedArea = true;
   bool isLoading = true; // State to track loading status
@@ -143,121 +148,121 @@ class _MapScreenState extends State<MapScreen> {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: MyColors.white,
-        floatingActionButtonLocation:
-            FloatingActionButtonLocation.miniCenterDocked,
-        floatingActionButton: Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.only(right: 55),
-            child: Container(
-                height: 60.h,
-                width: 280.w,
-                child: isLoading // Show CircularProgressIndicator if loading
-                    ? null
-                    : _widgets.AppButton(() {
-                        if (isInSelectedArea) {
-                          PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: AddressScreen(
-                              lat: latitude,
-                              long: longitude,
-                            ),
-                            withNavBar: true,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.cupertino,
-                          );
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(
-                                  'Enter Your Details',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                content: TextField(
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Type something...',
-                                    hintText: 'Enter text here',
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close dialog
-                                    },
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      String userInput = 'last';
-                                      if (userInput.isNotEmpty) {
-                                        // Perform actions with the userInput
-                                        print('User Input: $userInput');
-                                      }
-                                      Navigator.of(context)
-                                          .pop(); // Close dialog
-                                    },
-                                    child: Text(
-                                      'Submit',
-                                      style: TextStyle(
-                                          color: MyColors.Secondcolor),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      }, 'Confirm', enabled: true)),
-          ),
-        ),
-        appBar: AppBar(
-          title: const Text("Set Delivery Location"),
+      child: PopScope(
+        onPopInvoked: (didPop) {
+          if (didPop) {
+            BlocProvider.of<GetMethodCubit>(context)
+                .GetProduct(); // Optional refresh
+          }
+        },
+        child: Scaffold(
           backgroundColor: MyColors.white,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
-            onPressed: () {
-              if (!isLoading)
-                BlocProvider.of<GetMethodCubit>(context).GetProduct();
-               
-              context.pop();
-            },
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(8.sp),
-              child:
-                  Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniCenterDocked,
+          floatingActionButton: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(right: 55),
+              child: Container(
+                  height: 60.h,
+                  width: 280.w,
+                  child: isLoading // Show CircularProgressIndicator if loading
+                      ? null
+                      : _widgets.AppButton(() {
+                          if (isInSelectedArea) {
+                            _appRouter.navigateToAddressScreen(context,AddressScreen(lat: latitude,long: longitude,));
+
+
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(
+                                    'Enter Your Details',
+                                    style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  content: TextField(
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'Type something...',
+                                      hintText: 'Enter text here',
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close dialog
+                                      },
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        String userInput = 'last';
+                                        if (userInput.isNotEmpty) {
+                                          // Perform actions with the userInput
+                                          print('User Input: $userInput');
+                                        }
+                                        Navigator.of(context)
+                                            .pop(); // Close dialog
+                                      },
+                                      child: Text(
+                                        'Submit',
+                                        style: TextStyle(
+                                            color: MyColors.Secondcolor),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        }, 'Confirm', enabled: true)),
             ),
-          ],
-        ),
-        body: isLoading // Show CircularProgressIndicator if loading
-            ? Center(child: CircularGifIndicator())
-            : Stack(
-                children: [
-                  _buildGoogleMaps(),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 37),
-                      child: Icon(Icons.location_pin,
-                          size: 50.0,
-                          color: isInSelectedArea
-                              ? MyColors.Secondcolor
-                              : Colors.red),
-                    ),
-                  ),
-                ],
+          ),
+          appBar: AppBar(
+            title: const Text("Set Delivery Location"),
+            backgroundColor: MyColors.white,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
+              onPressed: () {
+                if (!isLoading) {
+                  Navigator.pop(context, true);
+                }
+              },
+            ),
+            actions: [
+              Padding(
+                padding: EdgeInsets.all(8.sp),
+                child:
+                    Icon(Icons.navigation_rounded, color: MyColors.Secondcolor),
               ),
+            ],
+          ),
+          body: isLoading // Show CircularProgressIndicator if loading
+              ? Center(child: CircularGifIndicator())
+              : Stack(
+                  children: [
+                    _buildGoogleMaps(),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 37),
+                        child: Icon(Icons.location_pin,
+                            size: 50.0,
+                            color: isInSelectedArea
+                                ? MyColors.Secondcolor
+                                : Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_state.dart';
 import 'package:anbobtak/besnese_logic/get_method/get_method_cubit.dart';
@@ -52,8 +53,6 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   Future<void> fetchData() async {
-    if (!mounted) return; // Check if the widget is still mounted
-
     setState(() {
       isLoading = true;
     });
@@ -75,6 +74,14 @@ class _AddressScreenState extends State<AddressScreen> {
   Widget _buildMe() {
     return BlocBuilder<GetMethodCubit, GetMethodState>(
       builder: (context, state) {
+
+        if (state is LodingState) {
+            return Center(
+            child: CircularProgressIndicator(
+              color: MyColors.Secondcolor,
+            ),
+          );
+        }
         if (state is GetMee) {
           final me = state.me;
           if (me.phone != null && me.phone != phone) {
@@ -95,38 +102,35 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
-  Widget _buildAddress() {
-    return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
-      builder: (context, state) {
-        if (state is LodingStateV1) {
-          isLoading = true;
-        } else if (state is GetAddres) {
-          final List<Datas> addressList = state.posts;
-          if (addressList.isNotEmpty) {
-            addresses.clear(); // Avoid duplicates
-            for (var item in addressList) {
-              if (mounted) {
-                addresses.add({
-                  'id': item.id,
-                  'building_number': item.buildingNumber ?? 'N/A',
-                  'apartment_number': item.apartmentNumber ?? 'N/A',
-                  'additional_address': item.additionalAddress ?? 'N/A',
-                  'floor': item.floor ?? 'N/A',
-                  'lat': item.lat?.toString() ?? '0',
-                  'long': item.long?.toString() ?? '0',
-                  'street': item.street ?? 'N/A',
-                });
-              }
-            }
-          } else {
-            print('No address data found');
-          }
-          isLoading = false;
+Widget _buildAddress() {
+  return BlocBuilder<GetMethodCubitV2, GetMethodStateV1>(
+    builder: (context, state) {
+      if (state is LodingStateV1) {
+        return Center(
+          child: CircularProgressIndicator(
+            color: MyColors.Secondcolor,
+          ),
+        );
+      } else if (state is GetAddres) {
+        final List<Datas> addressList = state.posts;
+        addresses.clear(); // Avoid duplicates
+        for (var item in addressList) {
+          addresses.add({
+            'id': item.id,
+            'building_number': item.buildingNumber ?? 'N/A',
+            'apartment_number': item.apartmentNumber ?? 'N/A',
+            'additional_address': item.additionalAddress ?? 'N/A',
+            'floor': item.floor ?? 'N/A',
+            'lat': item.lat?.toString() ?? '0',
+            'long': item.long?.toString() ?? '0',
+            'street': item.street ?? 'N/A',
+          });
         }
-        return Container();
-      },
-    );
-  }
+      }
+      return Container(); // Return an empty container when data is loaded
+    },
+  );
+}
 
   Widget _twoButton() {
     double width = MediaQuery.of(context).size.width;
@@ -164,7 +168,8 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
-  Widget _phoneInputField() {
+  Widget _phoneInputField(BuildContext context) {
+    final emailAuthCubit = BlocProvider.of<EmailAuthCubit>(context);
     return Row(
       children: [
         Expanded(
@@ -201,7 +206,9 @@ class _AddressScreenState extends State<AddressScreen> {
             child: Container(
               width: 100.w,
               height: 50.h,
-              child: _widgets.AppButton(() {}, 'Verify', enabled: true),
+              child: _widgets.AppButton(() {
+                emailAuthCubit.sendVerificationCode(phone);
+              }, 'Verify', enabled: true),
             ),
           )
       ],
@@ -303,7 +310,7 @@ class _AddressScreenState extends State<AddressScreen> {
         Padding(
           padding: EdgeInsets.only(right: width * 0.05, left: width * 0.05),
           child: Row(
-            children: [Expanded(child: _phoneInputField())],
+            children: [Expanded(child: _phoneInputField(context))],
           ),
         ),
         SizedBox(height: height * 0.015),
@@ -311,8 +318,7 @@ class _AddressScreenState extends State<AddressScreen> {
           height: height * 0.07,
           width: width * 0.80,
           child: _widgets.AppButton(() async {
-            if (selectedAddressMap != null) {
-              // Use the selected address from the dropdown
+            if (selectedAddressMap != null && phone != '') {
               PersistentNavBarNavigator.pushNewScreen(
                 context,
                 screen: CheckoutScreen(
@@ -343,20 +349,23 @@ class _AddressScreenState extends State<AddressScreen> {
               final state = context.read<UplodingDataCubit>().state;
 
               if (state is AddressLatUploaded) {
+                print('============================$phone');
                 // Navigate to CheckoutScreen with the new address ID
-                PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: CheckoutScreen(
-                    id: state.address, // Use the newly created address ID
-                    lat: widget.lat,
-                    long: widget.long,
-                    selectedAddressId: state.address,
-                    street: streetcontroller.text,
-                    building: buidingcontroller.text,
-                  ),
-                  withNavBar: true,
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
+                if (phone != '') {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: CheckoutScreen(
+                      id: state.address, // Use the newly created address ID
+                      lat: widget.lat,
+                      long: widget.long,
+                      selectedAddressId: state.address,
+                      street: streetcontroller.text,
+                      building: buidingcontroller.text,
+                    ),
+                    withNavBar: true,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                }
               } else if (state is ErrorOccurred) {
                 // Show an error if address creation fails
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -392,6 +401,9 @@ class _AddressScreenState extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, designSize: const Size(360, 852));
+     bool isLoading = 
+      context.watch<GetMethodCubitV2>().state is LodingStateV1;
+
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Poppins'),
       home: WillPopScope(
@@ -405,9 +417,10 @@ class _AddressScreenState extends State<AddressScreen> {
               icon:
                   const Icon(Icons.arrow_back_ios, color: MyColors.Secondcolor),
               onPressed: () {
-                if (!isLoading)
+                if (!isLoading) {
                   BlocProvider.of<GetMethodCubit>(context).GetRegions();
-                if (!isLoading) context.pop();
+                  Navigator.pop(context, true);
+                }
               },
             ),
             backgroundColor: MyColors.white,
@@ -481,13 +494,13 @@ class _AddressScreenState extends State<AddressScreen> {
               ),
             ],
           ),
-          body: isLoading // Show CircularProgressIndicator if loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: MyColors.Secondcolor,
-                  ),
-                )
-              : SingleChildScrollView(
+          body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: MyColors.Secondcolor,
+              ),
+            )
+          : SingleChildScrollView(
                   child: Center(
                     child: Column(
                       children: [
@@ -495,8 +508,8 @@ class _AddressScreenState extends State<AddressScreen> {
                           height: 150.h,
                           width: 320.w,
                           child: Stack(children: [
-                            _buildMe(),
                             _buildAddress(),
+                            _buildMe(),
                             _buildGoogleMaps(),
                             Center(
                               // This creates the fixed pin in the center of the map view

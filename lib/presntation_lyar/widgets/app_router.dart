@@ -2,6 +2,7 @@ import 'package:anbobtak/besnese_logic/email_auth/email_auth_cubit.dart';
 import 'package:anbobtak/besnese_logic/get_method%20v1/get_method_cubit.dart';
 import 'package:anbobtak/besnese_logic/orderLiisting/order_cubit_cubit.dart';
 import 'package:anbobtak/costanse/pages.dart';
+import 'package:anbobtak/presntation_lyar/screens/AddressScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/checkout/Checkout.dart';
 import 'package:anbobtak/presntation_lyar/screens/home/HomeScreen.dart';
 import 'package:anbobtak/presntation_lyar/screens/NavigationBar.dart';
@@ -15,6 +16,7 @@ import 'package:anbobtak/web_servese/dio/web_serv.dart';
 import 'package:anbobtak/web_servese/reproserty/myRepo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../../besnese_logic/get_method/get_method_cubit.dart';
 import '../../besnese_logic/uploding_data/uploding_data_cubit.dart';
 
@@ -34,8 +36,8 @@ class AppRouter {
         myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
     getMethodCubitV2 = GetMethodCubitV2(
         myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
-            orderCubitCubit = OrderCubitCubit(
-        myRepoInstance,  emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
+    orderCubitCubit = OrderCubitCubit(
+        myRepoInstance, emailAuthCubit ?? EmailAuthCubit(myRepoInstance));
   }
 
   Route? generateRoute(RouteSettings settings) {
@@ -51,7 +53,7 @@ class AppRouter {
           // Your callback function logic here
           print('Cart updated: $cartItems');
         };
-        MaterialPageRoute(
+       return MaterialPageRoute(
             builder: (_) => MultiBlocProvider(
                   providers: [
                     BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
@@ -79,7 +81,7 @@ class AppRouter {
       case checkout:
         final int? id = settings.arguments as int?;
 
-        MaterialPageRoute(
+       return MaterialPageRoute(
             builder: (_) => MultiBlocProvider(providers: [
                   BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
                   BlocProvider<UplodingDataCubit>.value(
@@ -119,6 +121,20 @@ class AppRouter {
           ),
         );
 
+ case addresspage:
+  return MaterialPageRoute(
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider<EmailAuthCubit>.value(value: emailAuthCubit!),
+        BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+        BlocProvider<GetMethodCubitV2>.value(value: getMethodCubitV2!),
+        BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!),
+      ],
+      child: AddressScreen(),
+    ),
+  );
+
+
       case realhomescreen:
         final Function(List<Map<String, dynamic>>) onCartUpdate = (cartItems) {
           // Your callback function logic here
@@ -139,4 +155,22 @@ class AppRouter {
     }
     return null;
   }
+  Future<void> navigateToAddressScreen(BuildContext context,screen) async {
+  // Perform any async operation here, like fetching data
+   PersistentNavBarNavigator.pushNewScreen(
+    context,
+    screen: MultiBlocProvider(
+      providers: [
+        BlocProvider<EmailAuthCubit>.value(value: emailAuthCubit!),
+        BlocProvider<GetMethodCubit>.value(value: getMethodCubit!),
+        BlocProvider<GetMethodCubitV2>.value(value: getMethodCubitV2!),
+        BlocProvider<UplodingDataCubit>.value(value: uplodingDataCubit!),
+      ],
+      child: screen,
+    ),
+    withNavBar: true,
+    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+  );
+}
+
 }

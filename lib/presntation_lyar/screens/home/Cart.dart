@@ -30,7 +30,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<GetMethodCubitV2>(context).GetCart();
+   BlocProvider.of<GetMethodCubitV2>(context).GetCart();
     print('Quantity passed to CartScreen: ${widget.quantity}');
   }
 
